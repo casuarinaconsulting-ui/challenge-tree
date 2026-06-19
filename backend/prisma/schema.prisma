@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String
+  passwordHash  String
+  location      String?
+  country       String?
+  language      String    @default("en")
+  incomeLevel   String    @default("medium")   // low | medium | high
+  abilityLevel  String    @default("full")      // limited | moderate | full
+  timeAvailable Int       @default(30)          // minutes per day
+  motivations   String[]  @default([])
+  preferences   Json      @default("{}")
+  streakCount   Int       @default(0)
+  longestStreak Int       @default(0)
+  lastActive    DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+
+  userChallenges UserChallenge[]
+  userBadges     UserBadge[]
+  impactRecords  Impact[]
+
+  @@map("users")
+}
+
+model Challenge {
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  category        Category
+  difficulty      Int      // 1 = beginner, 5 = advanced
+  timeEstimate    Int      // minutes
+  costLevel       String   // free | low | medium
+  instructions    String[]
+  impactEstimate  Json     // { co2: float, water: float, waste: float }
+  educationalText String
+  tips            String[]
+  barriers        String[]
+  region          String   @default("global")
+  language        String   @default("en")
+  isAiGenerated   Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  userChallenges UserChallenge[]
+
+  @@map("challenges")
+}
+
+model UserChallenge {
+  id              String    @id @default(uuid())
+  userId          String
+  challengeId     String
+  assignedDate    DateTime  @db.Date
+  isCompleted     Boolean   @default(false)
+  completedAt     DateTime?
+  impactAchieved  Json?
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+
+  @@unique([userId, challengeId, assignedDate])
+  @@map("user_challenges")
+}
+
+model Badge {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  icon        String
+  requirement Json     // { type: string, threshold: number }
+  createdAt   DateTime @default(now())
+
+  userBadges UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id])
+
+  @@id([userId, badgeId])
+  @@map("user_badges")
+}
+
+model Impact {
+  id             String   @id @default(uuid())
+  userId         String
+  date           DateTime @db.Date
+  co2Saved       Float    @default(0)
+  waterSaved     Float    @default(0)
+  wasteDiverted  Float    @default(0)
+  treesEquiv     Float    @default(0)
+  totalActions   Int      @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("impact")
+}
+
+enum Category {
+  ENERGY
+  WATER
+  WASTE
+  TRANSPORT
+  FOOD
+  CONSUMPTION
+  BIODIVERSITY
+  COMMUNITY
+  SOCIAL_EQUITY
+  CIRCULAR_ECONOMY
+  CLIMATE_ADVOCACY
+  WELLBEING
+}
