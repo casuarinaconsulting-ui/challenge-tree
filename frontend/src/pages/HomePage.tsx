@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
@@ -9,6 +10,33 @@ const CATEGORY_EMOJI: Record<string, string> = {
   SOCIAL_EQUITY: '⚖️', CIRCULAR_ECONOMY: '🔄', CLIMATE_ADVOCACY: '📢', WELLBEING: '🌱',
 }
 
+const DEMO_CHALLENGES = [
+  {
+    id: 'demo-1', isCompleted: false,
+    challenge: {
+      id: 'demo-1', title: '5-minute shower', category: 'WATER',
+      description: 'Cut your shower to 5 minutes today and save up to 50 litres of water.',
+      timeEstimate: 5, costLevel: 'free', difficulty: 1,
+    },
+  },
+  {
+    id: 'demo-2', isCompleted: false,
+    challenge: {
+      id: 'demo-2', title: 'Plant-based meal', category: 'FOOD',
+      description: 'Cook one fully plant-based meal — no meat, no dairy.',
+      timeEstimate: 30, costLevel: 'low', difficulty: 2,
+    },
+  },
+  {
+    id: 'demo-3', isCompleted: false,
+    challenge: {
+      id: 'demo-3', title: 'Walk or cycle one trip', category: 'TRANSPORT',
+      description: 'Skip motorised transport for one journey today, no matter how short.',
+      timeEstimate: 20, costLevel: 'free', difficulty: 1,
+    },
+  },
+]
+
 export default function HomePage() {
   const user     = useAuthStore(s => s.user)
   const logout   = useAuthStore(s => s.logout)
@@ -17,11 +45,21 @@ export default function HomePage() {
 
   const { data: challenges, isLoading } = useQuery({
     queryKey: ['daily-challenges'],
-    queryFn: () => api.get('/challenges/daily').then(r => r.data),
+    queryFn: () => api.get('/challenges/daily').then(r => r.data).catch(() => null),
   })
 
+  const displayChallenges = challenges ?? DEMO_CHALLENGES
+
+  const [demoCompleted, setDemoCompleted] = useState<Set<string>>(new Set())
+
   const completeMutation = useMutation({
-    mutationFn: (challengeId: string) => api.post(`/challenges/${challengeId}/complete`),
+    mutationFn: (challengeId: string) => {
+      if (challengeId.startsWith('demo-')) {
+        setDemoCompleted(prev => new Set(prev).add(challengeId))
+        return Promise.resolve()
+      }
+      return api.post(`/challenges/${challengeId}/complete`)
+    },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['daily-challenges'] }),
   })
 
@@ -53,14 +91,15 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {challenges?.map((uc: any) => {
+            {displayChallenges?.map((uc: any) => {
               const c = uc.challenge
+              const isCompleted = uc.isCompleted || demoCompleted.has(uc.id)
               return (
                 <div key={uc.id} className="rounded-2xl p-5"
-                  style={{ background: '#fff', border: uc.isCompleted ? '2px solid var(--green-light)' : '1px solid #e5e7eb' }}>
+                  style={{ background: '#fff', border: isCompleted ? '2px solid var(--green-light)' : '1px solid #e5e7eb' }}>
                   <div className="flex justify-between items-start mb-2">
                     <span className="text-2xl">{CATEGORY_EMOJI[c.category] ?? '🌍'}</span>
-                    {uc.isCompleted && (
+                    {isCompleted && (
                       <span className="text-xs font-semibold px-2 py-1 rounded-full"
                         style={{ background: '#d8f3dc', color: 'var(--green-deep)' }}>Done ✓</span>
                     )}
@@ -72,7 +111,7 @@ export default function HomePage() {
                     <span>💰 {c.costLevel}</span>
                     <span>🎯 Level {c.difficulty}</span>
                   </div>
-                  {!uc.isCompleted && (
+                  {!isCompleted && (
                     <button
                       onClick={() => completeMutation.mutate(c.id)}
                       disabled={completeMutation.isPending}

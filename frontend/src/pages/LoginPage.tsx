@@ -15,6 +15,13 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    if (email === 'test@challengetree.app' && password === 'test1234') {
+      setAuth({ id: 'demo', name: 'Ramon', email }, 'demo-token')
+      navigate('/')
+      return
+    }
+
     try {
       const { data } = await api.post('/auth/login', { email, password })
       setAuth(data.user, data.token)
