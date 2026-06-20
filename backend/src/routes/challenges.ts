@@ -1,10 +1,9 @@
 import { Router, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../lib/prisma'
 import { authenticate, AuthRequest } from '../middleware/auth'
 import { getDailyChallenges, markComplete } from '../services/challengeService'
 
 const router = Router()
-const prisma = new PrismaClient()
 
 // GET /api/challenges/daily — returns 3 personalised challenges for today
 router.get('/daily', authenticate, async (req: AuthRequest, res: Response) => {

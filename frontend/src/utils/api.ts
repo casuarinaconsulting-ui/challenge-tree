@@ -14,7 +14,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) useAuthStore.getState().logout()
+    const token = useAuthStore.getState().token
+    if (err.response?.status === 401 && token !== 'demo-token') {
+      useAuthStore.getState().logout()
+    }
     return Promise.reject(err)
   }
 )

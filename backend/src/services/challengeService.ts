@@ -1,6 +1,5 @@
-import { PrismaClient, Category } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { Category } from '@prisma/client'
+import { prisma } from '../lib/prisma'
 
 const TODAY = () => {
   const d = new Date()

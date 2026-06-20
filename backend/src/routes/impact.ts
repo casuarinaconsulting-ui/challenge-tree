@@ -1,9 +1,8 @@
 import { Router, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../lib/prisma'
 import { authenticate, AuthRequest } from '../middleware/auth'
 
 const router = Router()
-const prisma = new PrismaClient()
 
 router.get('/', authenticate, async (req: AuthRequest, res: Response) => {
   const records = await prisma.impact.findMany({ where: { userId: req.userId } })
