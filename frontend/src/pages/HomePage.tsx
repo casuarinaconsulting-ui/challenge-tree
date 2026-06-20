@@ -48,7 +48,7 @@ export default function HomePage() {
     queryFn: () => api.get('/challenges/daily').then(r => r.data).catch(() => null),
   })
 
-  const displayChallenges = challenges ?? DEMO_CHALLENGES
+  const displayChallenges = Array.isArray(challenges) ? challenges : DEMO_CHALLENGES
 
   const [demoCompleted, setDemoCompleted] = useState<Set<string>>(new Set())
 
