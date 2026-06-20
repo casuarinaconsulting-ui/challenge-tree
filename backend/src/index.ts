@@ -40,6 +40,8 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ error: 'Internal server error' })
 })
 
-app.listen(PORT, () => console.log(`Challenge Tree API running on port ${PORT}`))
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => console.log(`Challenge Tree API running on port ${PORT}`))
+}
 
 export default app
