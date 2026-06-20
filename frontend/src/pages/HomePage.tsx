@@ -56,7 +56,7 @@ export default function HomePage() {
     mutationFn: (challengeId: string) => {
       if (challengeId.startsWith('demo-')) {
         setDemoCompleted(prev => new Set(prev).add(challengeId))
-        return Promise.resolve()
+        return Promise.resolve(null as any)
       }
       return api.post(`/challenges/${challengeId}/complete`)
     },
