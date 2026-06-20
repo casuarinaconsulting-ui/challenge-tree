@@ -18,6 +18,7 @@ export default function LoginPage() {
 
     if (email === 'demo@challengetree.app' && password === 'vh9oNDVX23OaXn') {
       setAuth({ id: 'demo', name: 'Ramon', email }, 'demo-token')
+      setLoading(false)
       navigate('/')
       return
     }
