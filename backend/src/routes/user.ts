@@ -38,7 +38,7 @@ router.put('/profile', authenticate, async (req: AuthRequest, res: Response) => 
 
   const user = await prisma.user.update({
     where: { id: req.userId },
-    data: parsed.data,
+    data: parsed.data as any,
     select: { id: true, email: true, name: true, incomeLevel: true, abilityLevel: true }
   })
   res.json(user)
