@@ -12,23 +12,34 @@ function ImpactWave() {
   )
 }
 
-function getMotivation(n: number): { headline: string; body: string } {
-  if (n === 0) return {
-    headline: 'Every journey begins here.',
-    body: 'Climate hits communities unequally. Each action helps close that gap.',
-  }
-  if (n <= 5) return {
-    headline: 'Sustainability is justice.',
-    body: 'For future generations and the communities already living the crisis.',
-  }
-  if (n <= 15) return {
-    headline: 'You\'re inspiring others.',
-    body: 'Each visible change influences an average of 3 people around you.',
-  }
-  return {
-    headline: 'You\'re proof it works.',
-    body: 'Real change is built by consistent people, not perfect ones.',
-  }
+const DAILY_MESSAGES = [
+  { headline: 'Climate justice starts with daily choices.', body: 'Climate change hits hardest those who did least to cause it. Every action you take helps close that gap.' },
+  { headline: 'Biodiversity is not a luxury.', body: 'One in eight species faces extinction. The choices we make in daily life are among the most powerful forces we have.' },
+  { headline: 'Over 2 billion people lack safe water.', body: 'Every litre you conserve shifts demand in systems that affect millions — far beyond your tap.' },
+  { headline: 'Sustainability without equity is just aesthetics.', body: 'Real change includes everyone — especially those with the least power and the most to lose.' },
+  { headline: 'A third of all food produced is wasted.', body: 'What we eat and how we buy it is one of the highest-leverage choices available to any individual.' },
+  { headline: 'Individual acts, collective power.', body: 'No single person fixes the climate alone. But millions changing together? That is a movement.' },
+  { headline: 'Taking care of the planet is self-care.', body: 'A sustainable life is also a more intentional, connected, and fulfilling one. The two are not in tension.' },
+  { headline: 'We borrow this earth from our children.', body: 'Every decision you make today shapes the climate experienced for the next century. That is real power.' },
+  { headline: 'Markets follow behaviour.', body: 'When millions of people change how they live, industries follow. Your choices are a form of governance.' },
+  { headline: 'The most equal communities are the most resilient.', body: 'Sharing resources, sharing power, sharing futures — equity and sustainability grow from the same root.' },
+  { headline: 'You are not alone in this.', body: 'Hundreds of millions of people are making the same choices right now. You are part of something vast.' },
+  { headline: 'The strongest movements are local.', body: 'Change rooted in community, visible to neighbours, and contagious in conversation — that is the kind that lasts.' },
+  { headline: 'Individual and systemic change are the same thing.', body: 'They operate at different scales but fuel each other. Your habit can become someone\'s policy proposal.' },
+  { headline: 'Energy poverty is a justice issue.', body: 'Low-income communities bear the highest energy costs and the worst air quality. Clean energy is a shared right.' },
+  { headline: 'What you eat shapes the land.', body: 'Food production accounts for roughly a quarter of global emissions. Every meal is a small vote for the food system you want.' },
+  { headline: 'Circular thinking changes everything.', body: 'When nothing is waste and everything has a next life, the relationship between humanity and resources transforms.' },
+  { headline: 'Children born today will live to 2100.', body: 'The systems we build now will be inherited by people who are already alive. Act like it matters — because it does.' },
+  { headline: 'Transport is power — and access.', body: 'Who can move, and how, determines who participates in society. Sustainable transport is also more equitable transport.' },
+  { headline: 'Small consistent acts reshape systems.', body: 'Habits repeated across millions become norms. Norms become expectations. Expectations become policy.' },
+  { headline: 'The planet needs imperfect allies.', body: 'Not a handful doing sustainability perfectly — but millions doing it imperfectly, persistently, and together.' },
+]
+
+function getDailyMotivation() {
+  const now = new Date()
+  const start = new Date(now.getFullYear(), 0, 0)
+  const dayOfYear = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+  return DAILY_MESSAGES[dayOfYear % DAILY_MESSAGES.length]
 }
 
 function CasuarinaFooter() {
@@ -52,7 +63,7 @@ export default function ImpactPage() {
   })
 
   const totalActions = data?.totalActions ?? 0
-  const motivation   = getMotivation(totalActions)
+  const motivation   = getDailyMotivation()
 
   const stats = [
     { icon: '🌬️', label: 'CO₂ saved',       value: `${(data?.co2Saved ?? 0).toFixed(1)} kg`,     color: '#5e7a44' },
