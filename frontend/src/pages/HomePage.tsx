@@ -44,9 +44,13 @@ export default function HomePage() {
   const navigate = useNavigate()
   const qc       = useQueryClient()
 
+  const token = useAuthStore(s => s.token)
+  const isDemo = token === 'demo-token'
+
   const { data: challenges, isLoading } = useQuery({
     queryKey: ['daily-challenges'],
-    queryFn: () => api.get('/challenges/daily').then(r => r.data).catch(() => null),
+    queryFn: () => isDemo ? Promise.resolve(null) : api.get('/challenges/daily').then(r => r.data).catch(() => null),
+    enabled: !isDemo,
   })
 
   const displayChallenges = (Array.isArray(challenges) && challenges.length > 0) ? challenges : DEMO_CHALLENGES
