@@ -9,7 +9,7 @@ import ProfilePage  from './pages/ProfilePage'
 import ImpactPage   from './pages/ImpactPage'
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } },
 })
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
