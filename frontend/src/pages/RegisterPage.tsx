@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import api from '../utils/api'
+import Wordmark from '../components/Wordmark'
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '', country: '' })
@@ -31,7 +32,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ background: 'var(--cream)' }}>
       <div className="w-full max-w-sm">
-        <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--green-deep)' }}>Join Challenge Tree</h1>
+        <h1 className="mb-1" style={{ color: 'var(--green-deep)', fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600, fontSize: 30 }}>Join <Wordmark size={30} /></h1>
         <p className="text-sm mb-8" style={{ color: 'var(--green-mid)' }}>Start your daily sustainability journey.</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">

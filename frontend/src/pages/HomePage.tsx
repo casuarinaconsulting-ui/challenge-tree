@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
+import Wordmark from '../components/Wordmark'
 
 const CATEGORY_EMOJI: Record<string, string> = {
   ENERGY: '⚡', WATER: '💧', WASTE: '♻️', TRANSPORT: '🚲',
@@ -68,7 +69,7 @@ export default function HomePage() {
       {/* Header */}
       <div className="px-6 pt-12 pb-6" style={{ background: 'var(--green-deep)' }}>
         <div className="flex justify-between items-center mb-2">
-          <h1 className="text-2xl font-bold text-white">Challenge Tree</h1>
+          <h1><Wordmark size={22} dark /></h1>
           <button onClick={() => { logout(); navigate('/login') }}
             className="text-sm px-3 py-1 rounded-lg text-white" style={{ background: 'rgba(255,255,255,0.15)' }}>
             Sign out

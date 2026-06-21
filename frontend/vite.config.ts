@@ -10,8 +10,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Challenge Tree',
-        short_name: 'Challenge Tree',
+        name: 'Challenge Tre3',
+        short_name: 'Tre3',
         description: 'Small actions. Global impact. Every day.',
         theme_color: '#2d6a4f',
         background_color: '#ffffff',
@@ -37,7 +37,7 @@ export default defineConfig({
     }),
   ],
   server: {
-    port: 5173,
+    port: process.env.PORT ? parseInt(process.env.PORT) : 5173,
     proxy: { '/api': 'http://localhost:4000' },
   },
 })
