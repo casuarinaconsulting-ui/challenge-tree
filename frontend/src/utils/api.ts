@@ -11,15 +11,4 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    const { token, isAuthenticated, logout } = useAuthStore.getState()
-    if (err.response?.status === 401 && token !== 'demo-token' && isAuthenticated) {
-      logout()
-    }
-    return Promise.reject(err)
-  }
-)
-
 export default api

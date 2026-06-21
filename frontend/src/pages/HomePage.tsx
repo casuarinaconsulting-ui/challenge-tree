@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
@@ -47,11 +47,21 @@ export default function HomePage() {
   const token = useAuthStore(s => s.token)
   const isDemo = token === 'demo-token'
 
-  const { data: challenges, isLoading } = useQuery({
+  const { data: challenges, isLoading, error } = useQuery({
     queryKey: ['daily-challenges'],
-    queryFn: () => isDemo ? Promise.resolve(null) : api.get('/challenges/daily').then(r => r.data).catch(() => null),
+    queryFn: () => api.get('/challenges/daily').then(r => r.data),
     enabled: !isDemo,
+    retry: false,
   })
+
+  // Handle 401 inside React lifecycle — never from an axios interceptor
+  useEffect(() => {
+    const status = (error as any)?.response?.status
+    if (status === 401) {
+      logout()
+      navigate('/login', { replace: true })
+    }
+  }, [error, logout, navigate])
 
   const displayChallenges = (Array.isArray(challenges) && challenges.length > 0) ? challenges : DEMO_CHALLENGES
 
