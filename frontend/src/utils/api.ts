@@ -14,9 +14,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    const token = useAuthStore.getState().token
-    if (err.response?.status === 401 && token !== 'demo-token') {
-      useAuthStore.getState().logout()
+    const { token, isAuthenticated, logout } = useAuthStore.getState()
+    if (err.response?.status === 401 && token !== 'demo-token' && isAuthenticated) {
+      logout()
     }
     return Promise.reject(err)
   }
