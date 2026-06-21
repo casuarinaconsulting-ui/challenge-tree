@@ -14,21 +14,34 @@ function ImpactWave() {
 
 function getMotivation(n: number): { headline: string; body: string } {
   if (n === 0) return {
-    headline: 'Every movement starts somewhere.',
-    body: 'Climate change hits hardest those who did least to cause it. Your first challenge is the first step toward a fairer world — where environmental justice and human dignity go hand in hand.',
+    headline: 'Every journey begins here.',
+    body: 'Climate hits communities unequally. Each action helps close that gap.',
   }
   if (n <= 5) return {
-    headline: 'Small actions, outsized impact.',
-    body: 'Inequality and environmental damage are deeply linked. Every challenge you complete shifts demand, reduces waste, and builds the habit of choosing differently — for yourself and the communities most harmed.',
+    headline: 'Sustainability is justice.',
+    body: 'For future generations and the communities already living the crisis.',
   }
   if (n <= 15) return {
-    headline: 'You are influencing others.',
-    body: 'Research shows each person who visibly changes their behaviour inspires an average of three others. Your streak belongs not just to you — it belongs to a growing ripple of people choosing a fairer future.',
+    headline: 'You\'re inspiring others.',
+    body: 'Each visible change influences an average of 3 people around you.',
   }
   return {
-    headline: 'You are proof that it works.',
-    body: 'Real change is built by consistent people, not perfect ones. The gap between the world we have and the world we want is bridged one action at a time. Keep going.',
+    headline: 'You\'re proof it works.',
+    body: 'Real change is built by consistent people, not perfect ones.',
   }
+}
+
+function CasuarinaFooter() {
+  return (
+    <div style={{
+      textAlign: 'center', padding: '20px 0 10px',
+      fontFamily: "'Oswald', sans-serif", fontSize: 10,
+      letterSpacing: '0.18em', textTransform: 'uppercase',
+      color: 'rgba(26,51,40,0.28)',
+    }}>
+      Casuarina Consulting
+    </div>
+  )
 }
 
 export default function ImpactPage() {
@@ -42,15 +55,15 @@ export default function ImpactPage() {
   const motivation   = getMotivation(totalActions)
 
   const stats = [
-    { icon: '🌬️', label: 'CO₂ saved',       value: `${(data?.co2Saved ?? 0).toFixed(1)} kg`,  color: '#5e7a44' },
-    { icon: '💧', label: 'Water saved',      value: `${(data?.waterSaved ?? 0).toFixed(0)} L`,  color: '#2b8fb5' },
+    { icon: '🌬️', label: 'CO₂ saved',       value: `${(data?.co2Saved ?? 0).toFixed(1)} kg`,     color: '#5e7a44' },
+    { icon: '💧', label: 'Water saved',      value: `${(data?.waterSaved ?? 0).toFixed(0)} L`,     color: '#2b8fb5' },
     { icon: '♻️', label: 'Waste diverted',   value: `${(data?.wasteDiverted ?? 0).toFixed(1)} kg`, color: '#7b68ae' },
-    { icon: '🌳', label: 'Trees equivalent', value: `${(data?.treesEquiv ?? 0).toFixed(2)}`,    color: '#2a9d8f' },
-    { icon: '✅', label: 'Total actions',    value: `${totalActions}`,                           color: '#c8952a' },
+    { icon: '🌳', label: 'Trees equivalent', value: `${(data?.treesEquiv ?? 0).toFixed(2)}`,       color: '#2a9d8f' },
+    { icon: '✅', label: 'Total actions',    value: `${totalActions}`,                              color: '#c8952a' },
   ]
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: 'var(--cream)' }}>
+    <div className="min-h-screen pb-10" style={{ background: 'var(--cream)' }}>
 
       {/* ── Header ── */}
       <div style={{ background: '#1b4332' }}>
@@ -76,18 +89,13 @@ export default function ImpactPage() {
         <ImpactWave />
       </div>
 
-      {/* ── Stats grid ── */}
+      {/* ── Stats grid — 3 rows × 2 cols ── */}
       <div style={{ padding: '20px 18px 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
 
         {isLoading
           ? [1,2,3,4,5,6].map(i => (
-              <div key={i}
-                   className="animate-pulse"
-                   style={{
-                     height: i === 6 ? 140 : 100, borderRadius: 14,
-                     background: '#e5e7eb',
-                     gridColumn: i === 6 ? 'span 2' : undefined,
-                   }} />
+              <div key={i} className="animate-pulse"
+                   style={{ height: 100, borderRadius: 14, background: '#e5e7eb' }} />
             ))
           : <>
               {stats.map(s => (
@@ -108,49 +116,46 @@ export default function ImpactPage() {
                 </div>
               ))}
 
-              {/* ── 6th card: motivational ── */}
+              {/* ── 6th card: motivational (right of Total actions) ── */}
               <div style={{
-                gridColumn: 'span 2',
-                background: '#1b4332',
-                borderRadius: 14,
-                padding: '22px 20px',
-                position: 'relative',
-                overflow: 'hidden',
+                background: '#1b4332', borderRadius: 14,
+                padding: '14px 14px 16px',
+                position: 'relative', overflow: 'hidden',
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               }}>
-                {/* Subtle botanical watermark */}
                 <span style={{
-                  position: 'absolute', right: 16, top: 12,
-                  fontSize: 52, opacity: 0.08, userSelect: 'none',
+                  position: 'absolute', right: 8, top: 6,
+                  fontSize: 36, opacity: 0.07, userSelect: 'none',
                 }}>
                   🌍
                 </span>
-
-                <p style={{
-                  fontFamily: "'Oswald', sans-serif", fontWeight: 600,
-                  fontSize: 16, color: '#c8952a', margin: '0 0 10px',
-                  letterSpacing: '0.02em',
-                }}>
-                  {motivation.headline}
-                </p>
-                <p style={{
-                  fontSize: 13, color: 'rgba(255,255,255,0.65)',
-                  lineHeight: 1.65, margin: 0,
-                }}>
-                  {motivation.body}
-                </p>
-
-                {/* Decorative rule */}
+                <div>
+                  <p style={{
+                    fontFamily: "'Oswald', sans-serif", fontWeight: 600,
+                    fontSize: 13, color: '#c8952a', margin: '0 0 6px',
+                    lineHeight: 1.3,
+                  }}>
+                    {motivation.headline}
+                  </p>
+                  <p style={{
+                    fontSize: 11.5, color: 'rgba(255,255,255,0.6)',
+                    lineHeight: 1.55, margin: 0,
+                  }}>
+                    {motivation.body}
+                  </p>
+                </div>
                 <div style={{
-                  display: 'flex', alignItems: 'center', gap: 8, marginTop: 16,
+                  display: 'flex', alignItems: 'center', gap: 6, marginTop: 12,
                 }}>
-                  <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.18)' }} />
-                  <span style={{ fontSize: 12, opacity: 0.3 }}>🌿</span>
-                  <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                  <div style={{ width: 16, height: 1, background: 'rgba(255,255,255,0.2)' }} />
+                  <span style={{ fontSize: 9, opacity: 0.35 }}>🌿</span>
                 </div>
               </div>
             </>
         }
       </div>
+
+      <CasuarinaFooter />
     </div>
   )
 }

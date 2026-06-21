@@ -64,6 +64,15 @@ export default function ProfilePage() {
           style={{ background: '#fee2e2', color: '#dc2626' }}>
           Sign out
         </button>
+
+        <div style={{
+          textAlign: 'center', padding: '24px 0 8px',
+          fontFamily: "'Oswald', sans-serif", fontSize: 10,
+          letterSpacing: '0.18em', textTransform: 'uppercase',
+          color: 'rgba(26,51,40,0.28)',
+        }}>
+          Casuarina Consulting
+        </div>
       </div>
     </div>
   )

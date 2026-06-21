@@ -265,6 +265,16 @@ export default function HomePage() {
         )}
       </div>
 
+      {/* Footer */}
+      <div style={{
+        textAlign: 'center', padding: '24px 0 10px',
+        fontFamily: "'Oswald', sans-serif", fontSize: 10,
+        letterSpacing: '0.18em', textTransform: 'uppercase',
+        color: 'rgba(26,51,40,0.28)',
+      }}>
+        Casuarina Consulting
+      </div>
+
       {/* ── Bottom nav ── */}
       <nav style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,

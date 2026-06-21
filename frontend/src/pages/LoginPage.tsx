@@ -178,6 +178,15 @@ export default function LoginPage() {
             <span style={{ fontSize: 15, opacity: 0.35 }}>🌿</span>
             <div style={{ width: 36, height: 1, background: '#d4c9b8' }} />
           </div>
+
+          <div style={{
+            marginTop: 20,
+            fontFamily: "'Oswald', sans-serif", fontSize: 10,
+            letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: 'rgba(26,51,40,0.28)',
+          }}>
+            Casuarina Consulting
+          </div>
         </div>
       </div>
     </div>
