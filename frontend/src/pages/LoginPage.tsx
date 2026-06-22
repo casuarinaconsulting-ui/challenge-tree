@@ -30,10 +30,11 @@ function LoginWave() {
 }
 
 export default function LoginPage() {
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError]       = useState('')
-  const [loading, setLoading]   = useState(false)
+  const [email, setEmail]           = useState('')
+  const [password, setPassword]     = useState('')
+  const [error, setError]           = useState('')
+  const [loading, setLoading]       = useState(false)
+  const [showForgot, setShowForgot] = useState(false)
   const setAuth  = useAuthStore(s => s.setAuth)
   const navigate = useNavigate()
 
@@ -162,6 +163,40 @@ export default function LoginPage() {
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
+
+          {/* Forgot password */}
+          <div style={{ textAlign: 'center', marginTop: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowForgot(v => !v)}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: 12.5, color: '#2d6a4f',
+                fontFamily: "'Oswald', sans-serif", letterSpacing: '0.08em',
+                textDecoration: 'underline', textDecorationStyle: 'dotted',
+              }}
+            >
+              Forgot password?
+            </button>
+
+            {showForgot && (
+              <div style={{
+                marginTop: 12, padding: '14px 16px', borderRadius: 10,
+                background: '#f0f7f3', border: '1px solid #b7dfc8', textAlign: 'left',
+              }}>
+                <p style={{ fontSize: 13, color: '#1b4332', lineHeight: 1.6, margin: 0 }}>
+                  <strong>Your streak is safe.</strong> Email us at{' '}
+                  <a
+                    href="mailto:casuarinaconsulting@gmail.com?subject=Password reset - Challenge Tre3"
+                    style={{ color: '#c8952a', fontWeight: 600 }}
+                  >
+                    casuarinaconsulting@gmail.com
+                  </a>{' '}
+                  from your registered email address and we will reset your password within 24 hours.
+                </p>
+              </div>
+            )}
+          </div>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: 28 }}>

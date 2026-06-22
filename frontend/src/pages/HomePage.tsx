@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
 import Wordmark from '../components/Wordmark'
+import BottomNav from '../components/BottomNav'
 
 const CATEGORY_CONFIG: Record<string, { bg: string; label: string; emoji: string }> = {
   ENERGY:           { bg: '#e07b39', label: 'Energy',           emoji: '⚡' },
@@ -275,35 +276,8 @@ export default function HomePage() {
         Casuarina Consulting
       </div>
 
-      {/* ── Bottom nav ── */}
-      <nav style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        display: 'flex', justifyContent: 'space-around',
-        padding: '10px 24px 20px',
-        background: '#fff', borderTop: '1px solid #ebebeb',
-      }}>
-        <NavBtn icon="🏠" label="Home"    onClick={() => navigate('/')} />
-        <NavBtn icon="🌍" label="Impact"  onClick={() => navigate('/impact')} />
-        <NavBtn icon="👤" label="Profile" onClick={() => navigate('/profile')} />
-      </nav>
+      <BottomNav />
     </div>
-  )
-}
-
-function NavBtn({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
-  return (
-    <button onClick={onClick} style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-      background: 'none', border: 'none', cursor: 'pointer',
-    }}>
-      <span style={{ fontSize: 20 }}>{icon}</span>
-      <span style={{
-        fontSize: 10.5, color: '#888',
-        fontFamily: "'Oswald', sans-serif", letterSpacing: '0.08em', textTransform: 'uppercase',
-      }}>
-        {label}
-      </span>
-    </button>
   )
 }
 

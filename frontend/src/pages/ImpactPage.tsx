@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
+import BottomNav from '../components/BottomNav'
 
 function ImpactWave() {
   return (
@@ -422,8 +424,142 @@ function CasuarinaFooter() {
   )
 }
 
+function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
+  const [copied, setCopied] = useState(false)
+
+  const co2     = (data?.co2Saved     ?? 0).toFixed(1)
+  const water   = (data?.waterSaved   ?? 0).toFixed(0)
+  const waste   = (data?.wasteDiverted ?? 0).toFixed(1)
+  const actions = data?.totalActions  ?? 0
+
+  const shareText =
+    `🌿 My Challenge Tre3 Impact:\n` +
+    `🌬️ ${co2} kg CO₂ saved\n` +
+    `💧 ${water} L water saved\n` +
+    `♻️ ${waste} kg waste diverted\n` +
+    `✅ ${actions} actions completed\n\n` +
+    `Join me → https://challenge-tree.vercel.app`
+
+  function handleShare() {
+    if (navigator.share) {
+      navigator.share({ title: 'My Challenge Tre3 Impact', text: shareText })
+        .catch(() => {})
+    } else {
+      navigator.clipboard.writeText(shareText).then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2500)
+      })
+    }
+  }
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 200,
+      background: 'rgba(0,0,0,0.55)',
+      display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+    }} onClick={onClose}>
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: '100%', maxWidth: 480,
+          background: 'var(--cream)',
+          borderRadius: '20px 20px 0 0',
+          padding: '24px 22px 40px',
+        }}
+      >
+        {/* Handle */}
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: '#ccc', margin: '0 auto 20px' }} />
+
+        {/* Share card — branded preview */}
+        <div style={{
+          background: '#1b4332', borderRadius: 16, padding: '22px 20px 18px',
+          marginBottom: 20, position: 'relative', overflow: 'hidden',
+        }}>
+          {/* Watermark */}
+          <span style={{
+            position: 'absolute', right: 12, top: 8, fontSize: 52,
+            opacity: 0.06, userSelect: 'none',
+          }}>🌍</span>
+
+          <p style={{
+            fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 18,
+            color: '#fff', margin: '0 0 2px',
+          }}>
+            Challenge Tre<span style={{ color: '#c8952a' }}>3</span>
+          </p>
+          <p style={{
+            fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: '0.14em',
+            textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 18px',
+          }}>
+            My Impact
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {[
+              { icon: '🌬️', val: `${co2} kg`,   label: 'CO₂ saved',     color: '#95d5b2' },
+              { icon: '💧', val: `${water} L`,   label: 'Water saved',   color: '#74b9e8' },
+              { icon: '♻️', val: `${waste} kg`,  label: 'Waste diverted', color: '#b8a9e0' },
+              { icon: '✅', val: `${actions}`,   label: 'Actions done',  color: '#f0c96e' },
+            ].map(s => (
+              <div key={s.label} style={{
+                background: 'rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 12px',
+              }}>
+                <span style={{ fontSize: 16 }}>{s.icon}</span>
+                <p style={{
+                  fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 20,
+                  color: s.color, margin: '4px 0 1px',
+                }}>{s.val}</p>
+                <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', margin: 0 }}>{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6, marginTop: 16,
+          }}>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.12)' }} />
+            <span style={{
+              fontSize: 9.5, color: 'rgba(255,255,255,0.3)',
+              fontFamily: "'Oswald', sans-serif", letterSpacing: '0.12em', textTransform: 'uppercase',
+            }}>
+              challenge-tree.vercel.app
+            </span>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.12)' }} />
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <button
+          onClick={handleShare}
+          style={{
+            width: '100%', padding: '14px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
+            background: '#1b4332', color: '#fff',
+            fontFamily: "'Oswald', sans-serif", fontWeight: 500,
+            fontSize: 14, letterSpacing: '0.12em', textTransform: 'uppercase',
+            marginBottom: 10,
+          }}
+        >
+          {copied ? 'Copied to clipboard ✓' : (navigator.share ? 'Share my impact 🌿' : 'Copy to clipboard')}
+        </button>
+        <button
+          onClick={onClose}
+          style={{
+            width: '100%', padding: '12px 0', borderRadius: 12, border: '1.5px solid #ddd',
+            cursor: 'pointer', background: 'transparent', color: '#666',
+            fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase',
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function ImpactPage() {
   const navigate = useNavigate()
+  const [showShare, setShowShare] = useState(false)
+
   const { data, isLoading } = useQuery({
     queryKey: ['impact'],
     queryFn: () => api.get('/impact').then(r => r.data),
@@ -441,7 +577,7 @@ export default function ImpactPage() {
   ]
 
   return (
-    <div className="min-h-screen pb-10" style={{ background: 'var(--cream)' }}>
+    <div className="min-h-screen pb-32" style={{ background: 'var(--cream)' }}>
 
       {/* ── Header ── */}
       <div style={{ background: '#1b4332' }}>
@@ -456,13 +592,31 @@ export default function ImpactPage() {
           >
             ← Back
           </button>
-          <h1 style={{
-            color: '#fff', fontFamily: "'Oswald', sans-serif",
-            fontWeight: 600, fontSize: 26, margin: 0,
-          }}>
-            Your Impact
-          </h1>
-          <p style={{ color: '#95d5b2', fontSize: 13, marginTop: 4 }}>Every action adds up</p>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div>
+              <h1 style={{
+                color: '#fff', fontFamily: "'Oswald', sans-serif",
+                fontWeight: 600, fontSize: 26, margin: 0,
+              }}>
+                Your Impact
+              </h1>
+              <p style={{ color: '#95d5b2', fontSize: 13, marginTop: 4 }}>Every action adds up</p>
+            </div>
+            <button
+              onClick={() => setShowShare(true)}
+              style={{
+                marginTop: 4,
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '7px 14px', borderRadius: 20,
+                background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+                color: '#fff', cursor: 'pointer',
+                fontFamily: "'Oswald', sans-serif", fontSize: 11.5,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+              }}
+            >
+              Share 🌿
+            </button>
+          </div>
         </div>
         <ImpactWave />
       </div>
@@ -534,6 +688,9 @@ export default function ImpactPage() {
       </div>
 
       <CasuarinaFooter />
+      <BottomNav />
+
+      {showShare && <ShareModal data={data} onClose={() => setShowShare(false)} />}
     </div>
   )
 }

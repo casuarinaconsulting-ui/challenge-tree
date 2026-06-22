@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import api from '../utils/api'
+import BottomNav from '../components/BottomNav'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -18,9 +19,10 @@ export default function ProfilePage() {
   })
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: 'var(--cream)' }}>
-      <div className="px-6 pt-12 pb-8" style={{ background: 'var(--green-deep)' }}>
-        <button onClick={() => navigate('/')} className="text-white text-sm mb-4 opacity-70">← Back</button>
+    <div className="min-h-screen pb-32" style={{ background: 'var(--cream)' }}>
+
+      {/* ── Header ── */}
+      <div className="px-6 pt-14 pb-8" style={{ background: 'var(--green-deep)' }}>
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
             style={{ background: 'var(--green-mid)' }}>
@@ -34,6 +36,8 @@ export default function ProfilePage() {
       </div>
 
       <div className="px-6 mt-6">
+
+        {/* Streak card */}
         <div className="rounded-2xl p-5 mb-4" style={{ background: '#fff', border: '1px solid #e5e7eb' }}>
           <h2 className="font-semibold mb-3" style={{ color: 'var(--green-deep)' }}>Streak</h2>
           <div className="flex gap-6">
@@ -48,6 +52,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Badges */}
         {badges?.length > 0 && (
           <div className="rounded-2xl p-5 mb-4" style={{ background: '#fff', border: '1px solid #e5e7eb' }}>
             <h2 className="font-semibold mb-3" style={{ color: 'var(--green-deep)' }}>Badges</h2>
@@ -74,6 +79,8 @@ export default function ProfilePage() {
           Casuarina Consulting
         </div>
       </div>
+
+      <BottomNav />
     </div>
   )
 }
