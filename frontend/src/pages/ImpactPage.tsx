@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
 import BottomNav from '../components/BottomNav'
+import { useAuthStore } from '../store/authStore'
 
 function ImpactWave() {
   return (
@@ -762,16 +763,65 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
   )
 }
 
+// Impact estimate per challenge category completion
+const IMPACT_PER_CATEGORY: Record<string, { co2: number; water: number; waste: number }> = {
+  WATER:            { co2: 0.10, water: 50,  waste: 0.0 },
+  TRANSPORT:        { co2: 0.50, water: 5,   waste: 0.0 },
+  FOOD:             { co2: 1.50, water: 200, waste: 0.2 },
+  ENERGY:           { co2: 0.80, water: 0,   waste: 0.0 },
+  WASTE:            { co2: 0.20, water: 0,   waste: 0.5 },
+  CONSUMPTION:      { co2: 0.30, water: 30,  waste: 0.3 },
+  BIODIVERSITY:     { co2: 0.10, water: 5,   waste: 0.0 },
+  COMMUNITY:        { co2: 0.05, water: 2,   waste: 0.1 },
+  SOCIAL_EQUITY:    { co2: 0.05, water: 2,   waste: 0.1 },
+  CIRCULAR_ECONOMY: { co2: 0.30, water: 10,  waste: 0.5 },
+  CLIMATE_ADVOCACY: { co2: 0.10, water: 0,   waste: 0.0 },
+  WELLBEING:        { co2: 0.10, water: 5,   waste: 0.0 },
+}
+
 export default function ImpactPage() {
-  const navigate = useNavigate()
+  const navigate  = useNavigate()
+  const token     = useAuthStore(s => s.token)
+  const isDemo    = token === 'demo-token'
   const [showShare, setShowShare] = useState(false)
 
-  const { data, isLoading } = useQuery({
+  const { data: apiData, isLoading } = useQuery({
     queryKey: ['impact'],
     queryFn: () => api.get('/impact').then(r => r.data),
+    enabled: !isDemo,
+    retry: false,
   })
 
-  const totalActions = data?.totalActions ?? 0
+  // Calculate impact from localStorage completions (demo + offline fallback)
+  const localImpact = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('challenge-tree-completions')
+      if (!raw) return null
+      const completions: { id: string; category: string }[] = JSON.parse(raw)
+      if (!completions.length) return null
+      let co2 = 0, water = 0, waste = 0
+      completions.forEach(({ category }) => {
+        const m = IMPACT_PER_CATEGORY[category] ?? { co2: 0.1, water: 5, waste: 0.1 }
+        co2   += m.co2
+        water += m.water
+        waste += m.waste
+      })
+      return {
+        co2Saved:      co2,
+        waterSaved:    water,
+        wasteDiverted: waste,
+        totalActions:  completions.length,
+        treesEquiv:    co2 / 21,
+      }
+    } catch { return null }
+  }, [])
+
+  // Prefer API data for real users; fall back to local calculation
+  const data = (!isDemo && apiData) ? apiData : (localImpact ?? {
+    co2Saved: 0, waterSaved: 0, wasteDiverted: 0, totalActions: 0, treesEquiv: 0,
+  })
+
+  const totalActions = data.totalActions ?? 0
   const motivation   = getDailyMotivation()
 
   const stats = [

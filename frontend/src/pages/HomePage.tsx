@@ -84,7 +84,14 @@ export default function HomePage() {
 
   const displayChallenges = (Array.isArray(challenges) && challenges.length > 0) ? challenges : DEMO_CHALLENGES
 
-  const [demoCompleted, setDemoCompleted] = useState<Set<string>>(new Set())
+  const STORAGE_KEY = 'challenge-tree-completions'
+
+  const [demoCompleted, setDemoCompleted] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      return saved ? new Set(JSON.parse(saved)) : new Set()
+    } catch { return new Set() }
+  })
 
   const completedCount = displayChallenges.filter((uc: any) =>
     uc.isCompleted || demoCompleted.has(uc.id)
@@ -93,7 +100,15 @@ export default function HomePage() {
   const completeMutation = useMutation({
     mutationFn: (challengeId: string) => {
       if (challengeId.startsWith('demo-')) {
-        setDemoCompleted(prev => new Set(prev).add(challengeId))
+        setDemoCompleted(prev => {
+          const next = new Set(prev).add(challengeId)
+          // Save completed IDs + their categories so ImpactPage can calculate numbers
+          const withCategories = displayChallenges
+            .filter((uc: any) => next.has(uc.id))
+            .map((uc: any) => ({ id: uc.id, category: uc.challenge.category }))
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(withCategories))
+          return next
+        })
         return Promise.resolve(null as any)
       }
       return api.post(`/challenges/${challengeId}/complete`)
