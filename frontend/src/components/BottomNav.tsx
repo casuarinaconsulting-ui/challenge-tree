@@ -11,12 +11,11 @@ export default function BottomNav() {
   const { pathname } = useLocation()
 
   return (
-    <nav style={{
+    <nav className="glass" style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
       display: 'flex', justifyContent: 'space-around', alignItems: 'flex-start',
-      background: '#fff',
-      borderTop: '1.5px solid #ebebeb',
-      boxShadow: '0 -4px 16px rgba(0,0,0,0.05)',
+      borderTop: '0.5px solid rgba(255,255,255,0.9)',
+      boxShadow: '0 -8px 32px rgba(0,0,0,0.08), 0 -1px 0 rgba(0,0,0,0.04)',
       paddingBottom: 20,
       zIndex: 100,
     }}>

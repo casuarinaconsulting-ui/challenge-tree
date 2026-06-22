@@ -62,24 +62,42 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#f5efe6' }}>
+    <div className="min-h-screen" style={{
+      background: `
+        radial-gradient(ellipse at 20% 0%, rgba(82,183,136,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(200,149,42,0.08) 0%, transparent 50%),
+        #f5efe6
+      `,
+    }}>
 
       {/* ── Green header ── */}
-      <div style={{ background: '#1b4332', position: 'relative' }}>
+      <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
+
+        {/* Glow orbs */}
+        <div style={{
+          position: 'absolute', top: -40, right: -30, width: 200, height: 200, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(82,183,136,0.22) 0%, transparent 70%)',
+          animation: 'orbDrift 8s ease-in-out infinite', pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: 20, left: -30, width: 140, height: 140, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(200,149,42,0.16) 0%, transparent 70%)',
+          animation: 'orbDrift 10s ease-in-out infinite reverse', pointerEvents: 'none',
+        }} />
 
         {/* Botanical illustration — top right */}
-        <div style={{ position: 'absolute', top: 0, right: 16 }}>
+        <div style={{ position: 'absolute', top: 0, right: 16, zIndex: 1 }}>
           <BotanicalAccent />
         </div>
 
         {/* Terracotta accent dots — top left */}
-        <div style={{ position: 'absolute', top: 28, left: 24, display: 'flex', flexDirection: 'column', gap: 5 }}>
+        <div style={{ position: 'absolute', top: 28, left: 24, display: 'flex', flexDirection: 'column', gap: 5, zIndex: 1 }}>
           {[0,1,2].map(i => (
             <div key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: '#b85c38', opacity: 0.75 }} />
           ))}
         </div>
 
-        <div style={{ textAlign: 'center', paddingTop: 68, paddingBottom: 32, paddingLeft: 24, paddingRight: 24 }}>
+        <div style={{ textAlign: 'center', paddingTop: 68, paddingBottom: 32, paddingLeft: 24, paddingRight: 24, position: 'relative', zIndex: 1 }}>
           <Wordmark size={42} dark />
 
           {/* Tagline with decorative lines */}
@@ -100,8 +118,24 @@ export default function LoginPage() {
         <LoginWave />
       </div>
 
-      {/* ── Form section ── */}
-      <div style={{ padding: '28px 28px 48px' }}>
+      {/* ── Form section — frosted glass card ── */}
+      <div style={{ padding: '28px 20px 48px' }}>
+      <div className="card-3d animate-slide-up" style={{
+        background: 'rgba(255,255,255,0.88)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderRadius: 22,
+        padding: '28px 24px 24px',
+        border: '1px solid rgba(255,255,255,0.95)',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        {/* Top accent gradient line */}
+        <div style={{
+          position: 'absolute', top: 0, left: '15%', right: '15%', height: 3,
+          borderRadius: '0 0 4px 4px',
+          background: 'linear-gradient(90deg, #1b4332, #52b788, #c8952a)',
+          opacity: 0.7,
+        }} />
         <form onSubmit={handleSubmit}>
 
           <div style={{ marginBottom: 22 }}>
@@ -223,7 +257,8 @@ export default function LoginPage() {
             Casuarina Consulting
           </div>
         </div>
-      </div>
+      </div>{/* end glass card */}
+      </div>{/* end padding wrapper */}
     </div>
   )
 }

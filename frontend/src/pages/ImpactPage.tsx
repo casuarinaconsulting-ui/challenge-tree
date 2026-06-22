@@ -783,11 +783,27 @@ export default function ImpactPage() {
   ]
 
   return (
-    <div className="min-h-screen pb-32" style={{ background: 'var(--cream)' }}>
+    <div className="min-h-screen pb-32" style={{
+      background: `
+        radial-gradient(ellipse at 15% 0%, rgba(82,183,136,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 100%, rgba(200,149,42,0.07) 0%, transparent 55%),
+        #f5efe6
+      `,
+    }}>
 
       {/* ── Header ── */}
-      <div style={{ background: '#1b4332' }}>
-        <div style={{ padding: '52px 22px 20px' }}>
+      <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
+        <div style={{
+          position: 'absolute', top: -40, right: -30, width: 180, height: 180, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(82,183,136,0.2) 0%, transparent 70%)',
+          animation: 'orbDrift 8s ease-in-out infinite', pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: 10, left: -20, width: 120, height: 120, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(200,149,42,0.14) 0%, transparent 70%)',
+          animation: 'orbDrift 10s ease-in-out infinite reverse', pointerEvents: 'none',
+        }} />
+        <div style={{ padding: '52px 22px 20px', position: 'relative' }}>
           <button
             onClick={() => navigate('/')}
             style={{
@@ -813,11 +829,14 @@ export default function ImpactPage() {
               style={{
                 marginTop: 4,
                 display: 'flex', alignItems: 'center', gap: 5,
-                padding: '7px 14px', borderRadius: 20,
-                background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+                padding: '7px 16px', borderRadius: 20,
+                background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.25)',
                 color: '#fff', cursor: 'pointer',
                 fontFamily: "'Oswald', sans-serif", fontSize: 11.5,
                 letterSpacing: '0.1em', textTransform: 'uppercase',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+                backdropFilter: 'blur(8px)',
+                transition: 'background 0.2s',
               }}
             >
               Share 🌿
@@ -828,65 +847,93 @@ export default function ImpactPage() {
       </div>
 
       {/* ── Stats grid — 3 rows × 2 cols ── */}
-      <div style={{ padding: '20px 18px 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ padding: '20px 18px 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
 
         {isLoading
           ? [1,2,3,4,5,6].map(i => (
               <div key={i} className="animate-pulse"
-                   style={{ height: 100, borderRadius: 14, background: '#e5e7eb' }} />
+                   style={{ height: 110, borderRadius: 18, background: '#e5e7eb' }} />
             ))
           : <>
-              {stats.map(s => (
-                <div key={s.label} style={{
-                  background: '#fff', borderRadius: 14,
-                  padding: '14px 14px 16px',
-                  border: '1px solid #ebebeb',
-                  boxShadow: '0 1px 8px rgba(0,0,0,0.05)',
+              {stats.map((s, idx) => (
+                <div key={s.label} className="stat-card animate-slide-up" style={{
+                  background: '#fff', borderRadius: 18,
+                  padding: '16px 16px 18px',
+                  border: '1px solid rgba(0,0,0,0.05)',
+                  position: 'relative', overflow: 'hidden',
+                  animationDelay: `${idx * 0.06}s`,
                 }}>
-                  <span style={{ fontSize: 22 }}>{s.icon}</span>
+                  {/* Coloured top accent line */}
+                  <div style={{
+                    position: 'absolute', top: 0, left: '20%', right: '20%', height: 3,
+                    borderRadius: '0 0 4px 4px',
+                    background: s.color, opacity: 0.7,
+                  }} />
+                  {/* Soft glow bg */}
+                  <div style={{
+                    position: 'absolute', bottom: -20, right: -20, width: 80, height: 80,
+                    borderRadius: '50%',
+                    background: `radial-gradient(circle, ${s.color}22 0%, transparent 70%)`,
+                    pointerEvents: 'none',
+                  }} />
+                  <span style={{ fontSize: 24 }}>{s.icon}</span>
                   <p style={{
                     fontFamily: "'Oswald', sans-serif", fontWeight: 600,
-                    fontSize: 22, color: s.color, margin: '6px 0 2px',
+                    fontSize: 24, color: s.color, margin: '8px 0 3px',
                   }}>
                     {s.value}
                   </p>
-                  <p style={{ fontSize: 11.5, color: '#888', margin: 0 }}>{s.label}</p>
+                  <p style={{ fontSize: 11.5, color: '#999', margin: 0, letterSpacing: '0.03em' }}>{s.label}</p>
                 </div>
               ))}
 
-              {/* ── 6th card: motivational (right of Total actions) ── */}
-              <div style={{
-                background: '#1b4332', borderRadius: 14,
-                padding: '14px 14px 16px',
+              {/* ── 6th card: motivational ── */}
+              <div className="stat-card animate-slide-up" style={{
+                background: 'linear-gradient(145deg, #1b4332 0%, #0d2b1e 100%)',
+                borderRadius: 18,
+                padding: '16px 14px 16px',
                 position: 'relative', overflow: 'hidden',
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                border: '1px solid rgba(200,149,42,0.18)',
+                boxShadow: '0 8px 32px rgba(27,67,50,0.35)',
+                animationDelay: '0.3s',
               }}>
+                {/* Glow orb */}
+                <div style={{
+                  position: 'absolute', top: -30, right: -30, width: 100, height: 100,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(200,149,42,0.25) 0%, transparent 70%)',
+                  animation: 'glowPulse 4s ease-in-out infinite',
+                  pointerEvents: 'none',
+                }} />
                 <span style={{
                   position: 'absolute', right: 8, top: 6,
-                  fontSize: 36, opacity: 0.07, userSelect: 'none',
-                }}>
-                  🌍
-                </span>
+                  fontSize: 38, opacity: 0.06, userSelect: 'none',
+                }}>🌍</span>
+                {/* Top shimmer line */}
+                <div style={{
+                  position: 'absolute', top: 0, left: '15%', right: '15%', height: 2,
+                  borderRadius: '0 0 3px 3px',
+                  background: '#c8952a', opacity: 0.55,
+                }} />
                 <div>
                   <p style={{
                     fontFamily: "'Oswald', sans-serif", fontWeight: 600,
                     fontSize: 13, color: '#c8952a', margin: '0 0 6px',
-                    lineHeight: 1.3,
+                    lineHeight: 1.3, position: 'relative',
                   }}>
                     {motivation.headline}
                   </p>
                   <p style={{
-                    fontSize: 11.5, color: 'rgba(255,255,255,0.6)',
-                    lineHeight: 1.55, margin: 0,
+                    fontSize: 11.5, color: 'rgba(255,255,255,0.58)',
+                    lineHeight: 1.55, margin: 0, position: 'relative',
                   }}>
                     {motivation.body}
                   </p>
                 </div>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 6, marginTop: 12,
-                }}>
-                  <div style={{ width: 16, height: 1, background: 'rgba(255,255,255,0.2)' }} />
-                  <span style={{ fontSize: 9, opacity: 0.35 }}>🌿</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12 }}>
+                  <div style={{ width: 16, height: 1, background: 'rgba(255,255,255,0.15)' }} />
+                  <span style={{ fontSize: 9, opacity: 0.3 }}>🌿</span>
                 </div>
               </div>
             </>

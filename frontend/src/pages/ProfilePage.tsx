@@ -19,14 +19,37 @@ export default function ProfilePage() {
   })
 
   return (
-    <div className="min-h-screen pb-32" style={{ background: 'var(--cream)' }}>
+    <div className="min-h-screen pb-32" style={{
+      background: `
+        radial-gradient(ellipse at 15% 0%, rgba(82,183,136,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 100%, rgba(200,149,42,0.07) 0%, transparent 55%),
+        #f5efe6
+      `,
+    }}>
 
       {/* ── Header ── */}
-      <div className="px-6 pt-14 pb-8" style={{ background: 'var(--green-deep)' }}>
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
-            style={{ background: 'var(--green-mid)' }}>
-            {profile?.name?.[0] ?? '?'}
+      <div className="px-6 pt-14 pb-8" style={{ background: 'var(--green-deep)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{
+          position: 'absolute', top: -30, right: -20, width: 160, height: 160, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(82,183,136,0.2) 0%, transparent 70%)',
+          animation: 'orbDrift 8s ease-in-out infinite', pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: 0, left: -20, width: 100, height: 100, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(200,149,42,0.14) 0%, transparent 70%)',
+          animation: 'orbDrift 11s ease-in-out infinite reverse', pointerEvents: 'none',
+        }} />
+        <div className="flex items-center gap-4" style={{ position: 'relative' }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              position: 'absolute', inset: -3, borderRadius: '50%',
+              background: 'conic-gradient(#c8952a, #52b788, #c8952a)',
+              animation: 'floatSlow 4s ease-in-out infinite',
+            }} />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
+              style={{ background: 'var(--green-mid)', position: 'relative' }}>
+              {profile?.name?.[0] ?? '?'}
+            </div>
           </div>
           <div>
             <h1 className="text-xl font-bold text-white">{isLoading ? '…' : profile?.name}</h1>
@@ -38,24 +61,28 @@ export default function ProfilePage() {
       <div className="px-6 mt-6">
 
         {/* Streak card */}
-        <div className="rounded-2xl p-5 mb-4" style={{ background: '#fff', border: '1px solid #e5e7eb' }}>
-          <h2 className="font-semibold mb-3" style={{ color: 'var(--green-deep)' }}>Streak</h2>
+        <div className="card-3d animate-slide-up rounded-2xl p-5 mb-4" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.05)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{
+            position: 'absolute', top: 0, left: '20%', right: '20%', height: 3, borderRadius: '0 0 4px 4px',
+            background: 'linear-gradient(90deg, #52b788, #c8952a)', opacity: 0.7,
+          }} />
+          <h2 className="font-semibold mb-3" style={{ color: 'var(--green-deep)', fontFamily: "'Oswald', sans-serif", letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 12 }}>Streak</h2>
           <div className="flex gap-6">
             <div>
-              <p className="text-3xl font-bold" style={{ color: 'var(--green-mid)' }}>{profile?.streakCount ?? 0}</p>
-              <p className="text-xs" style={{ color: '#6b7280' }}>Current streak 🔥</p>
+              <p className="text-3xl font-bold" style={{ color: 'var(--green-mid)', fontFamily: "'Oswald', sans-serif" }}>{profile?.streakCount ?? 0}</p>
+              <p className="text-xs" style={{ color: '#6b7280' }}>Current 🔥</p>
             </div>
             <div>
-              <p className="text-3xl font-bold" style={{ color: 'var(--green-mid)' }}>{profile?.longestStreak ?? 0}</p>
-              <p className="text-xs" style={{ color: '#6b7280' }}>Best streak 🏆</p>
+              <p className="text-3xl font-bold" style={{ color: 'var(--green-mid)', fontFamily: "'Oswald', sans-serif" }}>{profile?.longestStreak ?? 0}</p>
+              <p className="text-xs" style={{ color: '#6b7280' }}>Best 🏆</p>
             </div>
           </div>
         </div>
 
         {/* Badges */}
         {badges?.length > 0 && (
-          <div className="rounded-2xl p-5 mb-4" style={{ background: '#fff', border: '1px solid #e5e7eb' }}>
-            <h2 className="font-semibold mb-3" style={{ color: 'var(--green-deep)' }}>Badges</h2>
+          <div className="card-3d animate-slide-up rounded-2xl p-5 mb-4" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.05)', animationDelay: '0.07s' }}>
+            <h2 className="font-semibold mb-3" style={{ color: 'var(--green-deep)', fontFamily: "'Oswald', sans-serif", letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 12 }}>Badges</h2>
             <div className="flex flex-wrap gap-2">
               {badges.map((ub: any) => (
                 <span key={ub.badge.id} className="text-2xl" title={ub.badge.name}>{ub.badge.icon}</span>
@@ -66,7 +93,11 @@ export default function ProfilePage() {
 
         <button onClick={() => { logout(); navigate('/login') }}
           className="w-full py-3 rounded-xl text-sm font-semibold mt-2"
-          style={{ background: '#fee2e2', color: '#dc2626' }}>
+          style={{
+            background: 'linear-gradient(135deg, #fee2e2, #fecaca)', color: '#dc2626',
+            border: '1px solid #fca5a5',
+            boxShadow: '0 4px 14px rgba(220,38,38,0.12)',
+          }}>
           Sign out
         </button>
 

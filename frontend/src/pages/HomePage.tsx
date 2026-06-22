@@ -102,10 +102,29 @@ export default function HomePage() {
   })
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: 'var(--cream)' }}>
+    <div className="min-h-screen pb-24" style={{
+      background: `
+        radial-gradient(ellipse at 15% 0%, rgba(82,183,136,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 100%, rgba(200,149,42,0.07) 0%, transparent 55%),
+        #f5efe6
+      `,
+    }}>
 
       {/* ── Header ── */}
-      <div style={{ background: '#1b4332', position: 'relative' }}>
+      <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
+        {/* Floating glow orbs */}
+        <div style={{
+          position: 'absolute', top: -30, right: -20, width: 180, height: 180, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(82,183,136,0.22) 0%, transparent 70%)',
+          animation: 'orbDrift 7s ease-in-out infinite',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: 10, left: -30, width: 140, height: 140, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(200,149,42,0.16) 0%, transparent 70%)',
+          animation: 'orbDrift 9s ease-in-out infinite reverse',
+          pointerEvents: 'none',
+        }} />
         <div style={{ padding: '52px 22px 22px' }}>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -177,18 +196,29 @@ export default function HomePage() {
               const cat = CATEGORY_CONFIG[c.category] ?? { bg: '#2d6a4f', label: c.category, emoji: '🌍' }
 
               return (
-                <div key={uc.id} style={{
-                  borderRadius: 16, overflow: 'hidden', background: '#fff',
-                  boxShadow: isCompleted ? 'none' : '0 2px 14px rgba(0,0,0,0.07)',
-                  border: isCompleted ? `1.5px solid ${cat.bg}50` : '1px solid #ebebeb',
+                <div key={uc.id} className={isCompleted ? '' : 'card-3d animate-slide-up'} style={{
+                  borderRadius: 18, overflow: 'hidden', background: '#fff',
+                  border: isCompleted ? `1.5px solid ${cat.bg}50` : '1px solid rgba(0,0,0,0.06)',
+                  animationDelay: `${uc.id === 'demo-1' ? '0' : uc.id === 'demo-2' ? '0.07' : '0.14'}s`,
                 }}>
 
                   {/* Category colour band */}
                   <div style={{
-                    background: isCompleted ? `${cat.bg}bb` : cat.bg,
+                    background: isCompleted
+                      ? `${cat.bg}bb`
+                      : `linear-gradient(135deg, ${cat.bg} 0%, ${cat.bg}cc 100%)`,
                     padding: '13px 16px',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    position: 'relative', overflow: 'hidden',
                   }}>
+                    {/* Shimmer overlay */}
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%)',
+                      backgroundSize: '200% 100%',
+                      animation: 'shimmerLine 3s linear infinite',
+                      pointerEvents: 'none',
+                    }} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                       <span style={{ fontSize: 17 }}>{cat.emoji}</span>
                       <span style={{
@@ -248,11 +278,22 @@ export default function HomePage() {
                         onClick={() => completeMutation.mutate(c.id)}
                         disabled={completeMutation.isPending}
                         style={{
-                          width: '100%', padding: '12px 0', borderRadius: 10,
+                          width: '100%', padding: '13px 0', borderRadius: 12,
                           border: 'none', cursor: 'pointer',
-                          background: cat.bg, color: '#fff',
+                          background: `linear-gradient(135deg, ${cat.bg} 0%, ${cat.bg}dd 100%)`,
+                          color: '#fff',
                           fontFamily: "'Oswald', sans-serif", fontWeight: 500,
                           fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase',
+                          boxShadow: `0 4px 14px ${cat.bg}55, 0 1px 3px rgba(0,0,0,0.15)`,
+                          transition: 'transform 0.18s ease, box-shadow 0.18s ease',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'
+                          ;(e.currentTarget as HTMLButtonElement).style.boxShadow = `0 8px 20px ${cat.bg}66, 0 2px 4px rgba(0,0,0,0.15)`
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'
+                          ;(e.currentTarget as HTMLButtonElement).style.boxShadow = `0 4px 14px ${cat.bg}55, 0 1px 3px rgba(0,0,0,0.15)`
                         }}
                       >
                         Mark complete
