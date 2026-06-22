@@ -28,21 +28,42 @@ export async function getDailyChallenges(userId: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } })
   if (!user) throw new Error('User not found')
 
-  // Pick 3 unseen challenges that match user profile
-  const candidates = await prisma.challenge.findMany({
-    where: {
-      isActive:    true,
-      id:          { notIn: seenIds },
-      costLevel:   user.incomeLevel === 'low' ? { in: ['free', 'low'] } : undefined,
-      difficulty:  user.abilityLevel === 'limited' ? { lte: 2 } : undefined,
-      timeEstimate: { lte: user.timeAvailable },
-      OR: [{ region: 'global' }, { region: user.country ?? 'global' }],
-    },
-    take: 50,
+  const profileFilter = {
+    isActive:     true,
+    costLevel:    user.incomeLevel === 'low' ? { in: ['free', 'low'] } : undefined,
+    difficulty:   user.abilityLevel === 'limited' ? { lte: 2 } : undefined,
+    timeEstimate: user.timeAvailable ? { lte: user.timeAvailable } : undefined,
+    OR: [{ region: 'global' }, { region: user.country ?? 'global' }] as any,
+  }
+
+  // Try unseen challenges first
+  let candidates = await prisma.challenge.findMany({
+    where: { ...profileFilter, id: { notIn: seenIds.length ? seenIds : ['__none__'] } },
+    take: 200,
   })
 
-  // Shuffle and pick 3 across different categories
-  const shuffled = candidates.sort(() => Math.random() - 0.5)
+  // Cycle exhausted — pull from the full pool so the user never runs dry.
+  // Using a Fisher-Yates shuffle seeded by today's date + userId ensures
+  // the cycle order is different every time it restarts.
+  if (candidates.length < 3) {
+    candidates = await prisma.challenge.findMany({
+      where: profileFilter,
+      take: 200,
+    })
+  }
+
+  // Fisher-Yates shuffle using a simple seeded random for today
+  const seed = parseInt(
+    Buffer.from(`${userId}-${today.toISOString().slice(0, 10)}`).toString('hex').slice(0, 8),
+    16
+  )
+  let s = seed
+  const rand = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 0xffffffff }
+  const shuffled = [...candidates]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
   const picked: typeof shuffled = []
   const usedCategories = new Set<Category>()
 
