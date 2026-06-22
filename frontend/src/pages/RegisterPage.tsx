@@ -4,11 +4,21 @@ import { useAuthStore } from '../store/authStore'
 import api from '../utils/api'
 import Wordmark from '../components/Wordmark'
 
+function RegisterWave() {
+  return (
+    <svg viewBox="0 0 400 44" preserveAspectRatio="none"
+         style={{ display: 'block', width: '100%', height: 44, marginTop: -1 }}>
+      <path d="M0,0 L400,0 L400,44 Q340,14 270,32 Q200,50 130,24 Q70,2 0,28 Z"
+            fill="#1b4332"/>
+    </svg>
+  )
+}
+
 export default function RegisterPage() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', country: '' })
-  const [error, setError]   = useState('')
+  const [form, setForm]       = useState({ name: '', email: '', password: '', country: '' })
+  const [error, setError]     = useState('')
   const [loading, setLoading] = useState(false)
-  const setAuth = useAuthStore(s => s.setAuth)
+  const setAuth  = useAuthStore(s => s.setAuth)
   const navigate = useNavigate()
 
   const update = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -30,38 +40,131 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ background: 'var(--cream)' }}>
-      <div className="w-full max-w-sm">
-        <h1 className="mb-1" style={{ color: 'var(--green-deep)', fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600, fontSize: 30 }}>Join <Wordmark size={30} /></h1>
-        <p className="text-sm mb-8" style={{ color: 'var(--green-mid)' }}>Start your daily sustainability journey.</p>
+    <div className="min-h-screen" style={{
+      background: `
+        radial-gradient(ellipse at 20% 0%, rgba(82,183,136,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(200,149,42,0.08) 0%, transparent 50%),
+        #f5efe6
+      `,
+    }}>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {(['name', 'email', 'password', 'country'] as const).map(field => (
-            <input
-              key={field}
-              type={field === 'password' ? 'password' : field === 'email' ? 'email' : 'text'}
-              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-              value={form[field]}
-              onChange={update(field)}
-              required={field !== 'country'}
-              className="w-full px-4 py-3 rounded-xl border text-base outline-none"
-              style={{ borderColor: '#d1d5db', background: '#fff' }}
-            />
-          ))}
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="submit" disabled={loading}
-            className="w-full py-3 rounded-xl text-white font-semibold text-base"
-            style={{ background: loading ? '#52b788' : 'var(--green-mid)' }}
-          >
-            {loading ? 'Creating account…' : 'Create account'}
-          </button>
-        </form>
+      {/* ── Header ── */}
+      <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
+        <div style={{
+          position: 'absolute', top: -40, right: -30, width: 200, height: 200, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(82,183,136,0.22) 0%, transparent 70%)',
+          animation: 'orbDrift 8s ease-in-out infinite', pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: 20, left: -30, width: 140, height: 140, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(200,149,42,0.16) 0%, transparent 70%)',
+          animation: 'orbDrift 10s ease-in-out infinite reverse', pointerEvents: 'none',
+        }} />
 
-        <p className="mt-6 text-sm text-center" style={{ color: '#6b7280' }}>
-          Already have an account?{' '}
-          <Link to="/login" className="font-medium" style={{ color: 'var(--green-mid)' }}>Sign in</Link>
-        </p>
+        <div style={{ textAlign: 'center', paddingTop: 60, paddingBottom: 28, paddingLeft: 24, paddingRight: 24, position: 'relative', zIndex: 1 }}>
+          <Wordmark size={38} dark />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 14, justifyContent: 'center' }}>
+            <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.28)' }} />
+            <p style={{
+              color: 'rgba(255,255,255,0.5)', fontFamily: "'Oswald', sans-serif",
+              fontWeight: 300, fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', margin: 0,
+            }}>
+              Create your free account
+            </p>
+            <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.28)' }} />
+          </div>
+        </div>
+        <RegisterWave />
+      </div>
+
+      {/* ── Form — frosted glass card ── */}
+      <div style={{ padding: '28px 20px 48px' }}>
+        <div className="card-3d animate-slide-up" style={{
+          background: 'rgba(255,255,255,0.88)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: 22, padding: '28px 24px 24px',
+          border: '1px solid rgba(255,255,255,0.95)',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          {/* Top gradient line */}
+          <div style={{
+            position: 'absolute', top: 0, left: '15%', right: '15%', height: 3,
+            borderRadius: '0 0 4px 4px',
+            background: 'linear-gradient(90deg, #1b4332, #52b788, #c8952a)', opacity: 0.7,
+          }} />
+
+          <form onSubmit={handleSubmit}>
+            {[
+              { key: 'name',     label: 'Full name',   type: 'text',     required: true  },
+              { key: 'email',    label: 'Email',        type: 'email',    required: true  },
+              { key: 'password', label: 'Password',     type: 'password', required: true  },
+              { key: 'country',  label: 'Country (optional)', type: 'text', required: false },
+            ].map(f => (
+              <div key={f.key} style={{ marginBottom: 22 }}>
+                <label style={{
+                  display: 'block', fontSize: 10.5,
+                  fontFamily: "'Oswald', sans-serif", letterSpacing: '0.14em',
+                  textTransform: 'uppercase', color: '#2d6a4f', marginBottom: 7,
+                }}>
+                  {f.label}
+                </label>
+                <input
+                  type={f.type}
+                  value={form[f.key as keyof typeof form]}
+                  onChange={update(f.key)}
+                  required={f.required}
+                  style={{
+                    width: '100%', fontSize: 16, padding: '9px 0',
+                    background: 'transparent', border: 'none',
+                    borderBottom: '2px solid #c8b89a',
+                    outline: 'none', color: '#1a1f1c',
+                  }}
+                  onFocus={e => (e.target.style.borderBottomColor = '#2d6a4f')}
+                  onBlur={e  => (e.target.style.borderBottomColor = '#c8b89a')}
+                />
+              </div>
+            ))}
+
+            {error && (
+              <p style={{ color: '#b85c38', fontSize: 13, marginBottom: 16, fontStyle: 'italic' }}>
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit" disabled={loading}
+              style={{
+                width: '100%', padding: '15px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
+                background: loading
+                  ? '#52b788'
+                  : 'linear-gradient(135deg, #2d6a4f, #1b4332)',
+                color: '#fff', fontFamily: "'Oswald', sans-serif",
+                fontWeight: 500, fontSize: 14, letterSpacing: '0.14em', textTransform: 'uppercase',
+                boxShadow: '0 4px 16px rgba(27,67,50,0.35)',
+                transition: 'opacity 0.2s',
+              }}
+            >
+              {loading ? 'Creating account…' : 'Create account'}
+            </button>
+          </form>
+
+          <div style={{ textAlign: 'center', marginTop: 20 }}>
+            <p style={{ fontSize: 13, color: '#888' }}>
+              Already have an account?{' '}
+              <Link to="/login" style={{ color: '#c8952a', fontWeight: 600 }}>Sign in</Link>
+            </p>
+          </div>
+        </div>
+
+        <div style={{
+          textAlign: 'center', marginTop: 28,
+          fontFamily: "'Oswald', sans-serif", fontSize: 10,
+          letterSpacing: '0.18em', textTransform: 'uppercase',
+          color: 'rgba(26,51,40,0.28)',
+        }}>
+          Casuarina Consulting
+        </div>
       </div>
     </div>
   )

@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage'
 import HomePage     from './pages/HomePage'
 import ProfilePage  from './pages/ProfilePage'
 import ImpactPage   from './pages/ImpactPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } },
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
             <Route path="/profile"  element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
             <Route path="/impact"   element={<PrivateRoute><ImpactPage /></PrivateRoute>} />
+            <Route path="*"         element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>

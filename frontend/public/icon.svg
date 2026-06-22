@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#1b4332"/>
+  <!-- trunk -->
+  <rect x="236" y="320" width="40" height="120" rx="8" fill="#52b788"/>
+  <!-- canopy layers -->
+  <ellipse cx="256" cy="280" rx="110" ry="80" fill="#2d6a4f"/>
+  <ellipse cx="256" cy="220" rx="88" ry="70" fill="#52b788"/>
+  <ellipse cx="256" cy="165" rx="66" ry="58" fill="#74c69d"/>
+  <!-- gold 3 accent -->
+  <text x="310" y="200" font-family="Georgia,serif" font-weight="700" font-size="72" fill="#c8952a" opacity="0.9">3</text>
+</svg>
