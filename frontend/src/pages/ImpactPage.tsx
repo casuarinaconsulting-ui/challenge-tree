@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
@@ -426,11 +426,13 @@ function CasuarinaFooter() {
 
 function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
   const [copied, setCopied] = useState(false)
+  const [downloading, setDownloading] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
 
-  const co2     = (data?.co2Saved     ?? 0).toFixed(1)
-  const water   = (data?.waterSaved   ?? 0).toFixed(0)
+  const co2     = (data?.co2Saved      ?? 0).toFixed(1)
+  const water   = (data?.waterSaved    ?? 0).toFixed(0)
   const waste   = (data?.wasteDiverted ?? 0).toFixed(1)
-  const actions = data?.totalActions  ?? 0
+  const actions = data?.totalActions   ?? 0
 
   const shareText =
     `🌿 My Challenge Tre3 Impact:\n` +
@@ -440,10 +442,41 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
     `✅ ${actions} actions completed\n\n` +
     `Join me → https://challenge-tree.vercel.app`
 
+  useEffect(() => {
+    const style = document.createElement('style')
+    style.id = 'share-modal-styles'
+    style.textContent = `
+      @keyframes floatCard {
+        0%,100% { transform: perspective(900px) rotateX(6deg) rotateY(-4deg) translateY(0px); }
+        50%      { transform: perspective(900px) rotateX(8deg) rotateY(-2deg) translateY(-6px); }
+      }
+      @keyframes shimmer {
+        0%   { background-position: -200% center; }
+        100% { background-position: 200% center; }
+      }
+      @keyframes pulse-glow {
+        0%,100% { opacity: 0.5; transform: scale(1); }
+        50%      { opacity: 0.9; transform: scale(1.08); }
+      }
+      @keyframes sparkle {
+        0%,100% { opacity: 0; transform: scale(0) rotate(0deg); }
+        50%      { opacity: 1; transform: scale(1) rotate(180deg); }
+      }
+      .share-card-3d {
+        animation: floatCard 3.8s ease-in-out infinite;
+        transform-style: preserve-3d;
+        will-change: transform;
+      }
+      .share-stat-glow { transition: transform 0.2s; }
+      .share-stat-glow:hover { transform: scale(1.04) translateZ(8px); }
+    `
+    document.head.appendChild(style)
+    return () => { document.getElementById('share-modal-styles')?.remove() }
+  }, [])
+
   function handleShare() {
     if (typeof navigator.share === 'function') {
-      navigator.share({ title: 'My Challenge Tre3 Impact', text: shareText })
-        .catch(() => {})
+      navigator.share({ title: 'My Challenge Tre3 Impact', text: shareText }).catch(() => {})
     } else {
       navigator.clipboard.writeText(shareText).then(() => {
         setCopied(true)
@@ -452,101 +485,274 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
     }
   }
 
+  function handleDownload() {
+    setDownloading(true)
+    const W = 800, H = 480
+    const canvas = document.createElement('canvas')
+    canvas.width = W; canvas.height = H
+    const ctx = canvas.getContext('2d')!
+
+    // Background
+    const bg = ctx.createLinearGradient(0, 0, W, H)
+    bg.addColorStop(0,   '#0d2b1e')
+    bg.addColorStop(0.5, '#1b4332')
+    bg.addColorStop(1,   '#0d2b1e')
+    ctx.fillStyle = bg
+    ctx.beginPath()
+    ctx.roundRect(0, 0, W, H, 24)
+    ctx.fill()
+
+    // Decorative circle blobs
+    const drawBlob = (x: number, y: number, r: number, color: string) => {
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, r)
+      grad.addColorStop(0, color)
+      grad.addColorStop(1, 'transparent')
+      ctx.fillStyle = grad
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill()
+    }
+    drawBlob(80,  80,  120, 'rgba(200,149,42,0.18)')
+    drawBlob(W-80, H-80, 120, 'rgba(45,106,79,0.35)')
+    drawBlob(W-60, 60,   80, 'rgba(149,213,178,0.12)')
+
+    // Header — wordmark
+    ctx.font = '700 32px "Helvetica Neue", Arial, sans-serif'
+    ctx.fillStyle = '#ffffff'
+    ctx.fillText('Challenge Tre', 44, 64)
+    ctx.fillStyle = '#c8952a'
+    ctx.fillText('3', 44 + ctx.measureText('Challenge Tre').width, 64)
+
+    ctx.font = '400 11px "Helvetica Neue", Arial, sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.35)'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('MY IMPACT', 46, 86)
+    ctx.letterSpacing = '0px'
+
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+    ctx.lineWidth = 1
+    ctx.beginPath(); ctx.moveTo(44, 104); ctx.lineTo(W - 44, 104); ctx.stroke()
+
+    // Stat cards
+    const statData = [
+      { val: `${co2} kg`,  label: 'CO₂ Saved',      color: '#95d5b2', glow: 'rgba(149,213,178,0.25)' },
+      { val: `${water} L`, label: 'Water Saved',     color: '#74b9e8', glow: 'rgba(116,185,232,0.25)' },
+      { val: `${waste} kg`,label: 'Waste Diverted',  color: '#c3aff0', glow: 'rgba(195,175,240,0.25)' },
+      { val: `${actions}`, label: 'Actions Done',    color: '#f0c96e', glow: 'rgba(240,201,110,0.25)' },
+    ]
+    const cardW = (W - 88 - 36) / 4
+    const cardX0 = 44
+
+    statData.forEach((s, i) => {
+      const x = cardX0 + i * (cardW + 12)
+      const y = 124
+
+      // Card bg
+      const cardGrad = ctx.createLinearGradient(x, y, x, y + 220)
+      cardGrad.addColorStop(0, 'rgba(255,255,255,0.09)')
+      cardGrad.addColorStop(1, 'rgba(255,255,255,0.04)')
+      ctx.fillStyle = cardGrad
+      ctx.beginPath(); ctx.roundRect(x, y, cardW, 220, 14); ctx.fill()
+
+      // Glow border top
+      ctx.strokeStyle = s.glow.replace('0.25', '0.5')
+      ctx.lineWidth = 1.5
+      ctx.beginPath(); ctx.moveTo(x + 20, y); ctx.lineTo(x + cardW - 20, y); ctx.stroke()
+
+      // Value
+      ctx.font = `700 ${s.val.length > 6 ? 26 : 30}px "Helvetica Neue", Arial, sans-serif`
+      ctx.fillStyle = s.color
+      ctx.textAlign = 'center'
+      ctx.fillText(s.val, x + cardW / 2, y + 90)
+
+      // Label
+      ctx.font = '400 11px "Helvetica Neue", Arial, sans-serif'
+      ctx.fillStyle = 'rgba(255,255,255,0.45)'
+      ctx.fillText(s.label, x + cardW / 2, y + 116)
+      ctx.textAlign = 'left'
+    })
+
+    // Footer URL
+    ctx.font = '400 11px "Helvetica Neue", Arial, sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.22)'
+    ctx.textAlign = 'center'
+    ctx.fillText('challenge-tree.vercel.app', W / 2, H - 28)
+    ctx.textAlign = 'left'
+
+    canvas.toBlob(blob => {
+      if (!blob) return
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url; a.download = 'my-challenge-tree-impact.png'
+      a.click()
+      URL.revokeObjectURL(url)
+      setDownloading(false)
+    }, 'image/png')
+  }
+
+  const statItems = [
+    { val: `${co2} kg`,  label: 'CO₂ saved',      color: '#95d5b2', glow: '#95d5b222', icon: '🌬️' },
+    { val: `${water} L`, label: 'Water saved',     color: '#74b9e8', glow: '#74b9e822', icon: '💧' },
+    { val: `${waste} kg`,label: 'Waste diverted',  color: '#c3aff0', glow: '#c3aff022', icon: '♻️' },
+    { val: `${actions}`, label: 'Actions done',    color: '#f0c96e', glow: '#f0c96e22', icon: '✅' },
+  ]
+
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 200,
-      background: 'rgba(0,0,0,0.55)',
+      background: 'rgba(0,0,0,0.72)',
       display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+      backdropFilter: 'blur(4px)',
     }} onClick={onClose}>
       <div
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: 480,
-          background: 'var(--cream)',
-          borderRadius: '20px 20px 0 0',
-          padding: '24px 22px 40px',
+          background: '#0f1f16',
+          borderRadius: '24px 24px 0 0',
+          padding: '20px 20px 40px',
+          border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
         {/* Handle */}
-        <div style={{ width: 36, height: 4, borderRadius: 2, background: '#ccc', margin: '0 auto 20px' }} />
+        <div style={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.15)', margin: '0 auto 18px' }} />
 
-        {/* Share card — branded preview */}
-        <div style={{
-          background: '#1b4332', borderRadius: 16, padding: '22px 20px 18px',
-          marginBottom: 20, position: 'relative', overflow: 'hidden',
-        }}>
-          {/* Watermark */}
-          <span style={{
-            position: 'absolute', right: 12, top: 8, fontSize: 52,
-            opacity: 0.06, userSelect: 'none',
-          }}>🌍</span>
+        {/* 3D Floating card */}
+        <div style={{ perspective: '900px', marginBottom: 24 }}>
+          <div
+            ref={cardRef}
+            className="share-card-3d"
+            style={{
+              borderRadius: 20,
+              padding: '22px 18px 18px',
+              position: 'relative', overflow: 'hidden',
+              background: 'linear-gradient(135deg, #0d2b1e 0%, #1b4332 50%, #0d2b1e 100%)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 32px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,149,42,0.15)',
+            }}
+          >
+            {/* Gold glow blob top-left */}
+            <div style={{
+              position: 'absolute', top: -40, left: -40,
+              width: 160, height: 160, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(200,149,42,0.22) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }} />
+            {/* Green glow blob bottom-right */}
+            <div style={{
+              position: 'absolute', bottom: -30, right: -30,
+              width: 140, height: 140, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(82,183,136,0.18) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }} />
+            {/* Shimmer line */}
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+              background: 'linear-gradient(90deg, transparent, rgba(200,149,42,0.6), transparent)',
+            }} />
 
-          <p style={{
-            fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 18,
-            color: '#fff', margin: '0 0 2px',
-          }}>
-            Challenge Tre<span style={{ color: '#c8952a' }}>3</span>
-          </p>
-          <p style={{
-            fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: '0.14em',
-            textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 18px',
-          }}>
-            My Impact
-          </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            {[
-              { icon: '🌬️', val: `${co2} kg`,   label: 'CO₂ saved',     color: '#95d5b2' },
-              { icon: '💧', val: `${water} L`,   label: 'Water saved',   color: '#74b9e8' },
-              { icon: '♻️', val: `${waste} kg`,  label: 'Waste diverted', color: '#b8a9e0' },
-              { icon: '✅', val: `${actions}`,   label: 'Actions done',  color: '#f0c96e' },
-            ].map(s => (
-              <div key={s.label} style={{
-                background: 'rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 12px',
+            {/* Wordmark */}
+            <div style={{ marginBottom: 16, position: 'relative' }}>
+              <p style={{
+                fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 22,
+                color: '#fff', margin: 0, lineHeight: 1,
               }}>
-                <span style={{ fontSize: 16 }}>{s.icon}</span>
-                <p style={{
-                  fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 20,
-                  color: s.color, margin: '4px 0 1px',
-                }}>{s.val}</p>
-                <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', margin: 0 }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
+                Challenge Tre<span style={{ color: '#c8952a' }}>3</span>
+              </p>
+              <p style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: '0.22em',
+                textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', margin: '4px 0 0',
+              }}>
+                My Impact
+              </p>
+            </div>
 
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 6, marginTop: 16,
-          }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.12)' }} />
-            <span style={{
-              fontSize: 9.5, color: 'rgba(255,255,255,0.3)',
-              fontFamily: "'Oswald', sans-serif", letterSpacing: '0.12em', textTransform: 'uppercase',
+            {/* Divider */}
+            <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 16 }} />
+
+            {/* Stat grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {statItems.map(s => (
+                <div
+                  key={s.label}
+                  className="share-stat-glow"
+                  style={{
+                    borderRadius: 14, padding: '14px 14px 12px',
+                    background: s.glow,
+                    border: `1px solid ${s.color}33`,
+                    position: 'relative', overflow: 'hidden',
+                  }}
+                >
+                  {/* Top accent line */}
+                  <div style={{
+                    position: 'absolute', top: 0, left: '20%', right: '20%', height: 2,
+                    borderRadius: '0 0 4px 4px',
+                    background: s.color, opacity: 0.7,
+                  }} />
+                  <span style={{ fontSize: 18, display: 'block', marginBottom: 6 }}>{s.icon}</span>
+                  <p style={{
+                    fontFamily: "'Oswald', sans-serif", fontWeight: 600,
+                    fontSize: s.val.length > 6 ? 18 : 22,
+                    color: s.color, margin: '0 0 3px', lineHeight: 1,
+                  }}>{s.val}</p>
+                  <p style={{
+                    fontSize: 10, color: 'rgba(255,255,255,0.4)',
+                    margin: 0, fontFamily: "'Oswald', sans-serif",
+                    letterSpacing: '0.06em', textTransform: 'uppercase',
+                  }}>{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, marginTop: 16,
             }}>
-              challenge-tree.vercel.app
-            </span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.12)' }} />
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+              <span style={{
+                fontSize: 9, color: 'rgba(255,255,255,0.22)',
+                fontFamily: "'Oswald', sans-serif", letterSpacing: '0.14em', textTransform: 'uppercase',
+              }}>challenge-tree.vercel.app</span>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+            </div>
           </div>
         </div>
 
         {/* Action buttons */}
-        <button
-          onClick={handleShare}
-          style={{
-            width: '100%', padding: '14px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
-            background: '#1b4332', color: '#fff',
-            fontFamily: "'Oswald', sans-serif", fontWeight: 500,
-            fontSize: 14, letterSpacing: '0.12em', textTransform: 'uppercase',
-            marginBottom: 10,
-          }}
-        >
-          {copied ? 'Copied to clipboard ✓' : (typeof navigator.share === 'function' ? 'Share my impact 🌿' : 'Copy to clipboard')}
-        </button>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+          <button
+            onClick={handleShare}
+            style={{
+              flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', cursor: 'pointer',
+              background: 'linear-gradient(135deg, #2d6a4f, #1b4332)',
+              color: '#fff', fontFamily: "'Oswald', sans-serif",
+              fontWeight: 500, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase',
+              boxShadow: '0 4px 16px rgba(27,67,50,0.5)',
+            }}
+          >
+            {copied ? '✓ Copied!' : (typeof navigator.share === 'function' ? '🌿 Share' : '📋 Copy')}
+          </button>
+          <button
+            onClick={handleDownload}
+            style={{
+              flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', cursor: 'pointer',
+              background: 'linear-gradient(135deg, #a07020, #c8952a)',
+              color: '#fff', fontFamily: "'Oswald', sans-serif",
+              fontWeight: 500, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase',
+              boxShadow: '0 4px 16px rgba(200,149,42,0.35)',
+            }}
+          >
+            {downloading ? '⏳ Saving…' : '⬇ Download'}
+          </button>
+        </div>
         <button
           onClick={onClose}
           style={{
-            width: '100%', padding: '12px 0', borderRadius: 12, border: '1.5px solid #ddd',
-            cursor: 'pointer', background: 'transparent', color: '#666',
-            fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase',
+            width: '100%', padding: '12px 0', borderRadius: 14,
+            border: '1px solid rgba(255,255,255,0.1)',
+            cursor: 'pointer', background: 'transparent',
+            color: 'rgba(255,255,255,0.35)',
+            fontFamily: "'Oswald', sans-serif", fontSize: 12,
+            letterSpacing: '0.1em', textTransform: 'uppercase',
           }}
         >
           Close
