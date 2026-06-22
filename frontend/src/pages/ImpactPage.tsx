@@ -441,7 +441,7 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
     `Join me → https://challenge-tree.vercel.app`
 
   function handleShare() {
-    if (navigator.share) {
+    if (typeof navigator.share === 'function') {
       navigator.share({ title: 'My Challenge Tre3 Impact', text: shareText })
         .catch(() => {})
     } else {
@@ -539,7 +539,7 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
             marginBottom: 10,
           }}
         >
-          {copied ? 'Copied to clipboard ✓' : (navigator.share ? 'Share my impact 🌿' : 'Copy to clipboard')}
+          {copied ? 'Copied to clipboard ✓' : (typeof navigator.share === 'function' ? 'Share my impact 🌿' : 'Copy to clipboard')}
         </button>
         <button
           onClick={onClose}
