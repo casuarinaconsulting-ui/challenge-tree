@@ -4,6 +4,28 @@ import { authenticate, AuthRequest } from '../middleware/auth'
 
 const router = Router()
 
+// Public — collective impact across all users (used on the login screen)
+router.get('/global', async (_req, res: Response) => {
+  try {
+    const [agg, memberCount] = await Promise.all([
+      prisma.impact.aggregate({
+        _sum: { co2Saved: true, waterSaved: true, wasteDiverted: true, totalActions: true },
+      }),
+      prisma.user.count(),
+    ])
+    res.json({
+      members:       memberCount,
+      co2Saved:      agg._sum.co2Saved      ?? 0,
+      waterSaved:    agg._sum.waterSaved    ?? 0,
+      wasteDiverted: agg._sum.wasteDiverted ?? 0,
+      totalActions:  agg._sum.totalActions  ?? 0,
+    })
+  } catch (err) {
+    console.error('Global impact error:', err)
+    res.status(500).json({ error: 'Could not load global impact.' })
+  }
+})
+
 router.get('/', authenticate, async (req: AuthRequest, res: Response) => {
   const records = await prisma.impact.findMany({ where: { userId: req.userId } })
   const totals = records.reduce(

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
@@ -5,6 +6,91 @@ import api from '../utils/api'
 import BottomNav from '../components/BottomNav'
 import { getEcosystem } from '../utils/ecosystems'
 import { getCurrentBadgeData, getNextBadgeData, BADGE_DATA } from '../utils/badges'
+
+function ChangePasswordCard() {
+  const [open, setOpen]       = useState(false)
+  const [current, setCurrent] = useState('')
+  const [next, setNext]       = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [msg, setMsg]         = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setMsg(null)
+    if (next !== confirm) { setMsg({ type: 'err', text: 'New passwords do not match.' }); return }
+    if (next.length < 8)  { setMsg({ type: 'err', text: 'New password must be at least 8 characters.' }); return }
+    setLoading(true)
+    try {
+      const { data } = await api.post('/auth/change-password', { currentPassword: current, newPassword: next })
+      setMsg({ type: 'ok', text: data.message || 'Password updated.' })
+      setCurrent(''); setNext(''); setConfirm('')
+    } catch (err: any) {
+      setMsg({ type: 'err', text: err.response?.data?.error || 'Could not update password.' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', fontSize: 15, padding: '10px 12px', marginBottom: 10,
+    background: '#fff', border: '1px solid #e5e0d5', borderRadius: 8,
+    outline: 'none', color: '#1a1f1c', boxSizing: 'border-box',
+  }
+
+  return (
+    <div className="card-3d animate-slide-up" style={{
+      borderRadius: 22, padding: '18px 20px', marginBottom: 14,
+      background: '#fff', border: '1px solid rgba(0,0,0,0.05)', animationDelay: '0.18s',
+    }}>
+      <button
+        onClick={() => { setOpen(o => !o); setMsg(null) }}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+        }}
+      >
+        <span style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.16em',
+          textTransform: 'uppercase', color: '#1b4332',
+        }}>
+          🔑 Change Password
+        </span>
+        <span style={{ color: '#9ca3af', fontSize: 14 }}>{open ? '−' : '+'}</span>
+      </button>
+
+      {open && (
+        <form onSubmit={handleSubmit} style={{ marginTop: 16 }}>
+          <input type="password" placeholder="Current password" value={current}
+                 onChange={e => setCurrent(e.target.value)} required style={inputStyle} />
+          <input type="password" placeholder="New password (min. 8 characters)" value={next}
+                 onChange={e => setNext(e.target.value)} required style={inputStyle} />
+          <input type="password" placeholder="Confirm new password" value={confirm}
+                 onChange={e => setConfirm(e.target.value)} required style={inputStyle} />
+
+          {msg && (
+            <p style={{
+              fontSize: 12.5, margin: '2px 0 10px',
+              color: msg.type === 'ok' ? '#2d6a4f' : '#b85c38',
+              fontStyle: 'italic',
+            }}>
+              {msg.type === 'ok' ? '✓ ' : ''}{msg.text}
+            </p>
+          )}
+
+          <button type="submit" disabled={loading} style={{
+            width: '100%', padding: '12px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
+            background: loading ? '#7cc4a0' : 'linear-gradient(135deg, #2d6a4f, #1b4332)',
+            color: '#fff', fontFamily: "'Oswald', sans-serif",
+            fontWeight: 500, fontSize: 12.5, letterSpacing: '0.1em', textTransform: 'uppercase',
+          }}>
+            {loading ? 'Updating…' : 'Update password'}
+          </button>
+        </form>
+      )}
+    </div>
+  )
+}
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -363,6 +449,9 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+
+        {/* ── Change password ── */}
+        <ChangePasswordCard />
 
         {/* ── Sign out ── */}
         <button onClick={() => { logout(); navigate('/login') }}

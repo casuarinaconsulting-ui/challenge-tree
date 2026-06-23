@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import api from '../utils/api'
@@ -29,14 +29,127 @@ function LoginWave() {
   )
 }
 
+interface GlobalImpact {
+  members: number
+  co2Saved: number
+  waterSaved: number
+  wasteDiverted: number
+  totalActions: number
+}
+
+function formatCompact(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000)     return `${(n / 1_000).toFixed(1)}k`
+  return `${Math.round(n)}`
+}
+
+// Counts up to a target value for a satisfying first impression
+function useCountUp(target: number, durationMs = 1100): number {
+  const [value, setValue] = useState(0)
+  useEffect(() => {
+    if (!target) { setValue(0); return }
+    let raf = 0
+    const start = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / durationMs, 1)
+      const eased = 1 - Math.pow(1 - t, 3)
+      setValue(target * eased)
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, durationMs])
+  return value
+}
+
+function CollectiveImpact({ data }: { data: GlobalImpact }) {
+  const members = useCountUp(data.members)
+  const co2     = useCountUp(data.co2Saved)
+  const water   = useCountUp(data.waterSaved)
+  const actions = useCountUp(data.totalActions)
+
+  const stats = [
+    { icon: '🌬️', value: `${formatCompact(co2)} kg`, label: 'CO₂ saved' },
+    { icon: '💧', value: `${formatCompact(water)} L`, label: 'Water saved' },
+    { icon: '✅', value: formatCompact(actions),       label: 'Actions' },
+  ]
+
+  return (
+    <div style={{ position: 'relative', zIndex: 1, padding: '0 20px 4px' }}>
+      {/* Headline */}
+      <div style={{ textAlign: 'center', marginBottom: 14 }}>
+        <p style={{
+          color: '#fff', fontFamily: "'Oswald', sans-serif", fontWeight: 600,
+          fontSize: 15, margin: 0, lineHeight: 1.4,
+        }}>
+          Join <span style={{ color: '#f0c96e' }}>{formatCompact(members)}+ members</span> worldwide
+        </p>
+        <p style={{
+          color: 'rgba(255,255,255,0.6)', fontSize: 12, margin: '3px 0 0',
+        }}>
+          making real change, one daily action at a time
+        </p>
+      </div>
+
+      {/* Stat strip */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8,
+        background: 'rgba(255,255,255,0.07)',
+        border: '1px solid rgba(255,255,255,0.12)',
+        borderRadius: 16, padding: '14px 10px',
+        backdropFilter: 'blur(8px)',
+      }}>
+        {stats.map((s, i) => (
+          <div key={s.label} style={{
+            textAlign: 'center',
+            borderRight: i < stats.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none',
+          }}>
+            <div style={{ fontSize: 16, marginBottom: 3 }}>{s.icon}</div>
+            <div style={{
+              fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 16,
+              color: '#fff', lineHeight: 1,
+            }}>
+              {s.value}
+            </div>
+            <div style={{
+              fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 3,
+              letterSpacing: '0.06em', textTransform: 'uppercase',
+              fontFamily: "'Oswald', sans-serif",
+            }}>
+              {s.label}
+            </div>
+          </div>
+        ))}
+      </div>
+      <p style={{
+        textAlign: 'center', fontSize: 9.5, color: 'rgba(255,255,255,0.35)',
+        margin: '8px 0 0', letterSpacing: '0.12em', textTransform: 'uppercase',
+        fontFamily: "'Oswald', sans-serif",
+      }}>
+        Our collective impact so far 🌍
+      </p>
+    </div>
+  )
+}
+
 export default function LoginPage() {
   const [email, setEmail]           = useState('')
   const [password, setPassword]     = useState('')
   const [error, setError]           = useState('')
   const [loading, setLoading]       = useState(false)
   const [showForgot, setShowForgot] = useState(false)
+  const [forgotEmail, setForgotEmail]     = useState('')
+  const [forgotLoading, setForgotLoading] = useState(false)
+  const [forgotMsg, setForgotMsg]         = useState('')
+  const [global, setGlobal]               = useState<GlobalImpact | null>(null)
   const setAuth  = useAuthStore(s => s.setAuth)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    api.get('/impact/global')
+      .then(r => setGlobal(r.data))
+      .catch(() => {/* silent — login still works without the graphic */})
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -58,6 +171,20 @@ export default function LoginPage() {
       setError(err.response?.data?.error || 'Login failed')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleForgot(e: React.FormEvent) {
+    e.preventDefault()
+    setForgotLoading(true)
+    setForgotMsg('')
+    try {
+      const { data } = await api.post('/auth/forgot-password', { email: forgotEmail || email })
+      setForgotMsg(data.message || 'Check your email for a temporary password.')
+    } catch {
+      setForgotMsg('Something went wrong. Please try again in a moment.')
+    } finally {
+      setForgotLoading(false)
     }
   }
 
@@ -97,11 +224,11 @@ export default function LoginPage() {
           ))}
         </div>
 
-        <div style={{ textAlign: 'center', paddingTop: 68, paddingBottom: 32, paddingLeft: 24, paddingRight: 24, position: 'relative', zIndex: 1 }}>
+        <div style={{ textAlign: 'center', paddingTop: 60, paddingBottom: 20, paddingLeft: 24, paddingRight: 24, position: 'relative', zIndex: 1 }}>
           <Wordmark size={42} dark />
 
           {/* Tagline with decorative lines */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18, justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16, justifyContent: 'center' }}>
             <div style={{ width: 28, height: 1, background: 'rgba(255,255,255,0.28)' }} />
             <p style={{
               color: 'rgba(255,255,255,0.5)',
@@ -115,6 +242,10 @@ export default function LoginPage() {
           </div>
         </div>
 
+        {/* Collective impact graphic */}
+        {global && global.members > 0 && <CollectiveImpact data={global} />}
+
+        <div style={{ height: 18 }} />
         <LoginWave />
       </div>
 
@@ -197,41 +328,65 @@ export default function LoginPage() {
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
-
-          {/* Forgot password */}
-          <div style={{ textAlign: 'center', marginTop: 16 }}>
-            <button
-              type="button"
-              onClick={() => setShowForgot(v => !v)}
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: 12.5, color: '#2d6a4f',
-                fontFamily: "'Oswald', sans-serif", letterSpacing: '0.08em',
-                textDecoration: 'underline', textDecorationStyle: 'dotted',
-              }}
-            >
-              Forgot password?
-            </button>
-
-            {showForgot && (
-              <div style={{
-                marginTop: 12, padding: '14px 16px', borderRadius: 10,
-                background: '#f0f7f3', border: '1px solid #b7dfc8', textAlign: 'left',
-              }}>
-                <p style={{ fontSize: 13, color: '#1b4332', lineHeight: 1.6, margin: 0 }}>
-                  <strong>Your streak is safe.</strong> Email us at{' '}
-                  <a
-                    href="mailto:casuarinaconsulting@gmail.com?subject=Password reset - Challenge Tre3"
-                    style={{ color: '#c8952a', fontWeight: 600 }}
-                  >
-                    casuarinaconsulting@gmail.com
-                  </a>{' '}
-                  from your registered email address and we will reset your password within 24 hours.
-                </p>
-              </div>
-            )}
-          </div>
         </form>
+
+        {/* Forgot password */}
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <button
+            type="button"
+            onClick={() => { setShowForgot(v => !v); setForgotMsg('') }}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: 12.5, color: '#2d6a4f',
+              fontFamily: "'Oswald', sans-serif", letterSpacing: '0.08em',
+              textDecoration: 'underline', textDecorationStyle: 'dotted',
+            }}
+          >
+            Forgot password?
+          </button>
+
+          {showForgot && (
+            <div style={{
+              marginTop: 12, padding: '16px', borderRadius: 12,
+              background: '#f0f7f3', border: '1px solid #b7dfc8', textAlign: 'left',
+            }}>
+              {forgotMsg ? (
+                <p style={{ fontSize: 13, color: '#1b4332', lineHeight: 1.6, margin: 0 }}>
+                  ✓ {forgotMsg}
+                </p>
+              ) : (
+                <form onSubmit={handleForgot}>
+                  <p style={{ fontSize: 12.5, color: '#2d6a4f', lineHeight: 1.55, margin: '0 0 12px' }}>
+                    Enter your email and we'll send a <strong>temporary password</strong> you can sign in with, then change.
+                  </p>
+                  <input
+                    type="email"
+                    value={forgotEmail || email}
+                    onChange={e => setForgotEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    style={{
+                      width: '100%', fontSize: 15, padding: '10px 12px', marginBottom: 10,
+                      background: '#fff', border: '1px solid #b7dfc8', borderRadius: 8,
+                      outline: 'none', color: '#1a1f1c', boxSizing: 'border-box',
+                    }}
+                  />
+                  <button
+                    type="submit" disabled={forgotLoading}
+                    style={{
+                      width: '100%', padding: '11px 0', borderRadius: 8, border: 'none', cursor: 'pointer',
+                      background: forgotLoading ? '#7cc4a0' : '#2d6a4f',
+                      color: '#fff', fontFamily: "'Oswald', sans-serif",
+                      fontWeight: 500, fontSize: 12.5, letterSpacing: '0.1em', textTransform: 'uppercase',
+                    }}
+                  >
+                    {forgotLoading ? 'Sending…' : 'Send temporary password'}
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
+        </div>
 
         <div style={{ textAlign: 'center', marginTop: 28 }}>
           <p style={{ fontSize: 13, color: '#888' }}>

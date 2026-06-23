@@ -784,6 +784,8 @@ export default function ImpactPage() {
   const token     = useAuthStore(s => s.token)
   const isDemo    = token === 'demo-token'
   const [showShare, setShowShare] = useState(false)
+  const [flipped, setFlipped] = useState<Record<string, boolean>>({})
+  const toggleFlip = (label: string) => setFlipped(f => ({ ...f, [label]: !f[label] }))
 
   const { data: apiData, isLoading } = useQuery({
     queryKey: ['impact'],
@@ -825,11 +827,26 @@ export default function ImpactPage() {
   const motivation   = getDailyMotivation()
 
   const stats = [
-    { icon: '🌬️', label: 'CO₂ saved',       value: `${(data?.co2Saved ?? 0).toFixed(1)} kg`,     color: '#5e7a44' },
-    { icon: '💧', label: 'Water saved',      value: `${(data?.waterSaved ?? 0).toFixed(0)} L`,     color: '#2b8fb5' },
-    { icon: '♻️', label: 'Waste diverted',   value: `${(data?.wasteDiverted ?? 0).toFixed(1)} kg`, color: '#7b68ae' },
-    { icon: '🌳', label: 'Trees equivalent', value: `${(data?.treesEquiv ?? 0).toFixed(2)}`,       color: '#2a9d8f' },
-    { icon: '✅', label: 'Total actions',    value: `${totalActions}`,                              color: '#c8952a' },
+    {
+      icon: '🌬️', label: 'CO₂ saved', value: `${(data?.co2Saved ?? 0).toFixed(1)} kg`, color: '#5e7a44',
+      back: 'CO₂ is the main greenhouse gas warming our planet. Every kilogram you keep out of the atmosphere slows climate change — for scale, a tree absorbs about 21 kg of CO₂ per year.',
+    },
+    {
+      icon: '💧', label: 'Water saved', value: `${(data?.waterSaved ?? 0).toFixed(0)} L`, color: '#2b8fb5',
+      back: 'Freshwater is finite — under 1% of Earth\'s water is drinkable. Saving water eases pressure on rivers and aquifers. One litre saved is a litre left for nature and communities.',
+    },
+    {
+      icon: '♻️', label: 'Waste diverted', value: `${(data?.wasteDiverted ?? 0).toFixed(1)} kg`, color: '#7b68ae',
+      back: 'Waste in landfill releases methane — 80× more potent than CO₂ over 20 years. Every kilogram you divert through reuse, recycling or composting keeps material in use and out of the ground.',
+    },
+    {
+      icon: '🌳', label: 'Trees equivalent', value: `${(data?.treesEquiv ?? 0).toFixed(2)}`, color: '#2a9d8f',
+      back: 'This translates your CO₂ savings into the number of trees it would take a year to absorb the same amount. A simple way to picture the living, breathing scale of your impact.',
+    },
+    {
+      icon: '✅', label: 'Total actions', value: `${totalActions}`, color: '#c8952a',
+      back: 'Each completed challenge is a real-world action. Studies show repeated small actions build lasting habits — and visible collective action is one of the strongest drivers of wider change.',
+    },
   ]
 
   return (
@@ -905,37 +922,91 @@ export default function ImpactPage() {
                    style={{ height: 110, borderRadius: 18, background: '#e5e7eb' }} />
             ))
           : <>
-              {stats.map((s, idx) => (
-                <div key={s.label} className="stat-card animate-slide-up" style={{
-                  background: '#fff', borderRadius: 18,
-                  padding: '16px 16px 18px',
-                  border: '1px solid rgba(0,0,0,0.05)',
-                  position: 'relative', overflow: 'hidden',
-                  animationDelay: `${idx * 0.06}s`,
-                }}>
-                  {/* Coloured top accent line */}
-                  <div style={{
-                    position: 'absolute', top: 0, left: '20%', right: '20%', height: 3,
-                    borderRadius: '0 0 4px 4px',
-                    background: s.color, opacity: 0.7,
-                  }} />
-                  {/* Soft glow bg */}
-                  <div style={{
-                    position: 'absolute', bottom: -20, right: -20, width: 80, height: 80,
-                    borderRadius: '50%',
-                    background: `radial-gradient(circle, ${s.color}22 0%, transparent 70%)`,
-                    pointerEvents: 'none',
-                  }} />
-                  <span style={{ fontSize: 24 }}>{s.icon}</span>
-                  <p style={{
-                    fontFamily: "'Oswald', sans-serif", fontWeight: 600,
-                    fontSize: 24, color: s.color, margin: '8px 0 3px',
-                  }}>
-                    {s.value}
-                  </p>
-                  <p style={{ fontSize: 11.5, color: '#999', margin: 0, letterSpacing: '0.03em' }}>{s.label}</p>
-                </div>
-              ))}
+              {stats.map((s, idx) => {
+                const isFlipped = !!flipped[s.label]
+                return (
+                  <div
+                    key={s.label}
+                    className="animate-slide-up"
+                    onClick={() => toggleFlip(s.label)}
+                    style={{
+                      perspective: '1000px', minHeight: 132, cursor: 'pointer',
+                      animationDelay: `${idx * 0.06}s`,
+                    }}
+                  >
+                    <div style={{
+                      position: 'relative', width: '100%', height: '100%', minHeight: 132,
+                      transformStyle: 'preserve-3d',
+                      transition: 'transform 0.55s cubic-bezier(0.4,0.2,0.2,1)',
+                      transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                    }}>
+
+                      {/* ── Front ── */}
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden',
+                        background: '#fff', borderRadius: 18,
+                        padding: '16px 16px 18px',
+                        border: '1px solid rgba(0,0,0,0.05)',
+                        overflow: 'hidden',
+                      }}>
+                        <div style={{
+                          position: 'absolute', top: 0, left: '20%', right: '20%', height: 3,
+                          borderRadius: '0 0 4px 4px', background: s.color, opacity: 0.7,
+                        }} />
+                        <div style={{
+                          position: 'absolute', bottom: -20, right: -20, width: 80, height: 80,
+                          borderRadius: '50%',
+                          background: `radial-gradient(circle, ${s.color}22 0%, transparent 70%)`,
+                          pointerEvents: 'none',
+                        }} />
+                        <span style={{ fontSize: 24 }}>{s.icon}</span>
+                        <p style={{
+                          fontFamily: "'Oswald', sans-serif", fontWeight: 600,
+                          fontSize: 24, color: s.color, margin: '8px 0 3px',
+                        }}>
+                          {s.value}
+                        </p>
+                        <p style={{ fontSize: 11.5, color: '#999', margin: 0, letterSpacing: '0.03em' }}>{s.label}</p>
+                        {/* Flip hint */}
+                        <span style={{
+                          position: 'absolute', bottom: 9, right: 11,
+                          fontSize: 12, color: `${s.color}99`,
+                        }}>↻</span>
+                      </div>
+
+                      {/* ── Back ── */}
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden',
+                        transform: 'rotateY(180deg)',
+                        background: `linear-gradient(150deg, ${s.color}, ${s.color}cc)`,
+                        borderRadius: 18, padding: '13px 14px',
+                        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+                        boxShadow: `0 6px 20px ${s.color}33`,
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                          <span style={{ fontSize: 14 }}>{s.icon}</span>
+                          <span style={{
+                            fontFamily: "'Oswald', sans-serif", fontSize: 10.5,
+                            letterSpacing: '0.08em', textTransform: 'uppercase',
+                            color: 'rgba(255,255,255,0.95)', fontWeight: 600,
+                          }}>
+                            {s.label}
+                          </span>
+                        </div>
+                        <p style={{
+                          fontSize: 10.5, lineHeight: 1.5, margin: 0,
+                          color: 'rgba(255,255,255,0.95)',
+                        }}>
+                          {s.back}
+                        </p>
+                      </div>
+
+                    </div>
+                  </div>
+                )
+              })}
 
               {/* ── 6th card: motivational ── */}
               <div className="stat-card animate-slide-up" style={{
