@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
 import BottomNav from '../components/BottomNav'
@@ -791,6 +791,22 @@ export default function ImpactPage() {
   const [showShare, setShowShare] = useState(false)
   const [flipped, setFlipped] = useState<Record<string, boolean>>({})
   const toggleFlip = (label: string) => setFlipped(f => ({ ...f, [label]: !f[label] }))
+  const qc = useQueryClient()
+
+  // Day-rollover detector: when the local day changes (same trigger that resets
+  // the daily challenges), refresh the motivational message and impact data so
+  // they always change in step with the tasks — even if the app is left open.
+  const [dayKey, setDayKey] = useState(() => new Date().toLocaleDateString('en-CA'))
+  useEffect(() => {
+    const iv = setInterval(() => {
+      const k = new Date().toLocaleDateString('en-CA')
+      if (k !== dayKey) {
+        setDayKey(k)
+        qc.invalidateQueries({ queryKey: ['impact'] })
+      }
+    }, 60_000)
+    return () => clearInterval(iv)
+  }, [dayKey, qc])
 
   const { data: apiData, isLoading } = useQuery({
     queryKey: ['impact'],
@@ -836,7 +852,8 @@ export default function ImpactPage() {
   })
 
   const totalActions = data.totalActions ?? 0
-  const motivation   = getDailyMotivation()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const motivation   = useMemo(() => getDailyMotivation(), [dayKey])
 
   const stats = [
     {
