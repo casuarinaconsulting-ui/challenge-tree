@@ -409,7 +409,12 @@ function getDailyMotivation() {
   const now = new Date()
   const start = new Date(now.getFullYear(), 0, 0)
   const dayOfYear = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-  return DAILY_MESSAGES[dayOfYear % DAILY_MESSAGES.length]
+  // The messages are grouped by theme, so stepping +1/day would show ~20 days
+  // of the same theme in a row. Stepping with a stride coprime to the list
+  // length jumps to a different theme each day, still one fixed message per day
+  // and no repeats within a full cycle. 226 ≈ golden-ratio of 365 (coprime: 5×73).
+  const STRIDE = 226
+  return DAILY_MESSAGES[(dayOfYear * STRIDE) % DAILY_MESSAGES.length]
 }
 
 function CasuarinaFooter() {
