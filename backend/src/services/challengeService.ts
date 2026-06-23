@@ -111,6 +111,13 @@ export async function markComplete(userId: string, challengeId: string, tzOffset
     co2?: number; water?: number; waste?: number
   }
 
+  // Was there already activity today (before this completion)? Used to ensure
+  // the streak is counted only once per day, on the first completion.
+  const existingToday = await prisma.impact.findUnique({
+    where: { userId_date: { userId, date: today } }
+  })
+  const firstActionToday = !existingToday
+
   // Mark challenge complete
   await prisma.userChallenge.updateMany({
     where: { userId, challengeId, assignedDate: today },
@@ -138,7 +145,8 @@ export async function markComplete(userId: string, challengeId: string, tzOffset
     }
   })
 
-  const newBadge = await updateStreak(userId, tzOffsetMin)
+  // Only advance the streak once per day (on the first completion).
+  const newBadge = firstActionToday ? await updateStreak(userId, tzOffsetMin) : null
   return { success: true, impact, newBadge }
 }
 
