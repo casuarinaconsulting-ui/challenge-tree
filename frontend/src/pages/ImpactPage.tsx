@@ -790,8 +790,20 @@ export default function ImpactPage() {
   const isDemo    = token === 'demo-token'
   const [showShare, setShowShare] = useState(false)
   const [flipped, setFlipped] = useState<Record<string, boolean>>({})
-  const toggleFlip = (label: string) => setFlipped(f => ({ ...f, [label]: !f[label] }))
+  const [hasInteracted, setHasInteracted] = useState(false)
+  const toggleFlip = (label: string) => {
+    setHasInteracted(true)
+    setFlipped(f => ({ ...f, [label]: !f[label] }))
+  }
   const qc = useQueryClient()
+
+  // One-time "peek" on load: each card gently rotates to reveal it has a back,
+  // hinting that the squares are tappable. Stops once the user flips any card.
+  const [peek, setPeek] = useState(true)
+  useEffect(() => {
+    const t = setTimeout(() => setPeek(false), 2600)
+    return () => clearTimeout(t)
+  }, [])
 
   // Day-rollover detector: when the local day changes (same trigger that resets
   // the daily challenges), refresh the motivational message and impact data so
@@ -968,6 +980,8 @@ export default function ImpactPage() {
                       transformStyle: 'preserve-3d',
                       transition: 'transform 0.55s cubic-bezier(0.4,0.2,0.2,1)',
                       transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                      animation: (peek && !hasInteracted && !isFlipped)
+                        ? `impactPeek 1s ease ${700 + idx * 150}ms` : undefined,
                     }}>
 
                       {/* ── Front ── */}
@@ -997,11 +1011,18 @@ export default function ImpactPage() {
                           {s.value}
                         </p>
                         <p style={{ fontSize: 11.5, color: '#999', margin: 0, letterSpacing: '0.03em' }}>{s.label}</p>
-                        {/* Flip hint */}
+                        {/* Flip hint — a small chip that gently pulses until the user taps */}
                         <span style={{
-                          position: 'absolute', bottom: 9, right: 11,
-                          fontSize: 12, color: `${s.color}99`,
-                        }}>↻</span>
+                          position: 'absolute', bottom: 8, right: 9,
+                          display: 'inline-flex', alignItems: 'center', gap: 3,
+                          fontSize: 9, color: s.color,
+                          background: `${s.color}14`, border: `1px solid ${s.color}30`,
+                          borderRadius: 999, padding: '2px 7px',
+                          fontFamily: "'Oswald', sans-serif", letterSpacing: '0.06em',
+                          animation: hasInteracted ? undefined : 'flipHintPulse 2.4s ease-in-out infinite',
+                        }}>
+                          <span style={{ fontSize: 11, lineHeight: 1 }}>↻</span> TAP
+                        </span>
                       </div>
 
                       {/* ── Back ── */}
@@ -1094,6 +1115,18 @@ export default function ImpactPage() {
       <BottomNav />
 
       {showShare && <ShareModal data={data} onClose={() => setShowShare(false)} />}
+
+      <style>{`
+        @keyframes impactPeek {
+          0%   { transform: rotateY(0deg); }
+          45%  { transform: rotateY(-26deg); }
+          100% { transform: rotateY(0deg); }
+        }
+        @keyframes flipHintPulse {
+          0%, 100% { opacity: 0.55; }
+          50%      { opacity: 1; }
+        }
+      `}</style>
     </div>
   )
 }
