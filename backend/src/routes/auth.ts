@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
+import { sendWelcomeEmail } from '../services/emailService'
 
 const router = Router()
 
@@ -40,6 +41,11 @@ router.post('/register', async (req: Request, res: Response) => {
       data: { email, name, passwordHash, location, country, language, ...(preferences ? { preferences: preferences as any } : {}) },
       select: { id: true, email: true, name: true, createdAt: true }
     })
+
+    // Non-blocking — email failure must never prevent registration
+    sendWelcomeEmail(user.email, user.name).catch(err =>
+      console.error('[email] Welcome email failed:', err.message)
+    )
 
     res.status(201).json({ user, token: signToken(user.id) })
   } catch (err) {
