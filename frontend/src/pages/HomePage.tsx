@@ -677,10 +677,12 @@ export default function HomePage() {
 
               {nextBadge && streakCount > 0 && (
                 <span style={{
-                  fontFamily: "'Oswald', sans-serif", fontSize: 10,
-                  color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em',
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  fontFamily: "'Oswald', sans-serif", fontSize: 13,
+                  color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em',
                 }}>
-                  {nextBadge.threshold - streakCount}d to {nextBadge.icon}
+                  {nextBadge.threshold - streakCount}d to
+                  <span style={{ fontSize: 19, lineHeight: 1 }}>{nextBadge.icon}</span>
                 </span>
               )}
             </div>
@@ -703,11 +705,12 @@ export default function HomePage() {
             </span>
             {!isDemo && streakCount > 0 && (
               <span style={{
-                marginLeft: 'auto', fontSize: 11,
-                fontFamily: "'Oswald', sans-serif", letterSpacing: '0.08em',
-                color: '#52b788',
+                marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 5,
+                fontFamily: "'Oswald', sans-serif", letterSpacing: '0.05em', color: '#74d99f',
               }}>
-                🔥 {streakCount} day streak
+                <span style={{ fontSize: 17, lineHeight: 1 }}>🔥</span>
+                <span style={{ fontSize: 17, fontWeight: 600 }}>{streakCount}</span>
+                <span style={{ fontSize: 12.5, opacity: 0.85 }}>day streak</span>
               </span>
             )}
           </div>
