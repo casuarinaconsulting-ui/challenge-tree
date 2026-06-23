@@ -142,6 +142,68 @@ export async function markComplete(userId: string, challengeId: string, tzOffset
   return { success: true, impact, newBadge }
 }
 
+// Replace one of today's (incomplete) challenges with a fresh alternative.
+export async function swapChallenge(userId: string, challengeId: string, tzOffsetMin = 0) {
+  const today = startOfUserDay(tzOffsetMin)
+
+  const current = await prisma.userChallenge.findFirst({
+    where: { userId, challengeId, assignedDate: today },
+  })
+  if (!current) return { error: 'Challenge not assigned for today' }
+  if (current.isCompleted) return { error: 'Cannot swap a completed challenge' }
+
+  const todays = await prisma.userChallenge.findMany({
+    where: { userId, assignedDate: today },
+    include: { challenge: { select: { id: true, category: true } } },
+  })
+  const keepIds        = todays.map(t => t.challengeId)
+  const keepCategories = todays.filter(t => t.challengeId !== challengeId).map(t => t.challenge.category)
+
+  const seen    = await prisma.userChallenge.findMany({ where: { userId }, select: { challengeId: true } })
+  const seenIds = seen.map(s => s.challengeId)
+
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+  if (!user) return { error: 'User not found' }
+
+  const profileFilter = {
+    isActive:     true,
+    costLevel:    user.incomeLevel === 'low' ? { in: ['free', 'low'] } : undefined,
+    difficulty:   user.abilityLevel === 'limited' ? { lte: 2 } : undefined,
+    timeEstimate: user.timeAvailable ? { lte: user.timeAvailable } : undefined,
+    OR: [{ region: 'global' }, { region: user.country ?? 'global' }] as any,
+  }
+
+  const excludeSeen = [...new Set([...seenIds, ...keepIds])]
+
+  // 1) unseen + different category from the other two
+  let candidates = await prisma.challenge.findMany({
+    where: { ...profileFilter, id: { notIn: excludeSeen }, category: { notIn: keepCategories as any } },
+    take: 100,
+  })
+  // 2) unseen, any category
+  if (candidates.length < 1) {
+    candidates = await prisma.challenge.findMany({
+      where: { ...profileFilter, id: { notIn: excludeSeen } }, take: 100,
+    })
+  }
+  // 3) cycle exhausted — anything not in today's current set
+  if (candidates.length < 1) {
+    candidates = await prisma.challenge.findMany({
+      where: { ...profileFilter, id: { notIn: keepIds } }, take: 100,
+    })
+  }
+  if (candidates.length < 1) return { error: 'No alternative challenge available right now' }
+
+  const pick = candidates[Math.floor(Math.random() * candidates.length)]
+
+  await prisma.userChallenge.delete({ where: { id: current.id } })
+  const created = await prisma.userChallenge.create({
+    data: { userId, challengeId: pick.id, assignedDate: today },
+    include: { challenge: true },
+  })
+  return { success: true, userChallenge: created }
+}
+
 const STREAK_MILESTONES = [1, 3, 7, 30, 90, 180, 270, 365]
 
 async function updateStreak(userId: string, tzOffsetMin = 0) {

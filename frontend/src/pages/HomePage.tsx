@@ -32,6 +32,10 @@ const DEMO_CHALLENGES = [
       id: 'demo-1', title: '5-minute shower', category: 'WATER',
       description: 'Cut your shower to 5 minutes today and save up to 50 litres of water.',
       timeEstimate: 5, costLevel: 'free', difficulty: 1,
+      impactEstimate: { co2: 0.5, water: 50, waste: 0 },
+      educationalText: 'Heating water is one of the biggest energy uses in the home. A shorter shower saves both water and the energy used to heat it — cutting your bills and carbon at once.',
+      tips: ['Play one song and finish before it ends', 'A water-saving showerhead cuts flow without losing pressure'],
+      barriers: ['Habit and routine', 'Shared households'],
     },
   },
   {
@@ -40,6 +44,10 @@ const DEMO_CHALLENGES = [
       id: 'demo-2', title: 'Plant-based meal', category: 'FOOD',
       description: 'Cook one fully plant-based meal — no meat, no dairy.',
       timeEstimate: 30, costLevel: 'low', difficulty: 2,
+      impactEstimate: { co2: 1.5, water: 200, waste: 0.2 },
+      educationalText: 'Food production drives roughly a quarter of global emissions, and animal products are the most resource-intensive. One plant-based meal meaningfully lowers your footprint.',
+      tips: ['Lentils, beans, and chickpeas are cheap, filling protein', 'Make a dish you already love in a plant-based version'],
+      barriers: ['Unfamiliar recipes', 'Cooking time'],
     },
   },
   {
@@ -48,6 +56,62 @@ const DEMO_CHALLENGES = [
       id: 'demo-3', title: 'Walk or cycle one trip', category: 'TRANSPORT',
       description: 'Skip motorised transport for one journey today, no matter how short.',
       timeEstimate: 20, costLevel: 'free', difficulty: 1,
+      impactEstimate: { co2: 0.5, water: 5, waste: 0 },
+      educationalText: 'Transport is about a quarter of global CO₂. Short car trips are the least efficient of all — replacing even one with walking or cycling cuts emissions and improves your health.',
+      tips: ['Pick a trip under 2 km to start', 'Combine errands into one walk or ride'],
+      barriers: ['Weather', 'Time pressure'],
+    },
+  },
+]
+
+// Extra challenges used only in demo mode when "swap" is tapped
+const DEMO_ALTERNATES = [
+  {
+    id: 'demo-alt-1', isCompleted: false,
+    challenge: {
+      id: 'demo-alt-1', title: 'Refuse single-use plastic', category: 'WASTE',
+      description: 'Say no to one single-use plastic item today — bag, bottle, cup, or cutlery.',
+      timeEstimate: 5, costLevel: 'free', difficulty: 1,
+      impactEstimate: { co2: 0.2, water: 0, waste: 0.5 },
+      educationalText: 'Only about 9% of all plastic ever made has been recycled. Refusing single-use plastic stops waste at the source — the most effective point in the chain.',
+      tips: ['Keep a reusable bag and bottle by the door', 'A refusal is more powerful than recycling after the fact'],
+      barriers: ['Forgetting reusables', 'Limited alternatives on the go'],
+    },
+  },
+  {
+    id: 'demo-alt-2', isCompleted: false,
+    challenge: {
+      id: 'demo-alt-2', title: 'Unplug idle devices', category: 'ENERGY',
+      description: 'Switch off or unplug devices on standby for the rest of the day.',
+      timeEstimate: 10, costLevel: 'free', difficulty: 1,
+      impactEstimate: { co2: 0.8, water: 0, waste: 0 },
+      educationalText: 'Standby power ("vampire load") can be 5–10% of a home\'s electricity. Devices left plugged in draw power even when off — switching them off is free saving.',
+      tips: ['A switched power strip turns off several devices at once', 'Chargers draw power even with nothing attached'],
+      barriers: ['Hard-to-reach sockets', 'Devices that need to stay on'],
+    },
+  },
+  {
+    id: 'demo-alt-3', isCompleted: false,
+    challenge: {
+      id: 'demo-alt-3', title: 'Spend 20 minutes in nature', category: 'WELLBEING',
+      description: 'Step outside and spend 20 phone-free minutes in a natural setting.',
+      timeEstimate: 20, costLevel: 'free', difficulty: 1,
+      impactEstimate: { co2: 0, water: 0, waste: 0 },
+      educationalText: 'Twenty minutes in nature measurably lowers stress hormones. Connection to the natural world is also one of the strongest predictors of wanting to protect it.',
+      tips: ['Even a park bench or garden counts', 'Notice three things you can see, hear, and touch'],
+      barriers: ['No green space nearby', 'Weather'],
+    },
+  },
+  {
+    id: 'demo-alt-4', isCompleted: false,
+    challenge: {
+      id: 'demo-alt-4', title: 'Share a tip with a friend', category: 'COMMUNITY',
+      description: 'Tell one person about a sustainable swap you have made.',
+      timeEstimate: 10, costLevel: 'free', difficulty: 1,
+      impactEstimate: { co2: 0.1, water: 0, waste: 0 },
+      educationalText: 'Behaviour spreads through social networks. A genuine conversation with someone you know is one of the most effective ways to shift attitudes and habits.',
+      tips: ['Share what worked for you, not what others "should" do', 'Lead with the benefit you noticed'],
+      barriers: ['Feeling preachy', 'Finding the moment'],
     },
   },
 ]
@@ -270,6 +334,134 @@ function BadgeUnlockModal({ badge, onClose }: { badge: BadgeUnlock; onClose: () 
   )
 }
 
+function ChallengeDetailModal({ challenge, onClose }: { challenge: any; onClose: () => void }) {
+  const cat = CATEGORY_CONFIG[challenge.category] ?? { bg: '#2d6a4f', label: challenge.category, emoji: '🌍' }
+  const impact = challenge.impactEstimate ?? {}
+  const tips: string[] = challenge.tips ?? []
+  const barriers: string[] = challenge.barriers ?? []
+  const impactRows = [
+    { label: 'CO₂ saved', value: impact.co2 ? `${impact.co2} kg` : null, icon: '🌍' },
+    { label: 'Water saved', value: impact.water ? `${impact.water} L` : null, icon: '💧' },
+    { label: 'Waste diverted', value: impact.waste ? `${impact.waste} kg` : null, icon: '♻️' },
+  ].filter(r => r.value)
+
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(10,28,18,0.78)',
+      display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+      backdropFilter: 'blur(6px)', animation: 'fadeIn 0.25s ease',
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        width: '100%', maxWidth: 480, maxHeight: '88vh', overflowY: 'auto',
+        background: '#fff', borderRadius: '24px 24px 0 0',
+        border: '1px solid rgba(0,0,0,0.06)',
+      }}>
+        {/* Coloured header */}
+        <div style={{
+          background: `linear-gradient(135deg, ${cat.bg} 0%, ${cat.bg}cc 100%)`,
+          padding: '22px 22px 20px', position: 'sticky', top: 0, zIndex: 1,
+        }}>
+          <div style={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.45)', margin: '0 auto 16px' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <span style={{ fontSize: 16 }}>{cat.emoji}</span>
+            <span style={{
+              fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.15em',
+              textTransform: 'uppercase', color: 'rgba(255,255,255,0.9)',
+            }}>{cat.label}</span>
+          </div>
+          <h2 style={{
+            fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 23,
+            color: '#fff', margin: 0, lineHeight: 1.2,
+          }}>{challenge.title}</h2>
+        </div>
+
+        <div style={{ padding: '20px 22px 28px' }}>
+          <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, margin: '0 0 20px' }}>
+            {challenge.description}
+          </p>
+
+          {/* Why it matters */}
+          {challenge.educationalText && (
+            <div style={{ marginBottom: 20 }}>
+              <h3 style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: cat.bg, margin: '0 0 8px',
+              }}>Why it matters</h3>
+              <p style={{ fontSize: 13.5, color: '#374151', lineHeight: 1.65, margin: 0 }}>
+                {challenge.educationalText}
+              </p>
+            </div>
+          )}
+
+          {/* Impact breakdown */}
+          {impactRows.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <h3 style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: cat.bg, margin: '0 0 10px',
+              }}>Your impact</h3>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {impactRows.map(r => (
+                  <div key={r.label} style={{
+                    flex: 1, textAlign: 'center', padding: '12px 8px', borderRadius: 12,
+                    background: `${cat.bg}0f`, border: `1px solid ${cat.bg}22`,
+                  }}>
+                    <div style={{ fontSize: 18, marginBottom: 4 }}>{r.icon}</div>
+                    <div style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 16, color: cat.bg }}>{r.value}</div>
+                    <div style={{ fontSize: 9.5, color: '#9ca3af', marginTop: 2 }}>{r.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tips */}
+          {tips.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <h3 style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: cat.bg, margin: '0 0 8px',
+              }}>💡 Tips</h3>
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {tips.map((t, i) => (
+                  <li key={i} style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 4 }}>{t}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Barriers */}
+          {barriers.length > 0 && (
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: '#9ca3af', margin: '0 0 8px',
+              }}>⚠️ Common barriers</h3>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {barriers.map((b, i) => (
+                  <span key={i} style={{
+                    fontSize: 12, color: '#6b7280', background: '#f3f3f1',
+                    padding: '4px 10px', borderRadius: 999,
+                  }}>{b}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button onClick={onClose} style={{
+            width: '100%', padding: '14px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
+            background: `linear-gradient(135deg, ${cat.bg} 0%, ${cat.bg}dd 100%)`, color: '#fff',
+            fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 500,
+            letterSpacing: '0.12em', textTransform: 'uppercase',
+          }}>
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function HomePage() {
   const user     = useAuthStore(s => s.user)
   const logout   = useAuthStore(s => s.logout)
@@ -299,6 +491,9 @@ export default function HomePage() {
   const nextBadge    = getNextBadge(streakCount)
 
   const [badgeUnlock, setBadgeUnlock] = useState<BadgeUnlock | null>(null)
+  const [detailC, setDetailC] = useState<any | null>(null)
+  // Local challenge list for demo mode (so demo "swap" can replace items)
+  const [demoList, setDemoList] = useState<any[]>(DEMO_CHALLENGES)
 
   useEffect(() => {
     const status = (error as any)?.response?.status
@@ -308,7 +503,9 @@ export default function HomePage() {
     }
   }, [error, logout, navigate])
 
-  const displayChallenges = (Array.isArray(challenges) && challenges.length > 0) ? challenges : DEMO_CHALLENGES
+  const displayChallenges = isDemo
+    ? demoList
+    : ((Array.isArray(challenges) && challenges.length > 0) ? challenges : DEMO_CHALLENGES)
 
   const STORAGE_KEY = 'challenge-tree-completions'
 
@@ -372,6 +569,25 @@ export default function HomePage() {
     },
   })
 
+  const swapMutation = useMutation({
+    mutationFn: (challengeId: string) => {
+      if (challengeId.startsWith('demo-')) {
+        // Demo: replace the tapped item with an alternate not already shown
+        setDemoList(prev => {
+          const shownIds = new Set(prev.map(uc => uc.id))
+          const alt = DEMO_ALTERNATES.find(a => !shownIds.has(a.id))
+          if (!alt) return prev
+          return prev.map(uc => (uc.challenge.id === challengeId ? alt : uc))
+        })
+        return Promise.resolve(null as any)
+      }
+      return api.post(`/challenges/${challengeId}/swap`)
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['daily-challenges'] })
+    },
+  })
+
   return (
     <div className="min-h-screen pb-24" style={{
       background: `
@@ -384,6 +600,11 @@ export default function HomePage() {
       {/* Badge unlock modal */}
       {badgeUnlock && (
         <BadgeUnlockModal badge={badgeUnlock} onClose={() => setBadgeUnlock(null)} />
+      )}
+
+      {/* Challenge detail modal */}
+      {detailC && (
+        <ChallengeDetailModal challenge={detailC} onClose={() => setDetailC(null)} />
       )}
 
       {/* ── Header ── */}
@@ -599,6 +820,36 @@ export default function HomePage() {
                           {m.icon} {m.val}
                         </span>
                       ))}
+                    </div>
+
+                    {/* Secondary actions: learn more + swap */}
+                    <div style={{ display: 'flex', gap: 8, marginBottom: isCompleted ? 0 : 10 }}>
+                      <button
+                        onClick={() => setDetailC(c)}
+                        style={{
+                          flex: 1, padding: '9px 0', borderRadius: 10, cursor: 'pointer',
+                          background: `${cat.bg}12`, border: `1px solid ${cat.bg}33`, color: cat.bg,
+                          fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 11.5,
+                          letterSpacing: '0.08em', textTransform: 'uppercase',
+                        }}
+                      >
+                        ⓘ Why it matters
+                      </button>
+                      {!isCompleted && (
+                        <button
+                          onClick={() => swapMutation.mutate(c.id)}
+                          disabled={swapMutation.isPending}
+                          style={{
+                            flex: '0 0 auto', padding: '9px 16px', borderRadius: 10, cursor: 'pointer',
+                            background: '#f3f3f1', border: '1px solid rgba(0,0,0,0.08)', color: '#555',
+                            fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 11.5,
+                            letterSpacing: '0.08em', textTransform: 'uppercase',
+                            opacity: swapMutation.isPending ? 0.6 : 1,
+                          }}
+                        >
+                          {swapMutation.isPending ? '…' : '↻ Swap'}
+                        </button>
+                      )}
                     </div>
 
                     {!isCompleted && (

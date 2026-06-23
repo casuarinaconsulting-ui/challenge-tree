@@ -1,7 +1,7 @@
 import { Router, Response } from 'express'
 import { prisma } from '../lib/prisma'
 import { authenticate, AuthRequest } from '../middleware/auth'
-import { getDailyChallenges, markComplete } from '../services/challengeService'
+import { getDailyChallenges, markComplete, swapChallenge } from '../services/challengeService'
 
 const router = Router()
 
@@ -28,6 +28,12 @@ router.get('/:id', authenticate, async (req: AuthRequest, res: Response) => {
 // POST /api/challenges/:id/complete — mark a challenge as completed
 router.post('/:id/complete', authenticate, async (req: AuthRequest, res: Response) => {
   const result = await markComplete(req.userId!, req.params.id, tzOffset(req))
+  res.json(result)
+})
+
+// POST /api/challenges/:id/swap — replace an incomplete challenge with a fresh one
+router.post('/:id/swap', authenticate, async (req: AuthRequest, res: Response) => {
+  const result = await swapChallenge(req.userId!, req.params.id, tzOffset(req))
   res.json(result)
 })
 
