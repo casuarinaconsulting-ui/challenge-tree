@@ -40,7 +40,17 @@ export default function RegisterPage() {
       setAuth(data.user, data.token)
       navigate('/')
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Registration failed')
+      const responseError = err.response?.data?.error
+      if (!responseError) {
+        setError('Connection failed — please check your internet and try again.')
+      } else if (typeof responseError === 'string') {
+        setError(responseError)
+      } else if (responseError.fieldErrors) {
+        const msgs = Object.values(responseError.fieldErrors).flat() as string[]
+        setError(msgs[0] || 'Please check your details and try again.')
+      } else {
+        setError('Please check your details and try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -105,7 +115,7 @@ export default function RegisterPage() {
             {[
               { key: 'name',     label: 'Full name',          type: 'text',     required: true  },
               { key: 'email',    label: 'Email',               type: 'email',    required: true  },
-              { key: 'password', label: 'Password',            type: 'password', required: true  },
+              { key: 'password', label: 'Password (min. 8 characters)', type: 'password', required: true  },
               { key: 'country',  label: 'Country (optional)',  type: 'text',     required: false },
             ].map(f => (
               <div key={f.key} style={{ marginBottom: 22 }}>
