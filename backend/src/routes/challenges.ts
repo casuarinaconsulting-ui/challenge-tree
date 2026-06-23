@@ -5,9 +5,16 @@ import { getDailyChallenges, markComplete } from '../services/challengeService'
 
 const router = Router()
 
+// Client sends Date.getTimezoneOffset() (minutes) so "today" resets at the
+// user's local midnight, not the server's UTC midnight.
+const tzOffset = (req: AuthRequest) => {
+  const v = Number(req.query.tz)
+  return Number.isFinite(v) ? v : 0
+}
+
 // GET /api/challenges/daily — returns 3 personalised challenges for today
 router.get('/daily', authenticate, async (req: AuthRequest, res: Response) => {
-  const challenges = await getDailyChallenges(req.userId!)
+  const challenges = await getDailyChallenges(req.userId!, tzOffset(req))
   res.json(challenges)
 })
 
@@ -20,7 +27,7 @@ router.get('/:id', authenticate, async (req: AuthRequest, res: Response) => {
 
 // POST /api/challenges/:id/complete — mark a challenge as completed
 router.post('/:id/complete', authenticate, async (req: AuthRequest, res: Response) => {
-  const result = await markComplete(req.userId!, req.params.id)
+  const result = await markComplete(req.userId!, req.params.id, tzOffset(req))
   res.json(result)
 })
 

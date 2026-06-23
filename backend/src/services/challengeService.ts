@@ -1,14 +1,17 @@
 import { Category } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 
-const TODAY = () => {
-  const d = new Date()
-  d.setHours(0, 0, 0, 0)
-  return d
+// Start of the *user's* local day, anchored at UTC midnight of that calendar
+// date so storage is consistent regardless of the server's timezone.
+// tzOffsetMin is the client's Date.getTimezoneOffset() (minutes; UTC+10 → -600).
+const startOfUserDay = (tzOffsetMin = 0): Date => {
+  const localMs = Date.now() - tzOffsetMin * 60000
+  const dateStr = new Date(localMs).toISOString().slice(0, 10)
+  return new Date(`${dateStr}T00:00:00.000Z`)
 }
 
-export async function getDailyChallenges(userId: string) {
-  const today = TODAY()
+export async function getDailyChallenges(userId: string, tzOffsetMin = 0) {
+  const today = startOfUserDay(tzOffsetMin)
 
   // Return already-assigned challenges for today if they exist
   const existing = await prisma.userChallenge.findMany({
@@ -94,8 +97,8 @@ export async function getDailyChallenges(userId: string) {
   return assignments
 }
 
-export async function markComplete(userId: string, challengeId: string) {
-  const today = TODAY()
+export async function markComplete(userId: string, challengeId: string, tzOffsetMin = 0) {
+  const today = startOfUserDay(tzOffsetMin)
 
   const assignment = await prisma.userChallenge.findFirst({
     where: { userId, challengeId, assignedDate: today },
@@ -135,16 +138,15 @@ export async function markComplete(userId: string, challengeId: string) {
     }
   })
 
-  const newBadge = await updateStreak(userId)
+  const newBadge = await updateStreak(userId, tzOffsetMin)
   return { success: true, impact, newBadge }
 }
 
 const STREAK_MILESTONES = [1, 3, 7, 30, 90, 180, 270, 365]
 
-async function updateStreak(userId: string) {
-  const yesterday = new Date()
-  yesterday.setDate(yesterday.getDate() - 1)
-  yesterday.setHours(0, 0, 0, 0)
+async function updateStreak(userId: string, tzOffsetMin = 0) {
+  const yesterday = startOfUserDay(tzOffsetMin)
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1)
 
   const yesterdayRecord = await prisma.impact.findUnique({
     where: { userId_date: { userId, date: yesterday } }
