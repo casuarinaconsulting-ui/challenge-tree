@@ -378,31 +378,36 @@ const challenges = [
 async function main() {
   console.log('Seeding challenges...')
 
-  const count = await prisma.challenge.count()
-  if (count > 0) {
-    console.log(`Already seeded (${count} challenges). Clearing and re-seeding...`)
-    await prisma.challenge.deleteMany({})
+  // Additive seed: only insert challenges whose titles aren't already present.
+  // Never delete — deleting breaks when users already reference challenges
+  // (FK RESTRICT) and wipes the live pool. This is idempotent and safe to run
+  // on every boot: once the full set exists, it's a cheap no-op.
+  const existing = await prisma.challenge.findMany({ select: { title: true } })
+  const existingTitles = new Set(existing.map(c => c.title))
+  const toCreate = challenges.filter(c => !existingTitles.has(c.title))
+
+  if (toCreate.length === 0) {
+    console.log(`Challenge pool complete (${existing.length} present). Skipping.`)
+  } else {
+    await prisma.challenge.createMany({
+      data: toCreate.map(c => ({
+        title:           c.title,
+        category:        c.category as any,
+        difficulty:      c.difficulty,
+        timeEstimate:    c.timeEstimate,
+        costLevel:       c.costLevel,
+        description:     c.description,
+        instructions:    c.instructions,
+        impactEstimate:  c.impactEstimate,
+        educationalText: c.educationalText,
+        tips:            c.tips,
+        barriers:        c.barriers,
+        region:          c.region,
+        isActive:        true,
+      }))
+    })
+    console.log(`Added ${toCreate.length} missing challenges (now ${existing.length + toCreate.length} total).`)
   }
-
-  await prisma.challenge.createMany({
-    data: challenges.map(c => ({
-      title:           c.title,
-      category:        c.category as any,
-      difficulty:      c.difficulty,
-      timeEstimate:    c.timeEstimate,
-      costLevel:       c.costLevel,
-      description:     c.description,
-      instructions:    c.instructions,
-      impactEstimate:  c.impactEstimate,
-      educationalText: c.educationalText,
-      tips:            c.tips,
-      barriers:        c.barriers,
-      region:          c.region,
-      isActive:        true,
-    }))
-  })
-
-  console.log(`Seeded ${challenges.length} challenges.`)
 
   // ── Streak badges ─────────────────────────────────────────────────────────
   const STREAK_BADGES = [
