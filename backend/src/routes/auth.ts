@@ -7,12 +7,13 @@ import { prisma } from '../lib/prisma'
 const router = Router()
 
 const registerSchema = z.object({
-  email:    z.string().email(),
-  name:     z.string().min(1).max(100),
-  password: z.string().min(8),
-  location: z.string().optional(),
-  country:  z.string().optional(),
-  language: z.string().default('en'),
+  email:       z.string().email(),
+  name:        z.string().min(1).max(100),
+  password:    z.string().min(8),
+  location:    z.string().optional(),
+  country:     z.string().optional(),
+  language:    z.string().default('en'),
+  preferences: z.record(z.unknown()).optional(),
 })
 
 const loginSchema = z.object({
@@ -29,14 +30,14 @@ router.post('/register', async (req: Request, res: Response) => {
     const parsed = registerSchema.safeParse(req.body)
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() })
 
-    const { email, name, password, location, country, language } = parsed.data
+    const { email, name, password, location, country, language, preferences } = parsed.data
 
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) return res.status(409).json({ error: 'Email already registered' })
 
     const passwordHash = await bcrypt.hash(password, 12)
     const user = await prisma.user.create({
-      data: { email, name, passwordHash, location, country, language },
+      data: { email, name, passwordHash, location, country, language, ...(preferences ? { preferences } : {}) },
       select: { id: true, email: true, name: true, createdAt: true }
     })
 

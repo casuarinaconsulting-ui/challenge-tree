@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import api from '../utils/api'
 import Wordmark from '../components/Wordmark'
+import { ECOSYSTEMS, getEcosystem } from '../utils/ecosystems'
 
 function RegisterWave() {
   return (
@@ -15,9 +16,10 @@ function RegisterWave() {
 }
 
 export default function RegisterPage() {
-  const [form, setForm]       = useState({ name: '', email: '', password: '', country: '' })
-  const [error, setError]     = useState('')
-  const [loading, setLoading] = useState(false)
+  const [form, setForm]             = useState({ name: '', email: '', password: '', country: '' })
+  const [ecosystem, setEcosystem]   = useState<string | null>(null)
+  const [error, setError]           = useState('')
+  const [loading, setLoading]       = useState(false)
   const setAuth  = useAuthStore(s => s.setAuth)
   const navigate = useNavigate()
 
@@ -29,7 +31,12 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
     try {
-      const { data } = await api.post('/auth/register', form)
+      // If user didn't pick, assign deterministically from their email
+      const chosenEcosystem = ecosystem ?? getEcosystem(undefined, form.email).id
+      const { data } = await api.post('/auth/register', {
+        ...form,
+        preferences: { ecosystem: chosenEcosystem },
+      })
       setAuth(data.user, data.token)
       navigate('/')
     } catch (err: any) {
@@ -77,7 +84,7 @@ export default function RegisterPage() {
         <RegisterWave />
       </div>
 
-      {/* ── Form — frosted glass card ── */}
+      {/* ── Form ── */}
       <div style={{ padding: '28px 20px 48px' }}>
         <div className="card-3d animate-slide-up" style={{
           background: 'rgba(255,255,255,0.88)',
@@ -96,10 +103,10 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit}>
             {[
-              { key: 'name',     label: 'Full name',   type: 'text',     required: true  },
-              { key: 'email',    label: 'Email',        type: 'email',    required: true  },
-              { key: 'password', label: 'Password',     type: 'password', required: true  },
-              { key: 'country',  label: 'Country (optional)', type: 'text', required: false },
+              { key: 'name',     label: 'Full name',          type: 'text',     required: true  },
+              { key: 'email',    label: 'Email',               type: 'email',    required: true  },
+              { key: 'password', label: 'Password',            type: 'password', required: true  },
+              { key: 'country',  label: 'Country (optional)',  type: 'text',     required: false },
             ].map(f => (
               <div key={f.key} style={{ marginBottom: 22 }}>
                 <label style={{
@@ -125,6 +132,59 @@ export default function RegisterPage() {
                 />
               </div>
             ))}
+
+            {/* ── Ecosystem picker ── */}
+            <div style={{ marginBottom: 24 }}>
+              <label style={{
+                display: 'block', fontSize: 10.5,
+                fontFamily: "'Oswald', sans-serif", letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: '#2d6a4f', marginBottom: 4,
+              }}>
+                Your ecosystem
+              </label>
+              <p style={{ fontSize: 11.5, color: '#888', marginBottom: 12, lineHeight: 1.5 }}>
+                Choose the ecosystem that represents you — or skip and we'll pick one.
+              </p>
+              <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8,
+              }}>
+                {ECOSYSTEMS.map(eco => {
+                  const selected = ecosystem === eco.id
+                  return (
+                    <button
+                      key={eco.id}
+                      type="button"
+                      onClick={() => setEcosystem(selected ? null : eco.id)}
+                      style={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'center',
+                        gap: 4, padding: '10px 4px', borderRadius: 12, cursor: 'pointer',
+                        border: selected ? '2px solid #2d6a4f' : '2px solid transparent',
+                        background: selected ? 'rgba(45,106,79,0.10)' : 'rgba(0,0,0,0.035)',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <span style={{ fontSize: 22, lineHeight: 1 }}>{eco.emoji}</span>
+                      <span style={{
+                        fontSize: 9, color: selected ? '#1b4332' : '#666',
+                        fontFamily: "'Oswald', sans-serif", letterSpacing: '0.05em',
+                        textAlign: 'center', lineHeight: 1.2,
+                        fontWeight: selected ? 600 : 400,
+                      }}>
+                        {eco.name}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+              {!ecosystem && (
+                <p style={{
+                  fontSize: 10.5, color: '#aaa', marginTop: 8, textAlign: 'center',
+                  fontStyle: 'italic',
+                }}>
+                  None selected — we'll surprise you ✨
+                </p>
+              )}
+            </div>
 
             {error && (
               <p style={{ color: '#b85c38', fontSize: 13, marginBottom: 16, fontStyle: 'italic' }}>

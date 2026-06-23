@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import api from '../utils/api'
 import BottomNav from '../components/BottomNav'
+import { getEcosystem } from '../utils/ecosystems'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -17,6 +18,11 @@ export default function ProfilePage() {
     queryKey: ['badges'],
     queryFn: () => api.get('/badges').then(r => r.data),
   })
+
+  const ecosystem = getEcosystem(
+    (profile?.preferences as any)?.ecosystem,
+    profile?.id ?? profile?.email
+  )
 
   return (
     <div className="min-h-screen pb-32" style={{
@@ -46,14 +52,23 @@ export default function ProfilePage() {
               background: 'conic-gradient(#c8952a, #52b788, #c8952a)',
               animation: 'floatSlow 4s ease-in-out infinite',
             }} />
-            <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
+            <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
               style={{ background: 'var(--green-mid)', position: 'relative' }}>
-              {profile?.name?.[0] ?? '?'}
+              {isLoading ? '…' : ecosystem.emoji}
             </div>
           </div>
           <div>
             <h1 className="text-xl font-bold text-white">{isLoading ? '…' : profile?.name}</h1>
             <p className="text-sm" style={{ color: '#95d5b2' }}>{profile?.email}</p>
+            {!isLoading && (
+              <p style={{
+                fontSize: 10.5, color: 'rgba(149,213,178,0.65)',
+                fontFamily: "'Oswald', sans-serif", letterSpacing: '0.12em',
+                textTransform: 'uppercase', marginTop: 3,
+              }}>
+                {ecosystem.name}
+              </p>
+            )}
           </div>
         </div>
       </div>
