@@ -135,11 +135,11 @@ export async function markComplete(userId: string, challengeId: string) {
     }
   })
 
-  // Update streak
-  await updateStreak(userId)
-
-  return { success: true, impact }
+  const newBadge = await updateStreak(userId)
+  return { success: true, impact, newBadge }
 }
+
+const STREAK_MILESTONES = [1, 3, 7, 30, 90, 180, 270, 365]
 
 async function updateStreak(userId: string) {
   const yesterday = new Date()
@@ -151,7 +151,7 @@ async function updateStreak(userId: string) {
   })
 
   const user = await prisma.user.findUnique({ where: { id: userId } })
-  if (!user) return
+  if (!user) return null
 
   const newStreak = yesterdayRecord ? user.streakCount + 1 : 1
   await prisma.user.update({
@@ -162,4 +162,21 @@ async function updateStreak(userId: string) {
       lastActive:    new Date()
     }
   })
+
+  if (!STREAK_MILESTONES.includes(newStreak)) return null
+
+  const badge = await prisma.badge.findFirst({
+    where: { requirement: { path: ['threshold'], equals: newStreak } }
+  })
+  if (!badge) return null
+
+  const already = await prisma.userBadge.findUnique({
+    where: { userId_badgeId: { userId, badgeId: badge.id } }
+  })
+  if (already) return null
+
+  await prisma.userBadge.create({ data: { userId, badgeId: badge.id } })
+
+  const req = badge.requirement as { threshold: number; level: number }
+  return { id: badge.id, name: badge.name, icon: badge.icon, description: badge.description, level: req.level }
 }

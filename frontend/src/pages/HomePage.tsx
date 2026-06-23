@@ -21,6 +21,26 @@ const CATEGORY_CONFIG: Record<string, { bg: string; label: string; emoji: string
   WELLBEING:        { bg: '#6aaa5a', label: 'Wellbeing',        emoji: '🌱' },
 }
 
+// Badge definitions — mirrors the backend seed, used for current-level display
+const BADGE_MILESTONES = [
+  { threshold: 1,   level: 1, name: 'Siberian Tiger',     icon: '🐯' },
+  { threshold: 3,   level: 2, name: 'Snow Leopard',       icon: '🐆' },
+  { threshold: 7,   level: 3, name: 'African Wild Dog',   icon: '🐕' },
+  { threshold: 30,  level: 4, name: 'Amur Leopard',       icon: '🐅' },
+  { threshold: 90,  level: 5, name: 'Sumatran Orangutan', icon: '🦧' },
+  { threshold: 180, level: 6, name: 'Javan Rhinoceros',   icon: '🦏' },
+  { threshold: 270, level: 7, name: 'Vaquita',            icon: '🐬' },
+  { threshold: 365, level: 8, name: 'Kakapo',             icon: '🦜' },
+]
+
+function getCurrentBadge(streak: number) {
+  return [...BADGE_MILESTONES].reverse().find(b => streak >= b.threshold) ?? null
+}
+
+function getNextBadge(streak: number) {
+  return BADGE_MILESTONES.find(b => streak < b.threshold) ?? null
+}
+
 const DEMO_CHALLENGES = [
   {
     id: 'demo-1', isCompleted: false,
@@ -58,6 +78,127 @@ function HomeWave() {
   )
 }
 
+interface BadgeUnlock {
+  name: string
+  icon: string
+  description: string
+  level: number
+}
+
+function BadgeUnlockModal({ badge, onClose }: { badge: BadgeUnlock; onClose: () => void }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(10,28,18,0.88)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '24px',
+        backdropFilter: 'blur(12px)',
+        animation: 'fadeIn 0.3s ease',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: 'linear-gradient(145deg, #1b4332, #0d2b1f)',
+          borderRadius: 24,
+          padding: '36px 28px 32px',
+          maxWidth: 340,
+          width: '100%',
+          textAlign: 'center',
+          border: '1px solid rgba(82,183,136,0.3)',
+          boxShadow: '0 0 60px rgba(82,183,136,0.18), 0 24px 48px rgba(0,0,0,0.5)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Glow orbs */}
+        <div style={{
+          position: 'absolute', top: -40, right: -40, width: 160, height: 160,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(200,149,42,0.22) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: -30, left: -30, width: 120, height: 120,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(82,183,136,0.18) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Header label */}
+        <div style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: '0.25em',
+          textTransform: 'uppercase', color: '#c8952a', marginBottom: 16,
+        }}>
+          Badge Unlocked
+        </div>
+
+        {/* Species emoji */}
+        <div style={{
+          fontSize: 72, lineHeight: 1, marginBottom: 12,
+          filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
+          animation: 'badgePop 0.5s cubic-bezier(0.34,1.56,0.64,1)',
+        }}>
+          {badge.icon}
+        </div>
+
+        {/* Level chip */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          background: 'rgba(200,149,42,0.15)', border: '1px solid rgba(200,149,42,0.35)',
+          borderRadius: 999, padding: '4px 14px', marginBottom: 12,
+        }}>
+          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, color: '#c8952a', letterSpacing: '0.12em' }}>
+            LEVEL {badge.level}
+          </span>
+        </div>
+
+        {/* Species name */}
+        <h2 style={{
+          fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 28,
+          color: '#fff', margin: '0 0 12px', lineHeight: 1.15,
+        }}>
+          {badge.name}
+        </h2>
+
+        {/* Description */}
+        <p style={{
+          fontSize: 13.5, color: 'rgba(149,213,178,0.85)', lineHeight: 1.6,
+          margin: '0 0 28px',
+        }}>
+          {badge.description}
+        </p>
+
+        {/* Dismiss */}
+        <button
+          onClick={onClose}
+          style={{
+            width: '100%', padding: '14px 0', borderRadius: 14,
+            border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(135deg, #52b788 0%, #2d6a4f 100%)',
+            color: '#fff', fontFamily: "'Oswald', sans-serif",
+            fontSize: 13, fontWeight: 500, letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            boxShadow: '0 6px 20px rgba(82,183,136,0.35)',
+          }}
+        >
+          Keep going 🌱
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes badgePop {
+          from { transform: scale(0.4) rotate(-15deg); opacity: 0 }
+          to   { transform: scale(1) rotate(0deg);    opacity: 1 }
+        }
+      `}</style>
+    </div>
+  )
+}
+
 export default function HomePage() {
   const user     = useAuthStore(s => s.user)
   const logout   = useAuthStore(s => s.logout)
@@ -73,6 +214,20 @@ export default function HomePage() {
     enabled: !isDemo,
     retry: false,
   })
+
+  // Fetch profile to get streakCount + currentBadge
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
+    queryFn: () => api.get('/user/profile').then(r => r.data),
+    enabled: !isDemo,
+    staleTime: 30_000,
+  })
+
+  const streakCount  = profile?.streakCount ?? 0
+  const currentBadge = getCurrentBadge(streakCount)
+  const nextBadge    = getNextBadge(streakCount)
+
+  const [badgeUnlock, setBadgeUnlock] = useState<BadgeUnlock | null>(null)
 
   useEffect(() => {
     const status = (error as any)?.response?.status
@@ -102,7 +257,6 @@ export default function HomePage() {
       if (challengeId.startsWith('demo-')) {
         setDemoCompleted(prev => {
           const next = new Set(prev).add(challengeId)
-          // Save completed IDs + their categories so ImpactPage can calculate numbers
           const withCategories = displayChallenges
             .filter((uc: any) => next.has(uc.id))
             .map((uc: any) => ({ id: uc.id, category: uc.challenge.category }))
@@ -113,7 +267,13 @@ export default function HomePage() {
       }
       return api.post(`/challenges/${challengeId}/complete`)
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['daily-challenges'] }),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['daily-challenges'] })
+      qc.invalidateQueries({ queryKey: ['profile'] })
+      if (data?.data?.newBadge) {
+        setBadgeUnlock(data.data.newBadge)
+      }
+    },
   })
 
   return (
@@ -124,6 +284,11 @@ export default function HomePage() {
         #f5efe6
       `,
     }}>
+
+      {/* Badge unlock modal */}
+      {badgeUnlock && (
+        <BadgeUnlockModal badge={badgeUnlock} onClose={() => setBadgeUnlock(null)} />
+      )}
 
       {/* ── Header ── */}
       <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
@@ -161,6 +326,49 @@ export default function HomePage() {
             Good {getTimeOfDay()}, {user?.name?.split(' ')[0]}
           </p>
 
+          {/* Streak badge row */}
+          {!isDemo && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              {currentBadge ? (
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 7,
+                  background: 'rgba(200,149,42,0.18)', border: '1px solid rgba(200,149,42,0.38)',
+                  borderRadius: 999, padding: '5px 13px 5px 9px',
+                }}>
+                  <span style={{ fontSize: 17, lineHeight: 1 }}>{currentBadge.icon}</span>
+                  <span style={{
+                    fontFamily: "'Oswald', sans-serif", fontSize: 11.5,
+                    color: '#e8c97a', letterSpacing: '0.1em', textTransform: 'uppercase',
+                  }}>
+                    Lv.{currentBadge.level} {currentBadge.name}
+                  </span>
+                </div>
+              ) : (
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.13)',
+                  borderRadius: 999, padding: '5px 13px',
+                }}>
+                  <span style={{
+                    fontFamily: "'Oswald', sans-serif", fontSize: 11,
+                    color: 'rgba(255,255,255,0.45)', letterSpacing: '0.1em',
+                  }}>
+                    Complete a challenge to earn your first badge
+                  </span>
+                </div>
+              )}
+
+              {nextBadge && streakCount > 0 && (
+                <span style={{
+                  fontFamily: "'Oswald', sans-serif", fontSize: 10,
+                  color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em',
+                }}>
+                  {nextBadge.threshold - streakCount}d to {nextBadge.icon}
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Progress dots */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {[0, 1, 2].map(i => (
@@ -176,6 +384,15 @@ export default function HomePage() {
             }}>
               {completedCount}/3 today
             </span>
+            {!isDemo && streakCount > 0 && (
+              <span style={{
+                marginLeft: 'auto', fontSize: 11,
+                fontFamily: "'Oswald', sans-serif", letterSpacing: '0.08em',
+                color: '#52b788',
+              }}>
+                🔥 {streakCount} day streak
+              </span>
+            )}
           </div>
         </div>
 

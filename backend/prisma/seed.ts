@@ -403,6 +403,27 @@ async function main() {
   })
 
   console.log(`Seeded ${challenges.length} challenges.`)
+
+  // ── Streak badges ─────────────────────────────────────────────────────────
+  const STREAK_BADGES = [
+    { name: 'Siberian Tiger',      icon: '🐯', level: 1, threshold: 1,   description: '~500 remain in the wild. Your first day of action — every journey begins with a single step.' },
+    { name: 'Snow Leopard',        icon: '🐆', level: 2, threshold: 3,   description: '~4,000 remain. Three days in — you\'re finding your rhythm, like the ghost of the mountains.' },
+    { name: 'African Wild Dog',    icon: '🐕', level: 3, threshold: 7,   description: '~6,000 remain. One full week. The most cooperative hunter on Earth never misses a day — nor do you.' },
+    { name: 'Amur Leopard',        icon: '🐅', level: 4, threshold: 30,  description: 'Fewer than 100 remain. A full month of daily action — you are among the rarest.' },
+    { name: 'Sumatran Orangutan',  icon: '🦧', level: 5, threshold: 90,  description: '~14,000 remain. Three months. The forest you\'re growing, one challenge at a time, is real.' },
+    { name: 'Javan Rhinoceros',    icon: '🦏', level: 6, threshold: 180, description: 'Only ~60 remain. Six months of unbroken commitment. You are, by any measure, extraordinary.' },
+    { name: 'Vaquita',             icon: '🐬', level: 7, threshold: 270, description: 'Fewer than 10 remain — the rarest marine mammal on Earth. Nine months. Words fall short.' },
+    { name: 'Kakapo',              icon: '🦜', level: 8, threshold: 365, description: '~250 remain. One full year of daily sustainable action. You are one in a million — literally.' },
+  ]
+
+  for (const b of STREAK_BADGES) {
+    await prisma.badge.upsert({
+      where: { name: b.name },
+      update: { description: b.description, icon: b.icon, requirement: { type: 'streak', threshold: b.threshold, level: b.level } },
+      create: { name: b.name, description: b.description, icon: b.icon, requirement: { type: 'streak', threshold: b.threshold, level: b.level } },
+    })
+  }
+  console.log(`Seeded ${STREAK_BADGES.length} streak badges.`)
 }
 
 main()

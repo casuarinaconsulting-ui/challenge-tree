@@ -24,11 +24,21 @@ router.get('/profile', authenticate, async (req: AuthRequest, res: Response) => 
       id: true, email: true, name: true, location: true, country: true,
       language: true, incomeLevel: true, abilityLevel: true,
       timeAvailable: true, motivations: true, preferences: true,
-      streakCount: true, longestStreak: true, lastActive: true, createdAt: true
+      streakCount: true, longestStreak: true, lastActive: true, createdAt: true,
+      userBadges: {
+        include: { badge: true },
+        orderBy: { earnedAt: 'desc' },
+      },
     }
   })
   if (!user) return res.status(404).json({ error: 'User not found' })
-  res.json(user)
+
+  // Attach the highest earned streak badge as currentBadge
+  const topBadge = user.userBadges
+    .map(ub => ({ ...ub.badge, earnedAt: ub.earnedAt, level: (ub.badge.requirement as any).level as number }))
+    .sort((a, b) => b.level - a.level)[0] ?? null
+
+  res.json({ ...user, currentBadge: topBadge })
 })
 
 router.put('/profile', authenticate, async (req: AuthRequest, res: Response) => {
