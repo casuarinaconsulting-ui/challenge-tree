@@ -794,12 +794,19 @@ export default function ImpactPage() {
     retry: false,
   })
 
-  // Calculate impact from localStorage completions (demo + offline fallback)
+  // Calculate impact from localStorage completions (demo + offline fallback).
+  // Stored as { date, ids, items } and scoped to the local day, so it resets
+  // at local midnight in step with the home screen.
   const localImpact = useMemo(() => {
     try {
       const raw = localStorage.getItem('challenge-tree-completions')
       if (!raw) return null
-      const completions: { id: string; category: string }[] = JSON.parse(raw)
+      const parsed = JSON.parse(raw)
+      const today = new Date().toLocaleDateString('en-CA')
+      // Support both the new {date, items} shape and the legacy plain array
+      const completions: { id: string; category: string }[] = Array.isArray(parsed)
+        ? parsed
+        : (parsed?.date === today && Array.isArray(parsed.items) ? parsed.items : [])
       if (!completions.length) return null
       let co2 = 0, water = 0, waste = 0
       completions.forEach(({ category }) => {

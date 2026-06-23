@@ -312,12 +312,35 @@ export default function HomePage() {
 
   const STORAGE_KEY = 'challenge-tree-completions'
 
+  // Demo/local completions are scoped to the user's LOCAL calendar date so they
+  // reset at local midnight, exactly like real challenges do on the backend.
   const [demoCompleted, setDemoCompleted] = useState<Set<string>>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      return saved ? new Set(JSON.parse(saved)) : new Set()
-    } catch { return new Set() }
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+      if (saved && saved.date === localDateKey() && Array.isArray(saved.ids)) {
+        return new Set<string>(saved.ids)
+      }
+    } catch { /* ignore */ }
+    return new Set()
   })
+
+  // Auto-reset when the local day rolls over while the app is left open
+  // (e.g. a PWA running overnight). Checks once a minute; on a new local date
+  // it clears local completions and refetches today's challenges + profile.
+  useEffect(() => {
+    let currentDay = localDateKey()
+    const iv = setInterval(() => {
+      const today = localDateKey()
+      if (today !== currentDay) {
+        currentDay = today
+        setDemoCompleted(new Set())
+        localStorage.removeItem(STORAGE_KEY)
+        qc.invalidateQueries({ queryKey: ['daily-challenges'] })
+        qc.invalidateQueries({ queryKey: ['profile'] })
+      }
+    }, 60_000)
+    return () => clearInterval(iv)
+  }, [qc])
 
   const completedCount = displayChallenges.filter((uc: any) =>
     uc.isCompleted || demoCompleted.has(uc.id)
@@ -328,10 +351,12 @@ export default function HomePage() {
       if (challengeId.startsWith('demo-')) {
         setDemoCompleted(prev => {
           const next = new Set(prev).add(challengeId)
-          const withCategories = displayChallenges
+          const items = displayChallenges
             .filter((uc: any) => next.has(uc.id))
             .map((uc: any) => ({ id: uc.id, category: uc.challenge.category }))
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(withCategories))
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            date: localDateKey(), ids: [...next], items,
+          }))
           return next
         })
         return Promise.resolve(null as any)
@@ -628,4 +653,9 @@ export default function HomePage() {
 function getTimeOfDay() {
   const h = new Date().getHours()
   return h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'
+}
+
+// User's local calendar date as YYYY-MM-DD (en-CA gives ISO-like format)
+function localDateKey() {
+  return new Date().toLocaleDateString('en-CA')
 }
