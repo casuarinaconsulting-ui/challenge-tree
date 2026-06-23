@@ -31,7 +31,7 @@ export default function BottomNav() {
               paddingTop: 0, paddingBottom: 0,
             }}
           >
-            {/* Active pill — slides in at top edge */}
+            {/* Active pill, slides in at top edge */}
             <div style={{
               width: active ? 32 : 0,
               height: 3,

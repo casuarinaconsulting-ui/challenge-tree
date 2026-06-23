@@ -4,7 +4,7 @@ import { authenticate, AuthRequest } from '../middleware/auth'
 
 const router = Router()
 
-// Public — collective impact across all users (used on the login screen).
+// Public, collective impact across all users (used on the login screen).
 // Cached in memory for 60s: it's hit on every login and changes slowly, so
 // this avoids a DB aggregate on the hot path.
 let globalCache: { at: number; data: any } | null = null

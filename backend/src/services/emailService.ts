@@ -16,7 +16,7 @@ function createTransporter() {
 export async function sendWelcomeEmail(to: string, name: string): Promise<void> {
   const transporter = createTransporter()
   if (!transporter) {
-    console.log('[email] EMAIL_USER/EMAIL_PASS not set — skipping welcome email')
+    console.log('[email] EMAIL_USER/EMAIL_PASS not set, skipping welcome email')
     return
   }
 
@@ -65,7 +65,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
               </p>
 
               <p style="font-size:15px;color:#374151;line-height:1.75;margin:0 0 20px;">
-                Challenge Tree is designed to make sustainability <em>practical, achievable, and even fun</em>. Each day, you'll receive three challenges — simple actions that fit into your life, wherever you are and whatever your circumstances. Over time, these small steps add up to meaningful impact.
+                Challenge Tree is designed to make sustainability <em>practical, achievable, and even fun</em>. Each day, you'll receive three challenges, simple actions that fit into your life, wherever you are and whatever your circumstances. Over time, these small steps add up to meaningful impact.
               </p>
 
               <!-- Callout box -->
@@ -73,7 +73,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
                 <tr>
                   <td style="background:#f0faf4;border-left:4px solid #52b788;border-radius:0 12px 12px 0;padding:18px 22px;">
                     <p style="font-size:14px;color:#1b4332;line-height:1.7;margin:0;font-style:italic;">
-                      We hope this becomes more than just an app for you. We hope it becomes a daily reminder that you are part of something bigger — a community of people choosing to act, learn, and grow together.
+                      We hope this becomes more than just an app for you. We hope it becomes a daily reminder that you are part of something bigger, a community of people choosing to act, learn, and grow together.
                     </p>
                   </td>
                 </tr>
@@ -157,9 +157,9 @@ Thank you for signing up for Challenge Tree.
 
 We know the climate crisis can feel overwhelming. It's easy to think that individual actions don't matter, that the scale of the problem is too large for one person to make a difference. But that's simply not true. Every mindful choice, every small shift in behaviour, and every conversation you start adds to a wave of collective change.
 
-Challenge Tree is designed to make sustainability practical, achievable, and even fun. Each day, you'll receive three challenges — simple actions that fit into your life, wherever you are and whatever your circumstances. Over time, these small steps add up to meaningful impact.
+Challenge Tree is designed to make sustainability practical, achievable, and even fun. Each day, you'll receive three challenges, simple actions that fit into your life, wherever you are and whatever your circumstances. Over time, these small steps add up to meaningful impact.
 
-We hope this becomes more than just an app for you. We hope it becomes a daily reminder that you are part of something bigger — a community of people choosing to act, learn, and grow together.
+We hope this becomes more than just an app for you. We hope it becomes a daily reminder that you are part of something bigger, a community of people choosing to act, learn, and grow together.
 
 Share Challenge Tree with your friends, family, and colleagues. The more of us who take part, the greater our collective impact.
 
@@ -175,7 +175,7 @@ Casuarina Consulting
   await transporter.sendMail({
     from: `"Challenge Tree" <${process.env.EMAIL_USER}>`,
     to,
-    subject: 'Welcome to Challenge Tree – Your Daily Sustainability Journey Begins',
+    subject: 'Welcome to Challenge Tree, Your Daily Sustainability Journey Begins',
     text,
     html,
   })
@@ -186,7 +186,7 @@ Casuarina Consulting
 export async function sendPasswordResetEmail(to: string, name: string, tempPassword: string): Promise<void> {
   const transporter = createTransporter()
   if (!transporter) {
-    console.log('[email] EMAIL_USER/EMAIL_PASS not set — skipping reset email')
+    console.log('[email] EMAIL_USER/EMAIL_PASS not set, skipping reset email')
     return
   }
 
@@ -263,7 +263,7 @@ export async function sendPasswordResetEmail(to: string, name: string, tempPassw
               </table>
 
               <p style="font-size:13px;color:#9ca3af;line-height:1.7;margin:24px 0 0;">
-                If you didn't request this, you can safely ignore this email — but we'd recommend signing in and changing your password as a precaution. Questions? Reach us at
+                If you didn't request this, you can safely ignore this email, but we'd recommend signing in and changing your password as a precaution. Questions? Reach us at
                 <a href="mailto:casuarinaconsulting@gmail.com" style="color:#2d6a4f;">casuarinaconsulting@gmail.com</a>.
               </p>
             </td>
@@ -299,7 +299,7 @@ What to do next:
 2. Go to your Profile page.
 3. Choose "Change Password" and set a new password you'll remember.
 
-If you didn't request this, you can safely ignore this email — but we'd recommend signing in and changing your password as a precaution.
+If you didn't request this, you can safely ignore this email, but we'd recommend signing in and changing your password as a precaution.
 
 Questions? Reach us at casuarinaconsulting@gmail.com.
 

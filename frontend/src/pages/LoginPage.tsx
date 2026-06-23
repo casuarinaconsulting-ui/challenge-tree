@@ -148,7 +148,7 @@ export default function LoginPage() {
   useEffect(() => {
     api.get('/impact/global')
       .then(r => setGlobal(r.data))
-      .catch(() => {/* silent — login still works without the graphic */})
+      .catch(() => {/* silent, login still works without the graphic */})
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -212,12 +212,12 @@ export default function LoginPage() {
           animation: 'orbDrift 10s ease-in-out infinite reverse', pointerEvents: 'none',
         }} />
 
-        {/* Botanical illustration — top right */}
+        {/* Botanical illustration, top right */}
         <div style={{ position: 'absolute', top: 0, right: 16, zIndex: 1 }}>
           <BotanicalAccent />
         </div>
 
-        {/* Terracotta accent dots — top left */}
+        {/* Terracotta accent dots, top left */}
         <div style={{ position: 'absolute', top: 28, left: 24, display: 'flex', flexDirection: 'column', gap: 5, zIndex: 1 }}>
           {[0,1,2].map(i => (
             <div key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: '#b85c38', opacity: 0.75 }} />
@@ -249,7 +249,7 @@ export default function LoginPage() {
         <LoginWave />
       </div>
 
-      {/* ── Form section — frosted glass card ── */}
+      {/* ── Form section, frosted glass card ── */}
       <div style={{ padding: '28px 20px 48px' }}>
       <div className="card-3d animate-slide-up" style={{
         background: 'rgba(255,255,255,0.88)',

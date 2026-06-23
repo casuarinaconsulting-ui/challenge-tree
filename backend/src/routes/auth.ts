@@ -51,7 +51,7 @@ router.post('/register', async (req: Request, res: Response) => {
       select: { id: true, email: true, name: true, createdAt: true }
     })
 
-    // Non-blocking — email failure must never prevent registration
+    // Non-blocking, email failure must never prevent registration
     sendWelcomeEmail(user.email, user.name).catch(err =>
       console.error('[email] Welcome email failed:', err.message)
     )

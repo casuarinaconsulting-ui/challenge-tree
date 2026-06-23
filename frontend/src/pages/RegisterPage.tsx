@@ -42,7 +42,7 @@ export default function RegisterPage() {
     } catch (err: any) {
       const responseError = err.response?.data?.error
       if (!responseError) {
-        setError('Connection failed — please check your internet and try again.')
+        setError('Connection failed, please check your internet and try again.')
       } else if (typeof responseError === 'string') {
         setError(responseError)
       } else if (responseError.fieldErrors) {
@@ -153,7 +153,7 @@ export default function RegisterPage() {
                 Your ecosystem
               </label>
               <p style={{ fontSize: 11.5, color: '#888', marginBottom: 12, lineHeight: 1.5 }}>
-                Choose the ecosystem that represents you — or skip and we'll pick one.
+                Choose the ecosystem that represents you, or skip and we'll pick one.
               </p>
               <div style={{
                 display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8,
@@ -191,7 +191,7 @@ export default function RegisterPage() {
                   fontSize: 10.5, color: '#aaa', marginTop: 8, textAlign: 'center',
                   fontStyle: 'italic',
                 }}>
-                  None selected — we'll surprise you ✨
+                  None selected, we'll surprise you ✨
                 </p>
               )}
             </div>

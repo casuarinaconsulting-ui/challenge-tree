@@ -45,7 +45,7 @@ export async function getDailyChallenges(userId: string, tzOffsetMin = 0) {
     take: 200,
   })
 
-  // Cycle exhausted — pull from the full pool so the user never runs dry.
+  // Cycle exhausted, pull from the full pool so the user never runs dry.
   // Using a Fisher-Yates shuffle seeded by today's date + userId ensures
   // the cycle order is different every time it restarts.
   if (candidates.length < 3) {
@@ -186,7 +186,7 @@ export async function swapChallenge(userId: string, challengeId: string, tzOffse
       where: { ...profileFilter, id: { notIn: excludeSeen } }, take: 100,
     })
   }
-  // 3) cycle exhausted — anything not in today's current set
+  // 3) cycle exhausted, anything not in today's current set
   if (candidates.length < 1) {
     candidates = await prisma.challenge.findMany({
       where: { ...profileFilter, id: { notIn: keepIds } }, take: 100,

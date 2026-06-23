@@ -23,14 +23,14 @@ export const BADGE_DATA: BadgeData[] = [
     name: 'Snow Leopard', icon: '🐆',
     status: 'Vulnerable', statusColor: '#c8952a',
     population: '~4,000', habitat: 'Central Asian mountains',
-    funFact: 'Known as the "ghost of the mountains," Snow Leopards are so elusive that a researcher can spend years in their habitat without a single sighting. Three days in — you\'re building something real.',
+    funFact: 'Known as the "ghost of the mountains," Snow Leopards are so elusive that a researcher can spend years in their habitat without a single sighting. Three days in, you\'re building something real.',
   },
   {
     threshold: 7, level: 3,
     name: 'African Wild Dog', icon: '🐕',
     status: 'Endangered', statusColor: '#e07b39',
     population: '~6,600', habitat: 'Sub-Saharan Africa',
-    funFact: 'African Wild Dogs have the highest hunt success rate of any large predator on Earth — over 80%. They also care for injured pack members. Seven days: same relentless commitment.',
+    funFact: 'African Wild Dogs have the highest hunt success rate of any large predator on Earth, over 80%. They also care for injured pack members. Seven days: same relentless commitment.',
   },
   {
     threshold: 30, level: 4,
@@ -44,7 +44,7 @@ export const BADGE_DATA: BadgeData[] = [
     name: 'Sumatran Orangutan', icon: '🦧',
     status: 'Critically Endangered', statusColor: '#dc2626',
     population: '~14,000', habitat: 'Sumatra, Indonesia',
-    funFact: 'Sumatran Orangutans share 96.9% of our DNA and have been observed using tools, treating wounds with medicinal plants, and teaching their young for years. Ninety days — you\'re proving our shared capacity for change.',
+    funFact: 'Sumatran Orangutans share 96.9% of our DNA and have been observed using tools, treating wounds with medicinal plants, and teaching their young for years. Ninety days, you\'re proving our shared capacity for change.',
   },
   {
     threshold: 180, level: 6,
@@ -58,14 +58,14 @@ export const BADGE_DATA: BadgeData[] = [
     name: 'Vaquita', icon: '🐬',
     status: 'Critically Endangered', statusColor: '#dc2626',
     population: '<10', habitat: 'Gulf of California',
-    funFact: 'The Vaquita — a tiny porpoise found nowhere else on Earth — may be extinct before most people learn it exists. Nine months of showing up every single day. Words genuinely fall short.',
+    funFact: 'The Vaquita, a tiny porpoise found nowhere else on Earth, may be extinct before most people learn it exists. Nine months of showing up every single day. Words genuinely fall short.',
   },
   {
     threshold: 365, level: 8,
     name: 'Kakapo', icon: '🦜',
     status: 'Critically Endangered', statusColor: '#dc2626',
     population: '~248', habitat: 'New Zealand island sanctuaries',
-    funFact: 'The Kakapo is the world\'s only flightless parrot, the heaviest parrot alive, and possibly the longest-lived bird — up to 90 years. An entire year of daily sustainable action. You are, without qualification, one in a million.',
+    funFact: 'The Kakapo is the world\'s only flightless parrot, the heaviest parrot alive, and possibly the longest-lived bird, up to 90 years. An entire year of daily sustainable action. You are, without qualification, one in a million.',
   },
 ]
 

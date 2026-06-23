@@ -117,7 +117,7 @@ export default function ProfilePage() {
   const currentBadge = getCurrentBadgeData(streak)
   const nextBadge    = getNextBadgeData(streak)
 
-  // Progress towards next badge (0–1)
+  // Progress towards next badge (0-1)
   const prevThreshold = currentBadge?.threshold ?? 0
   const nextThreshold = nextBadge?.threshold ?? (prevThreshold + 1)
   const progress = nextBadge
@@ -353,7 +353,7 @@ export default function ProfilePage() {
               fontFamily: "'Oswald', sans-serif", fontSize: 12,
               color: '#c8952a', letterSpacing: '0.1em',
             }}>
-              🦜 All badges earned — you are extraordinary
+              🦜 All badges earned, you are extraordinary
             </div>
           )}
         </div>
