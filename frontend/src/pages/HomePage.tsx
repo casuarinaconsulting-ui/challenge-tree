@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
 import Wordmark from '../components/Wordmark'
 import BottomNav from '../components/BottomNav'
+import { getCurrentBadgeData, getNextBadgeData, BADGE_DATA } from '../utils/badges'
 
 const CATEGORY_CONFIG: Record<string, { bg: string; label: string; emoji: string }> = {
   ENERGY:           { bg: '#e07b39', label: 'Energy',           emoji: '⚡' },
@@ -21,25 +22,8 @@ const CATEGORY_CONFIG: Record<string, { bg: string; label: string; emoji: string
   WELLBEING:        { bg: '#6aaa5a', label: 'Wellbeing',        emoji: '🌱' },
 }
 
-// Badge definitions — mirrors the backend seed, used for current-level display
-const BADGE_MILESTONES = [
-  { threshold: 1,   level: 1, name: 'Siberian Tiger',     icon: '🐯' },
-  { threshold: 3,   level: 2, name: 'Snow Leopard',       icon: '🐆' },
-  { threshold: 7,   level: 3, name: 'African Wild Dog',   icon: '🐕' },
-  { threshold: 30,  level: 4, name: 'Amur Leopard',       icon: '🐅' },
-  { threshold: 90,  level: 5, name: 'Sumatran Orangutan', icon: '🦧' },
-  { threshold: 180, level: 6, name: 'Javan Rhinoceros',   icon: '🦏' },
-  { threshold: 270, level: 7, name: 'Vaquita',            icon: '🐬' },
-  { threshold: 365, level: 8, name: 'Kakapo',             icon: '🦜' },
-]
-
-function getCurrentBadge(streak: number) {
-  return [...BADGE_MILESTONES].reverse().find(b => streak >= b.threshold) ?? null
-}
-
-function getNextBadge(streak: number) {
-  return BADGE_MILESTONES.find(b => streak < b.threshold) ?? null
-}
+function getCurrentBadge(streak: number) { return getCurrentBadgeData(streak) ?? null }
+function getNextBadge(streak: number)    { return getNextBadgeData(streak) ?? null }
 
 const DEMO_CHALLENGES = [
   {
@@ -85,107 +69,189 @@ interface BadgeUnlock {
   level: number
 }
 
+const CONFETTI_COLORS = ['#52b788','#c8952a','#e8c97a','#95d5b2','#fff','#f4a261','#2a9d8f']
+
+function Confetti() {
+  const pieces = Array.from({ length: 28 }, (_, i) => i)
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+      {pieces.map(i => {
+        const color = CONFETTI_COLORS[i % CONFETTI_COLORS.length]
+        const left   = `${(i * 37 + 7) % 100}%`
+        const delay  = `${(i * 0.13) % 1.4}s`
+        const size   = 6 + (i % 5) * 2
+        const rotate = (i * 47) % 360
+        return (
+          <div key={i} style={{
+            position: 'absolute', top: -20, left,
+            width: size, height: size,
+            background: color,
+            borderRadius: i % 3 === 0 ? '50%' : 2,
+            animation: `confettiFall 1.8s ${delay} ease-in forwards`,
+            transform: `rotate(${rotate}deg)`,
+            opacity: 0.9,
+          }} />
+        )
+      })}
+    </div>
+  )
+}
+
 function BadgeUnlockModal({ badge, onClose }: { badge: BadgeUnlock; onClose: () => void }) {
+  const richData = BADGE_DATA.find(b => b.level === badge.level)
+
   return (
     <div
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, zIndex: 9999,
-        background: 'rgba(10,28,18,0.88)',
+        background: 'rgba(5,18,12,0.92)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '24px',
-        backdropFilter: 'blur(12px)',
-        animation: 'fadeIn 0.3s ease',
+        padding: '20px',
+        backdropFilter: 'blur(16px)',
+        animation: 'fadeIn 0.25s ease',
       }}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'linear-gradient(145deg, #1b4332, #0d2b1f)',
-          borderRadius: 24,
-          padding: '36px 28px 32px',
-          maxWidth: 340,
+          background: 'linear-gradient(160deg, #132b1e 0%, #0a1c12 100%)',
+          borderRadius: 28,
+          padding: '0 0 28px',
+          maxWidth: 360,
           width: '100%',
           textAlign: 'center',
-          border: '1px solid rgba(82,183,136,0.3)',
-          boxShadow: '0 0 60px rgba(82,183,136,0.18), 0 24px 48px rgba(0,0,0,0.5)',
+          border: '1px solid rgba(82,183,136,0.25)',
+          boxShadow: '0 0 80px rgba(82,183,136,0.15), 0 30px 60px rgba(0,0,0,0.6)',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Glow orbs */}
-        <div style={{
-          position: 'absolute', top: -40, right: -40, width: 160, height: 160,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(200,149,42,0.22) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: -30, left: -30, width: 120, height: 120,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(82,183,136,0.18) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
+        <Confetti />
 
-        {/* Header label */}
+        {/* Top colour band */}
         <div style={{
-          fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: '0.25em',
-          textTransform: 'uppercase', color: '#c8952a', marginBottom: 16,
+          background: `linear-gradient(135deg, ${richData?.statusColor ?? '#52b788'}33, transparent)`,
+          borderBottom: `1px solid ${richData?.statusColor ?? '#52b788'}44`,
+          padding: '28px 24px 20px',
+          position: 'relative',
         }}>
-          Badge Unlocked
+          {/* Shimmer */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.04) 50%, transparent 65%)',
+            animation: 'shimmerLine 3s linear infinite',
+          }} />
+
+          {/* "NEW BADGE" pill */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: 'rgba(200,149,42,0.18)', border: '1px solid rgba(200,149,42,0.4)',
+            borderRadius: 999, padding: '4px 14px', marginBottom: 18,
+          }}>
+            <span style={{ fontSize: 8, color: '#c8952a' }}>★</span>
+            <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, color: '#c8952a', letterSpacing: '0.25em' }}>
+              LEVEL {badge.level} UNLOCKED
+            </span>
+            <span style={{ fontSize: 8, color: '#c8952a' }}>★</span>
+          </div>
+
+          {/* Emoji */}
+          <div style={{
+            fontSize: 82, lineHeight: 1, marginBottom: 8,
+            filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.5))',
+            animation: 'badgePop 0.55s cubic-bezier(0.34,1.56,0.64,1)',
+          }}>
+            {badge.icon}
+          </div>
+
+          {/* Species name */}
+          <h2 style={{
+            fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 30,
+            color: '#fff', margin: '0 0 6px', lineHeight: 1.1,
+            textShadow: '0 2px 12px rgba(0,0,0,0.4)',
+          }}>
+            {badge.name}
+          </h2>
+
+          {/* IUCN status */}
+          {richData && (
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              background: `${richData.statusColor}22`,
+              border: `1px solid ${richData.statusColor}55`,
+              borderRadius: 999, padding: '3px 12px', marginTop: 4,
+            }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: richData.statusColor }} />
+              <span style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 10,
+                color: richData.statusColor, letterSpacing: '0.12em',
+              }}>
+                {richData.status.toUpperCase()}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Species emoji */}
-        <div style={{
-          fontSize: 72, lineHeight: 1, marginBottom: 12,
-          filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
-          animation: 'badgePop 0.5s cubic-bezier(0.34,1.56,0.64,1)',
-        }}>
-          {badge.icon}
+        {/* Stats row */}
+        {richData && (
+          <div style={{
+            display: 'flex', justifyContent: 'center', gap: 0,
+            borderBottom: '1px solid rgba(82,183,136,0.12)',
+            margin: '0 0 20px',
+          }}>
+            <div style={{ flex: 1, padding: '14px 8px', borderRight: '1px solid rgba(82,183,136,0.12)' }}>
+              <div style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700,
+                color: richData.statusColor, lineHeight: 1,
+              }}>
+                {richData.population}
+              </div>
+              <div style={{ fontSize: 10, color: 'rgba(149,213,178,0.5)', marginTop: 3, letterSpacing: '0.06em' }}>
+                remaining
+              </div>
+            </div>
+            <div style={{ flex: 1, padding: '14px 8px' }}>
+              <div style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 600,
+                color: '#95d5b2', lineHeight: 1.2,
+              }}>
+                {richData.habitat}
+              </div>
+              <div style={{ fontSize: 10, color: 'rgba(149,213,178,0.5)', marginTop: 3, letterSpacing: '0.06em' }}>
+                habitat
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Fun fact */}
+        <div style={{ padding: '0 24px 22px' }}>
+          <p style={{
+            fontSize: 13, color: 'rgba(149,213,178,0.82)', lineHeight: 1.65,
+            margin: 0, fontStyle: 'italic',
+          }}>
+            "{richData?.funFact ?? badge.description}"
+          </p>
         </div>
 
-        {/* Level chip */}
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          background: 'rgba(200,149,42,0.15)', border: '1px solid rgba(200,149,42,0.35)',
-          borderRadius: 999, padding: '4px 14px', marginBottom: 12,
-        }}>
-          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, color: '#c8952a', letterSpacing: '0.12em' }}>
-            LEVEL {badge.level}
-          </span>
+        {/* CTA */}
+        <div style={{ padding: '0 24px' }}>
+          <button
+            onClick={onClose}
+            style={{
+              width: '100%', padding: '15px 0', borderRadius: 16,
+              border: 'none', cursor: 'pointer',
+              background: 'linear-gradient(135deg, #52b788 0%, #2d6a4f 100%)',
+              color: '#fff', fontFamily: "'Oswald', sans-serif",
+              fontSize: 13, fontWeight: 600, letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              boxShadow: '0 8px 24px rgba(82,183,136,0.4)',
+            }}
+          >
+            Keep protecting them 🌱
+          </button>
         </div>
-
-        {/* Species name */}
-        <h2 style={{
-          fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 28,
-          color: '#fff', margin: '0 0 12px', lineHeight: 1.15,
-        }}>
-          {badge.name}
-        </h2>
-
-        {/* Description */}
-        <p style={{
-          fontSize: 13.5, color: 'rgba(149,213,178,0.85)', lineHeight: 1.6,
-          margin: '0 0 28px',
-        }}>
-          {badge.description}
-        </p>
-
-        {/* Dismiss */}
-        <button
-          onClick={onClose}
-          style={{
-            width: '100%', padding: '14px 0', borderRadius: 14,
-            border: 'none', cursor: 'pointer',
-            background: 'linear-gradient(135deg, #52b788 0%, #2d6a4f 100%)',
-            color: '#fff', fontFamily: "'Oswald', sans-serif",
-            fontSize: 13, fontWeight: 500, letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            boxShadow: '0 6px 20px rgba(82,183,136,0.35)',
-          }}
-        >
-          Keep going 🌱
-        </button>
       </div>
 
       <style>{`
@@ -193,6 +259,11 @@ function BadgeUnlockModal({ badge, onClose }: { badge: BadgeUnlock; onClose: () 
         @keyframes badgePop {
           from { transform: scale(0.4) rotate(-15deg); opacity: 0 }
           to   { transform: scale(1) rotate(0deg);    opacity: 1 }
+        }
+        @keyframes confettiFall {
+          0%   { transform: translateY(0) rotate(0deg);   opacity: 0.9 }
+          80%  { opacity: 0.7 }
+          100% { transform: translateY(520px) rotate(720deg); opacity: 0 }
         }
       `}</style>
     </div>
