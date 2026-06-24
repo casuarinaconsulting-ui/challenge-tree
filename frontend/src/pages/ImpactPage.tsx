@@ -1121,6 +1121,29 @@ export default function ImpactPage() {
         }
       </div>
 
+      {/* How impact is calculated */}
+      <div style={{ padding: '24px 18px 0' }}>
+        <div style={{
+          background: 'rgba(45,106,79,0.06)',
+          border: '1px solid rgba(45,106,79,0.15)',
+          borderRadius: 14, padding: '14px 16px',
+        }}>
+          <p style={{
+            fontFamily: "'Oswald', sans-serif", fontSize: 11.5, letterSpacing: '0.1em',
+            textTransform: 'uppercase', color: '#2d6a4f', margin: '0 0 7px',
+          }}>
+            ⓘ How this is calculated
+          </p>
+          <p style={{ fontSize: 12.5, color: '#566c60', lineHeight: 1.6, margin: 0 }}>
+            Each figure is a conservative, evidence-based estimate of the typical saving from
+            completing that action. Real impact varies with where and how you live, but every
+            number reflects a genuine, achievable saving. Actions that drive change indirectly,
+            like advocacy, learning, and community work, count toward your streak and badges
+            rather than these totals.
+          </p>
+        </div>
+      </div>
+
       <CasuarinaFooter />
       <BottomNav />
 
