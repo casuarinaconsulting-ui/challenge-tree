@@ -173,6 +173,13 @@ export async function swapChallenge(userId: string, challengeId: string, tzOffse
   const user = await prisma.user.findUnique({ where: { id: userId } })
   if (!user) return { error: 'User not found' }
 
+  // One swap per day, total (not per card)
+  const dateKey = today.toISOString().slice(0, 10)
+  const prefs = (user.preferences as Record<string, unknown>) ?? {}
+  if (prefs.lastSwapDate === dateKey) {
+    return { error: 'You can swap one challenge per day. Come back tomorrow.' }
+  }
+
   const profileFilter = {
     isActive:     true,
     costLevel:    user.incomeLevel === 'low' ? { in: ['free', 'low'] } : undefined,
@@ -209,7 +216,14 @@ export async function swapChallenge(userId: string, challengeId: string, tzOffse
     data: { userId, challengeId: pick.id, assignedDate: today },
     include: { challenge: true },
   })
-  return { success: true, userChallenge: created }
+
+  // Record that today's single swap has been used
+  await prisma.user.update({
+    where: { id: userId },
+    data: { preferences: { ...prefs, lastSwapDate: dateKey } as any },
+  })
+
+  return { success: true, userChallenge: created, swapUsed: true }
 }
 
 const STREAK_MILESTONES = [1, 3, 7, 30, 90, 180, 270, 365]

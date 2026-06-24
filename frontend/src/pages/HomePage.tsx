@@ -494,6 +494,14 @@ export default function HomePage() {
   const [detailC, setDetailC] = useState<any | null>(null)
   // Local challenge list for demo mode (so demo "swap" can replace items)
   const [demoList, setDemoList] = useState<any[]>(DEMO_CHALLENGES)
+  // One swap per day, total. Tracked server-side (preferences.lastSwapDate) for
+  // real users and in localStorage for demo; mirrored locally for instant UI.
+  const DEMO_SWAP_KEY = 'challenge-tree-demo-swap'
+  const [swapUsedLocal, setSwapUsedLocal] = useState(false)
+  const swapUsedToday = swapUsedLocal
+    || (isDemo
+      ? (() => { try { return JSON.parse(localStorage.getItem(DEMO_SWAP_KEY) || 'null')?.date === localDateKey() } catch { return false } })()
+      : (profile?.preferences as any)?.lastSwapDate === localDateKey())
 
   useEffect(() => {
     const status = (error as any)?.response?.status
@@ -531,7 +539,9 @@ export default function HomePage() {
       if (today !== currentDay) {
         currentDay = today
         setDemoCompleted(new Set())
+        setSwapUsedLocal(false)
         localStorage.removeItem(STORAGE_KEY)
+        localStorage.removeItem(DEMO_SWAP_KEY)
         qc.invalidateQueries({ queryKey: ['daily-challenges'] })
         qc.invalidateQueries({ queryKey: ['profile'] })
       }
@@ -571,6 +581,7 @@ export default function HomePage() {
 
   const swapMutation = useMutation({
     mutationFn: (challengeId: string) => {
+      if (swapUsedToday) return Promise.resolve(null as any) // guard: one per day
       if (challengeId.startsWith('demo-')) {
         // Demo: replace the tapped item with an alternate not already shown
         setDemoList(prev => {
@@ -579,13 +590,19 @@ export default function HomePage() {
           if (!alt) return prev
           return prev.map(uc => (uc.challenge.id === challengeId ? alt : uc))
         })
+        try { localStorage.setItem(DEMO_SWAP_KEY, JSON.stringify({ date: localDateKey() })) } catch { /* ignore */ }
+        setSwapUsedLocal(true)
         return Promise.resolve(null as any)
       }
       return api.post(`/challenges/${challengeId}/swap`)
     },
     onSuccess: () => {
+      setSwapUsedLocal(true)
       qc.invalidateQueries({ queryKey: ['daily-challenges'] })
+      qc.invalidateQueries({ queryKey: ['profile'] })
     },
+    // If the server rejects (already swapped today), lock the buttons too
+    onError: () => setSwapUsedLocal(true),
   })
 
   return (
@@ -838,7 +855,7 @@ export default function HomePage() {
                       >
                         ⓘ Why it matters
                       </button>
-                      {!isCompleted && (
+                      {!isCompleted && !swapUsedToday && (
                         <button
                           onClick={() => swapMutation.mutate(c.id)}
                           disabled={swapMutation.isPending}
