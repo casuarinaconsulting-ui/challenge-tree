@@ -911,13 +911,27 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <div style={{
-        textAlign: 'center', padding: '24px 0 10px',
-        fontFamily: "'Oswald', sans-serif", fontSize: 12,
-        letterSpacing: '0.18em', textTransform: 'uppercase',
-        color: 'rgba(26,51,40,0.28)',
-      }}>
-        Casuarina Consulting
+      <div style={{ textAlign: 'center', padding: '24px 0 10px' }}>
+        <a
+          href="https://casuarinaconsulting.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: "'Oswald', sans-serif", fontSize: 12,
+            letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: 'rgba(26,51,40,0.45)', textDecoration: 'none',
+            borderBottom: '1px solid rgba(26,51,40,0.18)', paddingBottom: 2,
+          }}
+        >
+          Casuarina Consulting
+        </a>
+        <div style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 11,
+          letterSpacing: '0.16em', textTransform: 'uppercase',
+          color: 'rgba(26,51,40,0.28)', marginTop: 5,
+        }}>
+          casuarinaconsulting.com
+        </div>
       </div>
 
       <BottomNav />
