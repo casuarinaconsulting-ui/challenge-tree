@@ -16,11 +16,88 @@ function RegisterWave() {
   )
 }
 
+function WelcomeModal({ name, onStart }: { name: string; onStart: () => void }) {
+  const first = (name || '').split(' ')[0] || 'there'
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 500,
+      background: 'rgba(8,22,15,0.55)', backdropFilter: 'blur(6px)',
+      display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+      animation: 'fadeIn 0.3s ease',
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        width: '100%', maxWidth: 480, maxHeight: '92vh', overflowY: 'auto',
+        background: 'linear-gradient(160deg, #1b4332 0%, #0d2b1e 100%)',
+        borderRadius: '26px 26px 0 0', border: '1px solid rgba(82,183,136,0.25)',
+        padding: '30px 26px 32px', position: 'relative',
+      }}>
+        <div style={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.25)', margin: '0 auto 22px' }} />
+
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <TreeMark size={62} />
+        </div>
+
+        <h2 style={{
+          fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 26,
+          color: '#fff', textAlign: 'center', margin: '0 0 6px',
+        }}>
+          Welcome, {first}. 🌱
+        </h2>
+        <p style={{
+          textAlign: 'center', color: '#95d5b2', fontSize: 13.5,
+          fontFamily: "'Oswald', sans-serif", letterSpacing: '0.08em',
+          textTransform: 'uppercase', margin: '0 0 22px',
+        }}>
+          You're part of something bigger now
+        </p>
+
+        <div style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.82)', lineHeight: 1.7 }}>
+          <p style={{ margin: '0 0 14px' }}>
+            The climate crisis can feel overwhelming, like individual actions don't matter.
+            They do. Every mindful choice adds to a wave of collective change.
+          </p>
+          <p style={{ margin: '0 0 14px' }}>
+            Each day, Challenge Tre3 gives you <strong style={{ color: '#fff' }}>three simple
+            actions</strong> that fit your life, wherever you are. Small steps that add up to
+            real, measurable impact.
+          </p>
+          <p style={{ margin: '0 0 6px' }}>
+            Share it with friends and family, the more of us who take part, the greater our
+            collective impact. We're honoured to have you with us.
+          </p>
+        </div>
+
+        <button
+          onClick={onStart}
+          style={{
+            width: '100%', padding: '16px 0', borderRadius: 14, border: 'none', cursor: 'pointer',
+            marginTop: 24,
+            background: 'linear-gradient(135deg, #52b788 0%, #2d6a4f 100%)', color: '#fff',
+            fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 14,
+            letterSpacing: '0.14em', textTransform: 'uppercase',
+            boxShadow: '0 8px 24px rgba(82,183,136,0.4)',
+          }}
+        >
+          Start my first challenge →
+        </button>
+
+        <p style={{ textAlign: 'center', fontSize: 11.5, color: 'rgba(149,213,178,0.55)', margin: '16px 0 0', lineHeight: 1.6 }}>
+          Questions or ideas?{' '}
+          <a href="mailto:casuarinaconsulting@gmail.com" style={{ color: '#95d5b2' }}>casuarinaconsulting@gmail.com</a>
+          <br />
+          <a href="https://casuarinaconsulting.com" target="_blank" rel="noopener noreferrer" style={{ color: '#95d5b2' }}>casuarinaconsulting.com</a>
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function RegisterPage() {
   const [form, setForm]             = useState({ name: '', email: '', password: '', country: '' })
   const [ecosystem, setEcosystem]   = useState<string | null>(null)
   const [error, setError]           = useState('')
   const [loading, setLoading]       = useState(false)
+  const [welcomeName, setWelcomeName] = useState<string | null>(null)
   const setAuth  = useAuthStore(s => s.setAuth)
   const navigate = useNavigate()
 
@@ -39,7 +116,7 @@ export default function RegisterPage() {
         preferences: { ecosystem: chosenEcosystem },
       })
       setAuth(data.user, data.token)
-      navigate('/')
+      setWelcomeName(data.user?.name || form.name)
     } catch (err: any) {
       const responseError = err.response?.data?.error
       if (!responseError) {
@@ -65,6 +142,8 @@ export default function RegisterPage() {
         #f5efe6
       `,
     }}>
+
+      {welcomeName && <WelcomeModal name={welcomeName} onStart={() => navigate('/')} />}
 
       {/* ── Header ── */}
       <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
