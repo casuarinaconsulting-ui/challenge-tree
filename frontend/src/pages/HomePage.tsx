@@ -335,6 +335,11 @@ function BadgeUnlockModal({ badge, onClose }: { badge: BadgeUnlock; onClose: () 
   )
 }
 
+// Research/learning actions involve looking things up — recommend Ecosia.
+function isResearchAction(title: string) {
+  return /\b(learn|read|research|understand|explore|discover|find out|look up|watch|calculate|audit)\b/i.test(title || '')
+}
+
 function ChallengeDetailModal({ challenge, onClose }: { challenge: any; onClose: () => void }) {
   const cat = CATEGORY_CONFIG[challenge.category] ?? { bg: '#2d6a4f', label: challenge.category, emoji: '🌍' }
   const impact = challenge.impactEstimate ?? {}
@@ -377,9 +382,31 @@ function ChallengeDetailModal({ challenge, onClose }: { challenge: any; onClose:
         </div>
 
         <div style={{ padding: '20px 22px 28px' }}>
-          <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, margin: '0 0 20px' }}>
+          <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, margin: '0 0 16px' }}>
             {challenge.description}
           </p>
+
+          {/* Ecosia tip — affordable / measurable research path */}
+          {(isResearchAction(challenge.title) || (challenge.costLevel && challenge.costLevel !== 'free')) && (
+            <div style={{
+              background: 'rgba(45,106,79,0.07)', border: '1px solid rgba(45,106,79,0.18)',
+              borderRadius: 12, padding: '12px 14px', margin: '0 0 20px',
+              display: 'flex', gap: 10, alignItems: 'flex-start',
+            }}>
+              <span style={{ fontSize: 17, lineHeight: 1.2 }}>🌱</span>
+              <p style={{ fontSize: 12.5, color: '#3a5a4a', lineHeight: 1.55, margin: 0 }}>
+                {challenge.costLevel && challenge.costLevel !== 'free'
+                  ? <>On a budget? Do your research on{' '}
+                      <a href="https://www.ecosia.org" target="_blank" rel="noopener noreferrer"
+                        style={{ color: '#2d6a4f', fontWeight: 600 }}>Ecosia</a>{' '}
+                      instead — buying makes the biggest difference, but learning still counts and helps plant trees.</>
+                  : <>Do your searching on{' '}
+                      <a href="https://www.ecosia.org" target="_blank" rel="noopener noreferrer"
+                        style={{ color: '#2d6a4f', fontWeight: 600 }}>Ecosia</a>{' '}
+                      — it funds tree planting (about one tree per 45 searches), so even research has real impact.</>}
+              </p>
+            </div>
+          )}
 
           {/* Why it matters */}
           {challenge.educationalText && (

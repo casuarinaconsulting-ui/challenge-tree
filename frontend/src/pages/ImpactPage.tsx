@@ -1137,9 +1137,10 @@ export default function ImpactPage() {
           <p style={{ fontSize: 12.5, color: '#566c60', lineHeight: 1.6, margin: 0 }}>
             Each figure is a conservative, evidence-based estimate of the typical saving from
             completing that action. Real impact varies with where and how you live, but every
-            number reflects a genuine, achievable saving. Actions that drive change indirectly,
-            like advocacy, learning, and community work, count toward your streak and badges
-            rather than these totals.
+            number reflects a genuine, achievable saving. Research and learning count too — done
+            on Ecosia, your searches help fund real tree planting (about one tree per 45 searches).
+            Some actions, like advocacy and community work, build momentum that counts toward your
+            streak and badges rather than these totals.
           </p>
         </div>
       </div>
