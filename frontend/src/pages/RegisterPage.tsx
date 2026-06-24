@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import api from '../utils/api'
 import Wordmark from '../components/Wordmark'
+import TreeMark from '../components/TreeMark'
 import { ECOSYSTEMS, getEcosystem } from '../utils/ecosystems'
 
 function RegisterWave() {
@@ -79,6 +80,9 @@ export default function RegisterPage() {
         }} />
 
         <div style={{ textAlign: 'center', paddingTop: 60, paddingBottom: 28, paddingLeft: 24, paddingRight: 24, position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+            <TreeMark size={58} />
+          </div>
           <Wordmark size={38} dark />
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 14, justifyContent: 'center' }}>
             <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.28)' }} />

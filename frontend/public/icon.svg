@@ -1,11 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#1b4332"/>
-  <!-- trunk -->
-  <rect x="236" y="320" width="40" height="120" rx="8" fill="#52b788"/>
-  <!-- canopy layers -->
-  <ellipse cx="256" cy="280" rx="110" ry="80" fill="#2d6a4f"/>
-  <ellipse cx="256" cy="220" rx="88" ry="70" fill="#52b788"/>
-  <ellipse cx="256" cy="165" rx="66" ry="58" fill="#74c69d"/>
-  <!-- gold 3 accent -->
-  <text x="310" y="200" font-family="Georgia,serif" font-weight="700" font-size="72" fill="#c8952a" opacity="0.9">3</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Challenge Tre3">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#1b4332"/><stop offset="1" stop-color="#0d2b1e"/>
+</linearGradient>
+</defs>
+<rect x="0" y="0" width="240" height="240" rx="54" fill="url(#g)"/>
+<g transform="translate(64,56) scale(1.12)">
+<rect x="45.5" y="64" width="9" height="40" rx="3" fill="#c8952a"/>
+<circle cx="50" cy="44" r="30" fill="#2d6a4f"/>
+<circle cx="31" cy="50" r="18" fill="#3a8f63"/>
+<circle cx="69" cy="50" r="18" fill="#3a8f63"/>
+<circle cx="50" cy="27" r="21" fill="#52b788"/>
+<circle cx="40" cy="33" r="10" fill="#95d5b2"/>
+<text x="50" y="44" text-anchor="middle" dominant-baseline="central" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="40" fill="#f0c96e">3</text>
+</g>
 </svg>

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import api from '../utils/api'
 import Wordmark from '../components/Wordmark'
+import TreeMark from '../components/TreeMark'
 
 function BotanicalAccent() {
   return (
@@ -225,6 +226,9 @@ export default function LoginPage() {
         </div>
 
         <div style={{ textAlign: 'center', paddingTop: 60, paddingBottom: 20, paddingLeft: 24, paddingRight: 24, position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+            <TreeMark size={68} />
+          </div>
           <Wordmark size={42} dark />
 
           {/* Tagline with decorative lines */}

@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
 import Wordmark from '../components/Wordmark'
+import TreeMark from '../components/TreeMark'
 import BottomNav from '../components/BottomNav'
 import { getCurrentBadgeData, getNextBadgeData, BADGE_DATA } from '../utils/badges'
 
@@ -642,7 +643,10 @@ export default function HomePage() {
         <div style={{ padding: '52px 22px 22px' }}>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <h1><Wordmark size={22} dark /></h1>
+            <h1 style={{ display: 'flex', alignItems: 'center', gap: 9, margin: 0 }}>
+              <TreeMark size={36} />
+              <Wordmark size={22} dark />
+            </h1>
             <button
               onClick={() => { logout(); navigate('/login') }}
               style={{
