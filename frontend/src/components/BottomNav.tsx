@@ -42,7 +42,7 @@ export default function BottomNav() {
             }} />
             <span style={{ fontSize: 22, lineHeight: 1 }}>{icon}</span>
             <span style={{
-              fontSize: 10, marginTop: 3,
+              fontSize: 12, marginTop: 3,
               fontFamily: "'Oswald', sans-serif",
               letterSpacing: '0.1em',
               textTransform: 'uppercase',

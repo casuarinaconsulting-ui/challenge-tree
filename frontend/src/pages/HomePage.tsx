@@ -213,11 +213,11 @@ function BadgeUnlockModal({ badge, onClose }: { badge: BadgeUnlock; onClose: () 
             background: 'rgba(200,149,42,0.18)', border: '1px solid rgba(200,149,42,0.4)',
             borderRadius: 999, padding: '4px 14px', marginBottom: 18,
           }}>
-            <span style={{ fontSize: 8, color: '#c8952a' }}>★</span>
-            <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, color: '#c8952a', letterSpacing: '0.25em' }}>
+            <span style={{ fontSize: 10, color: '#c8952a' }}>★</span>
+            <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 12, color: '#c8952a', letterSpacing: '0.25em' }}>
               LEVEL {badge.level} UNLOCKED
             </span>
-            <span style={{ fontSize: 8, color: '#c8952a' }}>★</span>
+            <span style={{ fontSize: 10, color: '#c8952a' }}>★</span>
           </div>
 
           {/* Emoji */}
@@ -248,7 +248,7 @@ function BadgeUnlockModal({ badge, onClose }: { badge: BadgeUnlock; onClose: () 
             }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: richData.statusColor }} />
               <span style={{
-                fontFamily: "'Oswald', sans-serif", fontSize: 10,
+                fontFamily: "'Oswald', sans-serif", fontSize: 12,
                 color: richData.statusColor, letterSpacing: '0.12em',
               }}>
                 {richData.status.toUpperCase()}
@@ -271,7 +271,7 @@ function BadgeUnlockModal({ badge, onClose }: { badge: BadgeUnlock; onClose: () 
               }}>
                 {richData.population}
               </div>
-              <div style={{ fontSize: 10, color: 'rgba(149,213,178,0.5)', marginTop: 3, letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: 12, color: 'rgba(149,213,178,0.5)', marginTop: 3, letterSpacing: '0.06em' }}>
                 remaining
               </div>
             </div>
@@ -282,7 +282,7 @@ function BadgeUnlockModal({ badge, onClose }: { badge: BadgeUnlock; onClose: () 
               }}>
                 {richData.habitat}
               </div>
-              <div style={{ fontSize: 10, color: 'rgba(149,213,178,0.5)', marginTop: 3, letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: 12, color: 'rgba(149,213,178,0.5)', marginTop: 3, letterSpacing: '0.06em' }}>
                 habitat
               </div>
             </div>
@@ -365,7 +365,7 @@ function ChallengeDetailModal({ challenge, onClose }: { challenge: any; onClose:
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
             <span style={{ fontSize: 16 }}>{cat.emoji}</span>
             <span style={{
-              fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.15em',
+              fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.15em',
               textTransform: 'uppercase', color: 'rgba(255,255,255,0.9)',
             }}>{cat.label}</span>
           </div>
@@ -384,7 +384,7 @@ function ChallengeDetailModal({ challenge, onClose }: { challenge: any; onClose:
           {challenge.educationalText && (
             <div style={{ marginBottom: 20 }}>
               <h3 style={{
-                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.14em',
+                fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.14em',
                 textTransform: 'uppercase', color: cat.bg, margin: '0 0 8px',
               }}>Why it matters</h3>
               <p style={{ fontSize: 13.5, color: '#374151', lineHeight: 1.65, margin: 0 }}>
@@ -397,7 +397,7 @@ function ChallengeDetailModal({ challenge, onClose }: { challenge: any; onClose:
           {impactRows.length > 0 && (
             <div style={{ marginBottom: 20 }}>
               <h3 style={{
-                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.14em',
+                fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.14em',
                 textTransform: 'uppercase', color: cat.bg, margin: '0 0 10px',
               }}>Your impact</h3>
               <div style={{ display: 'flex', gap: 10 }}>
@@ -408,7 +408,7 @@ function ChallengeDetailModal({ challenge, onClose }: { challenge: any; onClose:
                   }}>
                     <div style={{ fontSize: 18, marginBottom: 4 }}>{r.icon}</div>
                     <div style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 16, color: cat.bg }}>{r.value}</div>
-                    <div style={{ fontSize: 9.5, color: '#9ca3af', marginTop: 2 }}>{r.label}</div>
+                    <div style={{ fontSize: 11.5, color: '#9ca3af', marginTop: 2 }}>{r.label}</div>
                   </div>
                 ))}
               </div>
@@ -419,7 +419,7 @@ function ChallengeDetailModal({ challenge, onClose }: { challenge: any; onClose:
           {tips.length > 0 && (
             <div style={{ marginBottom: 20 }}>
               <h3 style={{
-                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.14em',
+                fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.14em',
                 textTransform: 'uppercase', color: cat.bg, margin: '0 0 8px',
               }}>💡 Tips</h3>
               <ul style={{ margin: 0, paddingLeft: 18 }}>
@@ -434,13 +434,13 @@ function ChallengeDetailModal({ challenge, onClose }: { challenge: any; onClose:
           {barriers.length > 0 && (
             <div style={{ marginBottom: 24 }}>
               <h3 style={{
-                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.14em',
+                fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.14em',
                 textTransform: 'uppercase', color: '#9ca3af', margin: '0 0 8px',
               }}>⚠️ Common barriers</h3>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {barriers.map((b, i) => (
                   <span key={i} style={{
-                    fontSize: 12, color: '#6b7280', background: '#f3f3f1',
+                    fontSize: 13.5, color: '#6b7280', background: '#f3f3f1',
                     padding: '4px 10px', borderRadius: 999,
                   }}>{b}</span>
                 ))}
@@ -629,7 +629,7 @@ export default function HomePage() {
             <button
               onClick={() => { logout(); navigate('/login') }}
               style={{
-                fontSize: 11, padding: '6px 14px', borderRadius: 20, cursor: 'pointer',
+                fontSize: 13, padding: '6px 14px', borderRadius: 20, cursor: 'pointer',
                 background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.18)',
                 color: 'rgba(255,255,255,0.75)', fontFamily: "'Oswald', sans-serif",
                 letterSpacing: '0.1em', textTransform: 'uppercase',
@@ -654,7 +654,7 @@ export default function HomePage() {
                 }}>
                   <span style={{ fontSize: 17, lineHeight: 1 }}>{currentBadge.icon}</span>
                   <span style={{
-                    fontFamily: "'Oswald', sans-serif", fontSize: 11.5,
+                    fontFamily: "'Oswald', sans-serif", fontSize: 13,
                     color: '#e8c97a', letterSpacing: '0.1em', textTransform: 'uppercase',
                   }}>
                     Lv.{currentBadge.level} {currentBadge.name}
@@ -667,7 +667,7 @@ export default function HomePage() {
                   borderRadius: 999, padding: '5px 13px',
                 }}>
                   <span style={{
-                    fontFamily: "'Oswald', sans-serif", fontSize: 11,
+                    fontFamily: "'Oswald', sans-serif", fontSize: 13,
                     color: 'rgba(255,255,255,0.45)', letterSpacing: '0.1em',
                   }}>
                     Complete a challenge to earn your first badge
@@ -698,7 +698,7 @@ export default function HomePage() {
               }} />
             ))}
             <span style={{
-              color: 'rgba(255,255,255,0.4)', fontSize: 11, marginLeft: 6,
+              color: 'rgba(255,255,255,0.4)', fontSize: 13, marginLeft: 6,
               fontFamily: "'Oswald', sans-serif", letterSpacing: '0.08em',
             }}>
               {completedCount}/3 today
@@ -710,7 +710,7 @@ export default function HomePage() {
               }}>
                 <span style={{ fontSize: 17, lineHeight: 1 }}>🔥</span>
                 <span style={{ fontSize: 17, fontWeight: 600 }}>{streakCount}</span>
-                <span style={{ fontSize: 12.5, opacity: 0.85 }}>day streak</span>
+                <span style={{ fontSize: 14, opacity: 0.85 }}>day streak</span>
               </span>
             )}
           </div>
@@ -774,7 +774,7 @@ export default function HomePage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                       <span style={{ fontSize: 17 }}>{cat.emoji}</span>
                       <span style={{
-                        fontFamily: "'Oswald', sans-serif", fontWeight: 400, fontSize: 12,
+                        fontFamily: "'Oswald', sans-serif", fontWeight: 400, fontSize: 13.5,
                         letterSpacing: '0.15em', textTransform: 'uppercase',
                         color: 'rgba(255,255,255,0.92)',
                       }}>
@@ -783,7 +783,7 @@ export default function HomePage() {
                     </div>
                     {isCompleted && (
                       <span style={{
-                        fontSize: 10.5, fontWeight: 700, letterSpacing: '0.07em',
+                        fontSize: 12.5, fontWeight: 700, letterSpacing: '0.07em',
                         fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase',
                         color: '#fff', background: 'rgba(255,255,255,0.22)',
                         padding: '3px 10px', borderRadius: 999,
@@ -817,7 +817,7 @@ export default function HomePage() {
                       ].map(m => (
                         <span key={m.val} style={{
                           display: 'inline-flex', alignItems: 'center', gap: 3,
-                          padding: '3px 9px', borderRadius: 999, fontSize: 11.5,
+                          padding: '3px 9px', borderRadius: 999, fontSize: 13,
                           background: '#f3f3f1', color: '#555', fontWeight: 500,
                         }}>
                           {m.icon} {m.val}
@@ -832,7 +832,7 @@ export default function HomePage() {
                         style={{
                           flex: 1, padding: '9px 0', borderRadius: 10, cursor: 'pointer',
                           background: `${cat.bg}12`, border: `1px solid ${cat.bg}33`, color: cat.bg,
-                          fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 11.5,
+                          fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 13,
                           letterSpacing: '0.08em', textTransform: 'uppercase',
                         }}
                       >
@@ -845,7 +845,7 @@ export default function HomePage() {
                           style={{
                             flex: '0 0 auto', padding: '9px 16px', borderRadius: 10, cursor: 'pointer',
                             background: '#f3f3f1', border: '1px solid rgba(0,0,0,0.08)', color: '#555',
-                            fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 11.5,
+                            fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 13,
                             letterSpacing: '0.08em', textTransform: 'uppercase',
                             opacity: swapMutation.isPending ? 0.6 : 1,
                           }}
@@ -892,7 +892,7 @@ export default function HomePage() {
       {/* Footer */}
       <div style={{
         textAlign: 'center', padding: '24px 0 10px',
-        fontFamily: "'Oswald', sans-serif", fontSize: 10,
+        fontFamily: "'Oswald', sans-serif", fontSize: 12,
         letterSpacing: '0.18em', textTransform: 'uppercase',
         color: 'rgba(26,51,40,0.28)',
       }}>

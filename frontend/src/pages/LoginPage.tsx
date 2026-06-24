@@ -85,7 +85,7 @@ function CollectiveImpact({ data }: { data: GlobalImpact }) {
           Join <span style={{ color: '#f0c96e' }}>{formatCompact(members)}+ members</span> worldwide
         </p>
         <p style={{
-          color: 'rgba(255,255,255,0.6)', fontSize: 12, margin: '3px 0 0',
+          color: 'rgba(255,255,255,0.6)', fontSize: 13.5, margin: '3px 0 0',
         }}>
           making real change, one daily action at a time
         </p>
@@ -112,7 +112,7 @@ function CollectiveImpact({ data }: { data: GlobalImpact }) {
               {s.value}
             </div>
             <div style={{
-              fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 3,
+              fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 3,
               letterSpacing: '0.06em', textTransform: 'uppercase',
               fontFamily: "'Oswald', sans-serif",
             }}>
@@ -122,7 +122,7 @@ function CollectiveImpact({ data }: { data: GlobalImpact }) {
         ))}
       </div>
       <p style={{
-        textAlign: 'center', fontSize: 9.5, color: 'rgba(255,255,255,0.35)',
+        textAlign: 'center', fontSize: 11.5, color: 'rgba(255,255,255,0.35)',
         margin: '8px 0 0', letterSpacing: '0.12em', textTransform: 'uppercase',
         fontFamily: "'Oswald', sans-serif",
       }}>
@@ -233,7 +233,7 @@ export default function LoginPage() {
             <p style={{
               color: 'rgba(255,255,255,0.5)',
               fontFamily: "'Oswald', sans-serif",
-              fontWeight: 300, fontSize: 11.5,
+              fontWeight: 300, fontSize: 13,
               letterSpacing: '0.18em', textTransform: 'uppercase', margin: 0,
             }}>
               Small actions. Global impact.
@@ -271,7 +271,7 @@ export default function LoginPage() {
 
           <div style={{ marginBottom: 22 }}>
             <label style={{
-              display: 'block', fontSize: 10.5,
+              display: 'block', fontSize: 12.5,
               fontFamily: "'Oswald', sans-serif", letterSpacing: '0.14em',
               textTransform: 'uppercase', color: '#2d6a4f', marginBottom: 7,
             }}>
@@ -292,7 +292,7 @@ export default function LoginPage() {
 
           <div style={{ marginBottom: 30 }}>
             <label style={{
-              display: 'block', fontSize: 10.5,
+              display: 'block', fontSize: 12.5,
               fontFamily: "'Oswald', sans-serif", letterSpacing: '0.14em',
               textTransform: 'uppercase', color: '#2d6a4f', marginBottom: 7,
             }}>
@@ -337,7 +337,7 @@ export default function LoginPage() {
             onClick={() => { setShowForgot(v => !v); setForgotMsg('') }}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 12.5, color: '#2d6a4f',
+              fontSize: 14, color: '#2d6a4f',
               fontFamily: "'Oswald', sans-serif", letterSpacing: '0.08em',
               textDecoration: 'underline', textDecorationStyle: 'dotted',
             }}
@@ -356,7 +356,7 @@ export default function LoginPage() {
                 </p>
               ) : (
                 <form onSubmit={handleForgot}>
-                  <p style={{ fontSize: 12.5, color: '#2d6a4f', lineHeight: 1.55, margin: '0 0 12px' }}>
+                  <p style={{ fontSize: 14, color: '#2d6a4f', lineHeight: 1.55, margin: '0 0 12px' }}>
                     Enter your email and we'll send a <strong>temporary password</strong> you can sign in with, then change.
                   </p>
                   <input
@@ -377,7 +377,7 @@ export default function LoginPage() {
                       width: '100%', padding: '11px 0', borderRadius: 8, border: 'none', cursor: 'pointer',
                       background: forgotLoading ? '#7cc4a0' : '#2d6a4f',
                       color: '#fff', fontFamily: "'Oswald', sans-serif",
-                      fontWeight: 500, fontSize: 12.5, letterSpacing: '0.1em', textTransform: 'uppercase',
+                      fontWeight: 500, fontSize: 14, letterSpacing: '0.1em', textTransform: 'uppercase',
                     }}
                   >
                     {forgotLoading ? 'Sending…' : 'Send temporary password'}
@@ -405,7 +405,7 @@ export default function LoginPage() {
 
           <div style={{
             marginTop: 20,
-            fontFamily: "'Oswald', sans-serif", fontSize: 10,
+            fontFamily: "'Oswald', sans-serif", fontSize: 12,
             letterSpacing: '0.18em', textTransform: 'uppercase',
             color: 'rgba(26,51,40,0.28)',
           }}>

@@ -84,7 +84,7 @@ export default function RegisterPage() {
             <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.28)' }} />
             <p style={{
               color: 'rgba(255,255,255,0.5)', fontFamily: "'Oswald', sans-serif",
-              fontWeight: 300, fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', margin: 0,
+              fontWeight: 300, fontSize: 13, letterSpacing: '0.18em', textTransform: 'uppercase', margin: 0,
             }}>
               Create your free account
             </p>
@@ -120,7 +120,7 @@ export default function RegisterPage() {
             ].map(f => (
               <div key={f.key} style={{ marginBottom: 22 }}>
                 <label style={{
-                  display: 'block', fontSize: 10.5,
+                  display: 'block', fontSize: 12.5,
                   fontFamily: "'Oswald', sans-serif", letterSpacing: '0.14em',
                   textTransform: 'uppercase', color: '#2d6a4f', marginBottom: 7,
                 }}>
@@ -146,13 +146,13 @@ export default function RegisterPage() {
             {/* ── Ecosystem picker ── */}
             <div style={{ marginBottom: 24 }}>
               <label style={{
-                display: 'block', fontSize: 10.5,
+                display: 'block', fontSize: 12.5,
                 fontFamily: "'Oswald', sans-serif", letterSpacing: '0.14em',
                 textTransform: 'uppercase', color: '#2d6a4f', marginBottom: 4,
               }}>
                 Your ecosystem
               </label>
-              <p style={{ fontSize: 11.5, color: '#888', marginBottom: 12, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: '#888', marginBottom: 12, lineHeight: 1.5 }}>
                 Choose the ecosystem that represents you, or skip and we'll pick one.
               </p>
               <div style={{
@@ -175,7 +175,7 @@ export default function RegisterPage() {
                     >
                       <span style={{ fontSize: 22, lineHeight: 1 }}>{eco.emoji}</span>
                       <span style={{
-                        fontSize: 9, color: selected ? '#1b4332' : '#666',
+                        fontSize: 11, color: selected ? '#1b4332' : '#666',
                         fontFamily: "'Oswald', sans-serif", letterSpacing: '0.05em',
                         textAlign: 'center', lineHeight: 1.2,
                         fontWeight: selected ? 600 : 400,
@@ -188,7 +188,7 @@ export default function RegisterPage() {
               </div>
               {!ecosystem && (
                 <p style={{
-                  fontSize: 10.5, color: '#aaa', marginTop: 8, textAlign: 'center',
+                  fontSize: 12.5, color: '#aaa', marginTop: 8, textAlign: 'center',
                   fontStyle: 'italic',
                 }}>
                   None selected, we'll surprise you ✨
@@ -229,7 +229,7 @@ export default function RegisterPage() {
 
         <div style={{
           textAlign: 'center', marginTop: 28,
-          fontFamily: "'Oswald', sans-serif", fontSize: 10,
+          fontFamily: "'Oswald', sans-serif", fontSize: 12,
           letterSpacing: '0.18em', textTransform: 'uppercase',
           color: 'rgba(26,51,40,0.28)',
         }}>

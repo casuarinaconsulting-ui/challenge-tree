@@ -51,7 +51,7 @@ function ChangePasswordCard() {
         }}
       >
         <span style={{
-          fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.16em',
+          fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.16em',
           textTransform: 'uppercase', color: '#1b4332',
         }}>
           🔑 Change Password
@@ -70,7 +70,7 @@ function ChangePasswordCard() {
 
           {msg && (
             <p style={{
-              fontSize: 12.5, margin: '2px 0 10px',
+              fontSize: 14, margin: '2px 0 10px',
               color: msg.type === 'ok' ? '#2d6a4f' : '#b85c38',
               fontStyle: 'italic',
             }}>
@@ -82,7 +82,7 @@ function ChangePasswordCard() {
             width: '100%', padding: '12px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
             background: loading ? '#7cc4a0' : 'linear-gradient(135deg, #2d6a4f, #1b4332)',
             color: '#fff', fontFamily: "'Oswald', sans-serif",
-            fontWeight: 500, fontSize: 12.5, letterSpacing: '0.1em', textTransform: 'uppercase',
+            fontWeight: 500, fontSize: 14, letterSpacing: '0.1em', textTransform: 'uppercase',
           }}>
             {loading ? 'Updating…' : 'Update password'}
           </button>
@@ -184,16 +184,16 @@ export default function ProfilePage() {
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span style={{
-              fontFamily: "'Oswald', sans-serif", fontSize: 10,
+              fontFamily: "'Oswald', sans-serif", fontSize: 12,
               color: 'rgba(149,213,178,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase',
             }}>
               {ecosystem.name}
             </span>
             {memberSince && (
               <>
-                <span style={{ color: 'rgba(149,213,178,0.3)', fontSize: 10 }}>·</span>
+                <span style={{ color: 'rgba(149,213,178,0.3)', fontSize: 12 }}>·</span>
                 <span style={{
-                  fontFamily: "'Oswald', sans-serif", fontSize: 10,
+                  fontFamily: "'Oswald', sans-serif", fontSize: 12,
                   color: 'rgba(149,213,178,0.5)', letterSpacing: '0.1em',
                 }}>
                   Member since {memberSince}
@@ -233,7 +233,7 @@ export default function ProfilePage() {
                 }}>
                   <div style={{ width: 5, height: 5, borderRadius: '50%', background: currentBadge.statusColor }} />
                   <span style={{
-                    fontFamily: "'Oswald', sans-serif", fontSize: 9,
+                    fontFamily: "'Oswald', sans-serif", fontSize: 11,
                     color: currentBadge.statusColor, letterSpacing: '0.14em',
                   }}>
                     {currentBadge.status.toUpperCase()} · LEVEL {currentBadge.level}
@@ -245,13 +245,13 @@ export default function ProfilePage() {
                 }}>
                   {currentBadge.name}
                 </h2>
-                <p style={{ fontSize: 11, color: 'rgba(149,213,178,0.55)', margin: 0 }}>
+                <p style={{ fontSize: 13, color: 'rgba(149,213,178,0.55)', margin: 0 }}>
                   {currentBadge.population} remaining · {currentBadge.habitat}
                 </p>
               </div>
             </div>
             <p style={{
-              fontSize: 12, color: 'rgba(149,213,178,0.7)', lineHeight: 1.6,
+              fontSize: 13.5, color: 'rgba(149,213,178,0.7)', lineHeight: 1.6,
               margin: 0, padding: '12px 20px 20px', fontStyle: 'italic',
             }}>
               "{currentBadge.funFact}"
@@ -300,7 +300,7 @@ export default function ProfilePage() {
                 </span>
               </div>
               <div style={{
-                fontFamily: "'Oswald', sans-serif", fontSize: 10,
+                fontFamily: "'Oswald', sans-serif", fontSize: 12,
                 color: '#9ca3af', letterSpacing: '0.16em', textTransform: 'uppercase',
               }}>
                 Current streak 🔥
@@ -314,7 +314,7 @@ export default function ProfilePage() {
                 {best}
               </div>
               <div style={{
-                fontFamily: "'Oswald', sans-serif", fontSize: 10,
+                fontFamily: "'Oswald', sans-serif", fontSize: 12,
                 color: '#9ca3af', letterSpacing: '0.16em', textTransform: 'uppercase',
               }}>
                 Best 🏆
@@ -326,10 +326,10 @@ export default function ProfilePage() {
           {nextBadge && (
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 11, color: '#6b7280' }}>
+                <span style={{ fontSize: 13, color: '#6b7280' }}>
                   Next: {nextBadge.icon} {nextBadge.name}
                 </span>
-                <span style={{ fontSize: 11, color: '#6b7280' }}>
+                <span style={{ fontSize: 13, color: '#6b7280' }}>
                   {nextBadge.threshold - streak} day{nextBadge.threshold - streak !== 1 ? 's' : ''} to go
                 </span>
               </div>
@@ -350,7 +350,7 @@ export default function ProfilePage() {
           {!nextBadge && streak > 0 && (
             <div style={{
               textAlign: 'center', padding: '8px 0 0',
-              fontFamily: "'Oswald', sans-serif", fontSize: 12,
+              fontFamily: "'Oswald', sans-serif", fontSize: 13.5,
               color: '#c8952a', letterSpacing: '0.1em',
             }}>
               🦜 All badges earned, you are extraordinary
@@ -366,7 +366,7 @@ export default function ProfilePage() {
             animationDelay: '0.10s',
           }}>
             <h3 style={{
-              fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.16em',
+              fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.16em',
               textTransform: 'uppercase', color: '#1b4332', margin: '0 0 16px',
             }}>
               Your Impact
@@ -390,7 +390,7 @@ export default function ProfilePage() {
                   }}>
                     {s.value}{s.unit}
                   </div>
-                  <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 2, letterSpacing: '0.06em' }}>
+                  <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2, letterSpacing: '0.06em' }}>
                     {s.label}
                   </div>
                 </div>
@@ -407,7 +407,7 @@ export default function ProfilePage() {
             animationDelay: '0.15s',
           }}>
             <h3 style={{
-              fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.16em',
+              fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.16em',
               textTransform: 'uppercase', color: '#1b4332', margin: '0 0 14px',
             }}>
               Badges Earned
@@ -432,13 +432,13 @@ export default function ProfilePage() {
                         {ub.badge?.name}
                       </div>
                       {rich && (
-                        <div style={{ fontSize: 10, color: rich.statusColor, marginTop: 1, letterSpacing: '0.08em' }}>
+                        <div style={{ fontSize: 12, color: rich.statusColor, marginTop: 1, letterSpacing: '0.08em' }}>
                           {rich.status.toUpperCase()} · {rich.population} remaining
                         </div>
                       )}
                     </div>
                     <div style={{
-                      fontFamily: "'Oswald', sans-serif", fontSize: 11,
+                      fontFamily: "'Oswald', sans-serif", fontSize: 13,
                       color: '#9ca3af', letterSpacing: '0.1em',
                     }}>
                       LV.{req?.level}
@@ -460,7 +460,7 @@ export default function ProfilePage() {
             background: 'linear-gradient(135deg, #fee2e2, #fecaca)', color: '#dc2626',
             border: '1px solid #fca5a5',
             boxShadow: '0 4px 14px rgba(220,38,38,0.1)',
-            fontFamily: "'Oswald', sans-serif", fontSize: 12,
+            fontFamily: "'Oswald', sans-serif", fontSize: 13.5,
             fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase',
           }}>
           Sign out
@@ -473,7 +473,7 @@ export default function ProfilePage() {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              fontFamily: "'Oswald', sans-serif", fontSize: 11,
+              fontFamily: "'Oswald', sans-serif", fontSize: 13,
               letterSpacing: '0.2em', textTransform: 'uppercase',
               color: 'rgba(26,51,40,0.45)',
               textDecoration: 'none',
@@ -485,7 +485,7 @@ export default function ProfilePage() {
             Casuarina Consulting
           </a>
           <div style={{
-            fontFamily: "'Oswald', sans-serif", fontSize: 9,
+            fontFamily: "'Oswald', sans-serif", fontSize: 11,
             letterSpacing: '0.16em', textTransform: 'uppercase',
             color: 'rgba(26,51,40,0.25)', marginTop: 5,
           }}>

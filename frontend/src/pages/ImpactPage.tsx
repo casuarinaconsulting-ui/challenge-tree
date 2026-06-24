@@ -421,7 +421,7 @@ function CasuarinaFooter() {
   return (
     <div style={{
       textAlign: 'center', padding: '20px 0 10px',
-      fontFamily: "'Oswald', sans-serif", fontSize: 10,
+      fontFamily: "'Oswald', sans-serif", fontSize: 12,
       letterSpacing: '0.18em', textTransform: 'uppercase',
       color: 'rgba(26,51,40,0.28)',
     }}>
@@ -665,7 +665,7 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
                 Challenge Tre<span style={{ color: '#c8952a' }}>3</span>
               </p>
               <p style={{
-                fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: '0.22em',
+                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: '0.22em',
                 textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', margin: '4px 0 0',
               }}>
                 My Impact
@@ -701,7 +701,7 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
                     color: s.color, margin: '0 0 3px', lineHeight: 1,
                   }}>{s.val}</p>
                   <p style={{
-                    fontSize: 10, color: 'rgba(255,255,255,0.4)',
+                    fontSize: 12, color: 'rgba(255,255,255,0.4)',
                     margin: 0, fontFamily: "'Oswald', sans-serif",
                     letterSpacing: '0.06em', textTransform: 'uppercase',
                   }}>{s.label}</p>
@@ -715,7 +715,7 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
             }}>
               <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
               <span style={{
-                fontSize: 9, color: 'rgba(255,255,255,0.22)',
+                fontSize: 11, color: 'rgba(255,255,255,0.22)',
                 fontFamily: "'Oswald', sans-serif", letterSpacing: '0.14em', textTransform: 'uppercase',
               }}>challenge-tree.vercel.app</span>
               <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
@@ -757,7 +757,7 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
             border: '1px solid rgba(255,255,255,0.1)',
             cursor: 'pointer', background: 'transparent',
             color: 'rgba(255,255,255,0.35)',
-            fontFamily: "'Oswald', sans-serif", fontSize: 12,
+            fontFamily: "'Oswald', sans-serif", fontSize: 13.5,
             letterSpacing: '0.1em', textTransform: 'uppercase',
           }}
         >
@@ -940,7 +940,7 @@ export default function ImpactPage() {
                 padding: '7px 16px', borderRadius: 20,
                 background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.25)',
                 color: '#fff', cursor: 'pointer',
-                fontFamily: "'Oswald', sans-serif", fontSize: 11.5,
+                fontFamily: "'Oswald', sans-serif", fontSize: 13,
                 letterSpacing: '0.1em', textTransform: 'uppercase',
                 boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
                 backdropFilter: 'blur(8px)',
@@ -1010,18 +1010,18 @@ export default function ImpactPage() {
                         }}>
                           {s.value}
                         </p>
-                        <p style={{ fontSize: 11.5, color: '#999', margin: 0, letterSpacing: '0.03em' }}>{s.label}</p>
+                        <p style={{ fontSize: 13, color: '#999', margin: 0, letterSpacing: '0.03em' }}>{s.label}</p>
                         {/* Flip hint — a small chip that gently pulses until the user taps */}
                         <span style={{
                           position: 'absolute', bottom: 8, right: 9,
                           display: 'inline-flex', alignItems: 'center', gap: 3,
-                          fontSize: 9, color: s.color,
+                          fontSize: 11, color: s.color,
                           background: `${s.color}14`, border: `1px solid ${s.color}30`,
                           borderRadius: 999, padding: '2px 7px',
                           fontFamily: "'Oswald', sans-serif", letterSpacing: '0.06em',
                           animation: hasInteracted ? undefined : 'flipHintPulse 2.4s ease-in-out infinite',
                         }}>
-                          <span style={{ fontSize: 11, lineHeight: 1 }}>↻</span> TAP
+                          <span style={{ fontSize: 13, lineHeight: 1 }}>↻</span> TAP
                         </span>
                       </div>
 
@@ -1038,7 +1038,7 @@ export default function ImpactPage() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                           <span style={{ fontSize: 14 }}>{s.icon}</span>
                           <span style={{
-                            fontFamily: "'Oswald', sans-serif", fontSize: 10.5,
+                            fontFamily: "'Oswald', sans-serif", fontSize: 12.5,
                             letterSpacing: '0.08em', textTransform: 'uppercase',
                             color: 'rgba(255,255,255,0.95)', fontWeight: 600,
                           }}>
@@ -1046,7 +1046,7 @@ export default function ImpactPage() {
                           </span>
                         </div>
                         <p style={{
-                          fontSize: 10.5, lineHeight: 1.5, margin: 0,
+                          fontSize: 12.5, lineHeight: 1.5, margin: 0,
                           color: 'rgba(255,255,255,0.95)',
                         }}>
                           {s.back}
@@ -1096,7 +1096,7 @@ export default function ImpactPage() {
                     {motivation.headline}
                   </p>
                   <p style={{
-                    fontSize: 11.5, color: 'rgba(255,255,255,0.58)',
+                    fontSize: 13, color: 'rgba(255,255,255,0.58)',
                     lineHeight: 1.55, margin: 0, position: 'relative',
                   }}>
                     {motivation.body}
@@ -1104,7 +1104,7 @@ export default function ImpactPage() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12 }}>
                   <div style={{ width: 16, height: 1, background: 'rgba(255,255,255,0.15)' }} />
-                  <span style={{ fontSize: 9, opacity: 0.3 }}>🌿</span>
+                  <span style={{ fontSize: 11, opacity: 0.3 }}>🌿</span>
                 </div>
               </div>
             </>
