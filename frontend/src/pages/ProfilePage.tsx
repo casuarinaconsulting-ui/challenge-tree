@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import api from '../utils/api'
 import BottomNav from '../components/BottomNav'
+import Wordmark from '../components/Wordmark'
+import TreeMark from '../components/TreeMark'
 import { getEcosystem } from '../utils/ecosystems'
 import { getCurrentBadgeData, getNextBadgeData, BADGE_DATA } from '../utils/badges'
 
@@ -154,6 +156,12 @@ export default function ProfilePage() {
         }} />
 
         <div style={{ padding: '52px 24px 32px', position: 'relative', textAlign: 'center' }}>
+
+          {/* Brand lockup */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 11, marginBottom: 22 }}>
+            <TreeMark size={48} />
+            <Wordmark size={22} dark />
+          </div>
 
           {/* Ecosystem avatar */}
           <div style={{ position: 'relative', display: 'inline-block', marginBottom: 14 }}>

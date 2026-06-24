@@ -3,6 +3,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
 import BottomNav from '../components/BottomNav'
+import Wordmark from '../components/Wordmark'
+import TreeMark from '../components/TreeMark'
 import { useAuthStore } from '../store/authStore'
 
 function ImpactWave() {
@@ -912,16 +914,22 @@ export default function ImpactPage() {
           animation: 'orbDrift 10s ease-in-out infinite reverse', pointerEvents: 'none',
         }} />
         <div style={{ padding: '52px 22px 20px', position: 'relative' }}>
-          <button
-            onClick={() => navigate('/')}
-            style={{
-              color: 'rgba(255,255,255,0.55)', fontSize: 13, background: 'none',
-              border: 'none', cursor: 'pointer', marginBottom: 12, padding: 0,
-              fontFamily: "'Oswald', sans-serif", letterSpacing: '0.06em',
-            }}
-          >
-            ← Back
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <button
+              onClick={() => navigate('/')}
+              style={{
+                color: 'rgba(255,255,255,0.55)', fontSize: 13, background: 'none',
+                border: 'none', cursor: 'pointer', padding: 0,
+                fontFamily: "'Oswald', sans-serif", letterSpacing: '0.06em',
+              }}
+            >
+              ← Back
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <TreeMark size={46} />
+              <Wordmark size={20} dark />
+            </div>
+          </div>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <div>
               <h1 style={{
