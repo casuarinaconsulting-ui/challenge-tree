@@ -771,19 +771,21 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
 }
 
 // Impact estimate per challenge category completion
+// Conservative per-action averages, matching the backend impact model.
+// Indirect categories (community/advocacy/etc.) save nothing directly.
 const IMPACT_PER_CATEGORY: Record<string, { co2: number; water: number; waste: number }> = {
-  WATER:            { co2: 0.10, water: 50,  waste: 0.0 },
-  TRANSPORT:        { co2: 0.50, water: 5,   waste: 0.0 },
-  FOOD:             { co2: 1.50, water: 200, waste: 0.2 },
-  ENERGY:           { co2: 0.80, water: 0,   waste: 0.0 },
-  WASTE:            { co2: 0.20, water: 0,   waste: 0.5 },
-  CONSUMPTION:      { co2: 0.30, water: 30,  waste: 0.3 },
+  WATER:            { co2: 0.05, water: 30,  waste: 0.0 },
+  TRANSPORT:        { co2: 0.60, water: 0,   waste: 0.0 },
+  FOOD:             { co2: 1.50, water: 300, waste: 0.1 },
+  ENERGY:           { co2: 0.40, water: 0,   waste: 0.0 },
+  WASTE:            { co2: 0.10, water: 0,   waste: 0.3 },
+  CONSUMPTION:      { co2: 0.80, water: 20,  waste: 0.2 },
   BIODIVERSITY:     { co2: 0.10, water: 5,   waste: 0.0 },
-  COMMUNITY:        { co2: 0.05, water: 2,   waste: 0.1 },
-  SOCIAL_EQUITY:    { co2: 0.05, water: 2,   waste: 0.1 },
-  CIRCULAR_ECONOMY: { co2: 0.30, water: 10,  waste: 0.5 },
-  CLIMATE_ADVOCACY: { co2: 0.10, water: 0,   waste: 0.0 },
-  WELLBEING:        { co2: 0.10, water: 5,   waste: 0.0 },
+  COMMUNITY:        { co2: 0.0,  water: 0,   waste: 0.0 },
+  SOCIAL_EQUITY:    { co2: 0.0,  water: 0,   waste: 0.0 },
+  CIRCULAR_ECONOMY: { co2: 1.00, water: 10,  waste: 0.3 },
+  CLIMATE_ADVOCACY: { co2: 0.0,  water: 0,   waste: 0.0 },
+  WELLBEING:        { co2: 0.0,  water: 0,   waste: 0.0 },
 }
 
 export default function ImpactPage() {
