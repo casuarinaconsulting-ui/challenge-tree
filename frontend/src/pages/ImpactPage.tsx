@@ -874,23 +874,23 @@ export default function ImpactPage() {
   const stats = [
     {
       icon: '🌬️', label: 'CO₂ saved', value: `${(data?.co2Saved ?? 0).toFixed(1)} kg`, color: '#5e7a44',
-      back: 'CO₂ is the main greenhouse gas warming our planet. Every kilogram you keep out of the atmosphere slows climate change, for scale, a tree absorbs about 21 kg of CO₂ per year.',
+      back: 'CO₂ is the main warming gas. Every kg saved slows climate change — a tree absorbs around 21 kg per year.',
     },
     {
       icon: '💧', label: 'Water saved', value: `${(data?.waterSaved ?? 0).toFixed(0)} L`, color: '#2b8fb5',
-      back: 'Freshwater is finite, under 1% of Earth\'s water is drinkable. Saving water eases pressure on rivers and aquifers. One litre saved is a litre left for nature and communities.',
+      back: "Under 1% of Earth's water is drinkable. Every litre saved eases pressure on rivers, aquifers, and communities.",
     },
     {
       icon: '♻️', label: 'Waste diverted', value: `${(data?.wasteDiverted ?? 0).toFixed(1)} kg`, color: '#7b68ae',
-      back: 'Waste in landfill releases methane, 80× more potent than CO₂ over 20 years. Every kilogram you divert through reuse, recycling or composting keeps material in use and out of the ground.',
+      back: 'Landfill releases methane — 80× more potent than CO₂. Every kg you reuse, recycle, or compost stays out of the ground.',
     },
     {
       icon: '🌳', label: 'Trees equivalent', value: `${(data?.treesEquiv ?? 0).toFixed(2)}`, color: '#2a9d8f',
-      back: 'This translates your CO₂ savings into the number of trees it would take a year to absorb the same amount. A simple way to picture the living, breathing scale of your impact.',
+      back: 'How many trees it would take a year to absorb your CO₂ savings — a concrete picture of your impact at scale.',
     },
     {
       icon: '✅', label: 'Total actions', value: `${totalActions}`, color: '#c8952a',
-      back: 'Each completed challenge is a real-world action. Studies show repeated small actions build lasting habits, and visible collective action is one of the strongest drivers of wider change.',
+      back: 'Each challenge counts. Small habits compound into lasting change, and visible action inspires others to join.',
     },
   ]
 
@@ -981,12 +981,12 @@ export default function ImpactPage() {
                     className="animate-slide-up"
                     onClick={() => toggleFlip(s.label)}
                     style={{
-                      perspective: '1000px', minHeight: 132, cursor: 'pointer',
+                      perspective: '1000px', minHeight: 180, cursor: 'pointer',
                       animationDelay: `${idx * 0.06}s`,
                     }}
                   >
                     <div style={{
-                      position: 'relative', width: '100%', height: '100%', minHeight: 132,
+                      position: 'relative', width: '100%', height: '100%', minHeight: 180,
                       transformStyle: 'preserve-3d',
                       transition: 'transform 0.55s cubic-bezier(0.4,0.2,0.2,1)',
                       transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
@@ -1042,7 +1042,7 @@ export default function ImpactPage() {
                         transform: 'rotateY(180deg)',
                         background: `linear-gradient(150deg, ${s.color}, ${s.color}cc)`,
                         borderRadius: 18, padding: '13px 14px',
-                        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+                        display: 'flex', flexDirection: 'column', overflowY: 'auto',
                         boxShadow: `0 6px 20px ${s.color}33`,
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
@@ -1056,7 +1056,7 @@ export default function ImpactPage() {
                           </span>
                         </div>
                         <p style={{
-                          fontSize: 12.5, lineHeight: 1.5, margin: 0,
+                          fontSize: 12, lineHeight: 1.55, margin: 0,
                           color: 'rgba(255,255,255,0.95)',
                         }}>
                           {s.back}
