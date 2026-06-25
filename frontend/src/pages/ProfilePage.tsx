@@ -98,19 +98,30 @@ export default function ProfilePage() {
   const navigate = useNavigate()
   const logout   = useAuthStore(s => s.logout)
 
+  // Retry with backoff so a slow/cold backend (Railway free tier) recovers on
+  // its own instead of leaving the streak stuck at its default until the user
+  // interacts and triggers a fresh fetch.
+  const retryOpts = {
+    retry: 3,
+    retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 5000),
+  }
+
   const { data: profile, isLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: () => api.get('/user/profile').then(r => r.data),
+    ...retryOpts,
   })
 
   const { data: badges } = useQuery({
     queryKey: ['badges'],
     queryFn: () => api.get('/badges').then(r => r.data),
+    ...retryOpts,
   })
 
   const { data: impact } = useQuery({
     queryKey: ['impact'],
     queryFn: () => api.get('/impact').then(r => r.data),
+    ...retryOpts,
   })
 
   const ecosystem    = getEcosystem((profile?.preferences as any)?.ecosystem, profile?.id ?? profile?.email)
@@ -298,7 +309,7 @@ export default function ProfilePage() {
                   fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 48,
                   color: '#1b4332', lineHeight: 1,
                 }}>
-                  {streak}
+                  {isLoading ? '–' : streak}
                 </span>
                 <span style={{
                   fontFamily: "'Oswald', sans-serif", fontSize: 14,
@@ -319,7 +330,7 @@ export default function ProfilePage() {
                 fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 28,
                 color: '#c8952a', lineHeight: 1,
               }}>
-                {best}
+                {isLoading ? '–' : best}
               </div>
               <div style={{
                 fontFamily: "'Oswald', sans-serif", fontSize: 12,
@@ -331,7 +342,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Progress to next badge */}
-          {nextBadge && (
+          {!isLoading && nextBadge && (
             <div>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
                 <span style={{ fontSize: 13, color: '#6b7280', minWidth: 0, overflowWrap: 'break-word' }}>
