@@ -874,7 +874,7 @@ export default function HomePage() {
                     </div>
 
                     {/* Secondary actions: learn more + swap */}
-                    <div style={{ display: 'flex', gap: 8, marginBottom: isCompleted ? 0 : 10 }}>
+                    <div style={{ display: 'flex', gap: 8, marginBottom: isCompleted ? 0 : 16 }}>
                       <button
                         onClick={() => setDetailC(c)}
                         style={{
