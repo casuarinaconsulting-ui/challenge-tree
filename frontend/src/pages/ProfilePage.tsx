@@ -333,11 +333,11 @@ export default function ProfilePage() {
           {/* Progress to next badge */}
           {nextBadge && (
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 13, color: '#6b7280' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 13, color: '#6b7280', minWidth: 0 }}>
                   Next: {nextBadge.icon} {nextBadge.name}
                 </span>
-                <span style={{ fontSize: 13, color: '#6b7280' }}>
+                <span style={{ fontSize: 13, color: '#6b7280', whiteSpace: 'nowrap', flexShrink: 0 }}>
                   {nextBadge.threshold - streak} day{nextBadge.threshold - streak !== 1 ? 's' : ''} to go
                 </span>
               </div>
