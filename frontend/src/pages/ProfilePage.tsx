@@ -98,6 +98,10 @@ export default function ProfilePage() {
   const navigate = useNavigate()
   const logout   = useAuthStore(s => s.logout)
 
+  const token  = useAuthStore(s => s.token)
+  const user   = useAuthStore(s => s.user)
+  const isDemo = token === 'demo-token'
+
   // Retry with backoff so a slow/cold backend (Railway free tier) recovers on
   // its own instead of leaving the streak stuck at its default until the user
   // interacts and triggers a fresh fetch.
@@ -106,23 +110,40 @@ export default function ProfilePage() {
     retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 5000),
   }
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: apiProfile, isLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: () => api.get('/user/profile').then(r => r.data),
+    enabled: !isDemo,
     ...retryOpts,
   })
 
   const { data: badges } = useQuery({
     queryKey: ['badges'],
     queryFn: () => api.get('/badges').then(r => r.data),
+    enabled: !isDemo,
     ...retryOpts,
   })
 
   const { data: impact } = useQuery({
     queryKey: ['impact'],
     queryFn: () => api.get('/impact').then(r => r.data),
+    enabled: !isDemo,
     ...retryOpts,
   })
+
+  // Demo mode is a frontend-only bypass with no backend session, so the calls
+  // above are skipped. Fall back to a sensible default profile so the streak
+  // card renders proper values instead of a perpetual loading placeholder.
+  const demoProfile = {
+    id: user?.id ?? 'demo',
+    email: user?.email ?? 'demo@challengetree.app',
+    name: user?.name ?? 'Explorer',
+    preferences: {},
+    streakCount: 0,
+    longestStreak: 0,
+    userBadges: [],
+  }
+  const profile = isDemo ? demoProfile : apiProfile
 
   const ecosystem    = getEcosystem((profile?.preferences as any)?.ecosystem, profile?.id ?? profile?.email)
   const streak       = profile?.streakCount ?? 0
@@ -309,7 +330,7 @@ export default function ProfilePage() {
                   fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 48,
                   color: '#1b4332', lineHeight: 1,
                 }}>
-                  {isLoading ? '–' : streak}
+                  {profile ? streak : '–'}
                 </span>
                 <span style={{
                   fontFamily: "'Oswald', sans-serif", fontSize: 14,
@@ -330,7 +351,7 @@ export default function ProfilePage() {
                 fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 28,
                 color: '#c8952a', lineHeight: 1,
               }}>
-                {isLoading ? '–' : best}
+                {profile ? best : '–'}
               </div>
               <div style={{
                 fontFamily: "'Oswald', sans-serif", fontSize: 12,
@@ -342,7 +363,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Progress to next badge */}
-          {!isLoading && nextBadge && (
+          {profile && nextBadge && (
             <div>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
                 <span style={{ fontSize: 13, color: '#6b7280', minWidth: 0, overflowWrap: 'break-word' }}>
