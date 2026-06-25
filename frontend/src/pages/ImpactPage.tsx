@@ -874,19 +874,19 @@ export default function ImpactPage() {
   const stats = [
     {
       icon: '🌬️', label: 'CO₂ saved', value: `${(data?.co2Saved ?? 0).toFixed(1)} kg`, color: '#5e7a44',
-      back: 'CO₂ is the main warming gas. Every kg saved slows climate change. A tree absorbs around 21 kg per year.',
+      back: 'CO₂ is the main warming gas. Each kg saved slows warming. A tree absorbs about 21 kg a year.',
     },
     {
       icon: '💧', label: 'Water saved', value: `${(data?.waterSaved ?? 0).toFixed(0)} L`, color: '#2b8fb5',
-      back: "Under 1% of Earth's water is drinkable. Every litre saved eases pressure on rivers, aquifers, and communities.",
+      back: "Under 1% of Earth's water is drinkable. Every litre saved eases the strain.",
     },
     {
       icon: '♻️', label: 'Waste diverted', value: `${(data?.wasteDiverted ?? 0).toFixed(1)} kg`, color: '#7b68ae',
-      back: 'Landfill releases methane, 80× more potent than CO₂. Every kg you reuse, recycle, or compost stays out of the ground.',
+      back: 'Landfill waste releases methane. Each kg you reuse or recycle stays out of the ground.',
     },
     {
       icon: '🌳', label: 'Trees equivalent', value: `${(data?.treesEquiv ?? 0).toFixed(2)}`, color: '#2a9d8f',
-      back: 'How many trees it would take a year to absorb your CO₂ savings, a concrete picture of your impact at scale.',
+      back: 'Your CO₂ savings shown as the trees it would take a year to absorb the same.',
     },
     {
       icon: '✅', label: 'Total actions', value: `${totalActions}`, color: '#c8952a',
@@ -981,12 +981,12 @@ export default function ImpactPage() {
                     className="animate-slide-up"
                     onClick={() => toggleFlip(s.label)}
                     style={{
-                      perspective: '1000px', minHeight: 180, cursor: 'pointer',
+                      perspective: '1000px', minHeight: 200, cursor: 'pointer',
                       animationDelay: `${idx * 0.06}s`,
                     }}
                   >
                     <div style={{
-                      position: 'relative', width: '100%', height: '100%', minHeight: 180,
+                      position: 'relative', width: '100%', height: '100%', minHeight: 200,
                       transformStyle: 'preserve-3d',
                       transition: 'transform 0.55s cubic-bezier(0.4,0.2,0.2,1)',
                       transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
