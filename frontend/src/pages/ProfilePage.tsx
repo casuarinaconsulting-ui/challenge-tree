@@ -334,7 +334,7 @@ export default function ProfilePage() {
           {nextBadge && (
             <div>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 13, color: '#6b7280', minWidth: 0 }}>
+                <span style={{ fontSize: 13, color: '#6b7280', minWidth: 0, overflowWrap: 'break-word' }}>
                   Next: {nextBadge.icon} {nextBadge.name}
                 </span>
                 <span style={{ fontSize: 13, color: '#6b7280', whiteSpace: 'nowrap', flexShrink: 0 }}>
