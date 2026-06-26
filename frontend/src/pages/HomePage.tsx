@@ -7,6 +7,8 @@ import Wordmark from '../components/Wordmark'
 import TreeMark from '../components/TreeMark'
 import BottomNav from '../components/BottomNav'
 import { getCurrentBadgeData, getNextBadgeData, BADGE_DATA } from '../utils/badges'
+import { getImpactDayFor } from '../utils/impactDays'
+import { ImpactDayBanner, ImpactDayModal } from '../components/ImpactDay'
 
 const CATEGORY_CONFIG: Record<string, { bg: string; label: string; emoji: string }> = {
   ENERGY:           { bg: '#e07b39', label: 'Energy',           emoji: '⚡' },
@@ -520,6 +522,18 @@ export default function HomePage() {
 
   const [badgeUnlock, setBadgeUnlock] = useState<BadgeUnlock | null>(null)
   const [detailC, setDetailC] = useState<any | null>(null)
+
+  // Environmental "impact day" for today (e.g. World Oceans Day), if any.
+  const impactDay = getImpactDayFor(new Date(), profile?.country)
+  const [showImpactDay, setShowImpactDay] = useState(false)
+  useEffect(() => {
+    if (!impactDay) return
+    const key = `impact-day-seen-${localDateKey()}`
+    if (!localStorage.getItem(key)) {
+      setShowImpactDay(true)
+      try { localStorage.setItem(key, '1') } catch { /* ignore */ }
+    }
+  }, [impactDay?.name])
   // Local challenge list for demo mode (so demo "swap" can replace items)
   const [demoList, setDemoList] = useState<any[]>(DEMO_CHALLENGES)
   // One swap per day, total. Tracked server-side (preferences.lastSwapDate) for
@@ -647,6 +661,11 @@ export default function HomePage() {
         <BadgeUnlockModal badge={badgeUnlock} onClose={() => setBadgeUnlock(null)} />
       )}
 
+      {/* Impact day modal (once per day) */}
+      {showImpactDay && impactDay && (
+        <ImpactDayModal day={impactDay} onClose={() => setShowImpactDay(false)} />
+      )}
+
       {/* Challenge detail modal */}
       {detailC && (
         <ChallengeDetailModal challenge={detailC} onClose={() => setDetailC(null)} />
@@ -769,6 +788,11 @@ export default function HomePage() {
 
       {/* ── Challenge list ── */}
       <div style={{ padding: '18px 18px 0' }}>
+
+        {/* Impact day banner (tap to reopen the moment) */}
+        {impactDay && (
+          <ImpactDayBanner day={impactDay} onOpen={() => setShowImpactDay(true)} />
+        )}
 
         {/* Section header with gradient rule */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
