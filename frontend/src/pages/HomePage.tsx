@@ -7,8 +7,8 @@ import Wordmark from '../components/Wordmark'
 import TreeMark from '../components/TreeMark'
 import BottomNav from '../components/BottomNav'
 import { getCurrentBadgeData, getNextBadgeData, BADGE_DATA } from '../utils/badges'
-import { getImpactDayFor } from '../utils/impactDays'
-import { ImpactDayBanner, ImpactDayModal } from '../components/ImpactDay'
+import { getImpactDayFor, getUpcomingImpactDays } from '../utils/impactDays'
+import { ImpactDayBanner, ImpactDayModal, NextImpactDayBanner } from '../components/ImpactDay'
 
 const CATEGORY_CONFIG: Record<string, { bg: string; label: string; emoji: string }> = {
   ENERGY:           { bg: '#e07b39', label: 'Energy',           emoji: '⚡' },
@@ -525,6 +525,10 @@ export default function HomePage() {
 
   // Environmental "impact day" for today (e.g. World Oceans Day), if any.
   const impactDay = getImpactDayFor(new Date(), profile?.country)
+  // On other days, point to the next one coming up (recomputed each render).
+  const nextImpactDay = !impactDay
+    ? (getUpcomingImpactDays(new Date(), 1, profile?.country)[0] ?? null)
+    : null
   const [showImpactDay, setShowImpactDay] = useState(false)
   useEffect(() => {
     if (!impactDay) return
@@ -789,10 +793,12 @@ export default function HomePage() {
       {/* ── Challenge list ── */}
       <div style={{ padding: '18px 18px 0' }}>
 
-        {/* Impact day banner (tap to reopen the moment) */}
-        {impactDay && (
+        {/* Impact day banner: today's moment, or a heads-up for the next one */}
+        {impactDay ? (
           <ImpactDayBanner day={impactDay} onOpen={() => setShowImpactDay(true)} />
-        )}
+        ) : nextImpactDay ? (
+          <NextImpactDayBanner day={nextImpactDay.day} date={nextImpactDay.date} onOpen={() => navigate('/impact')} />
+        ) : null}
 
         {/* Section header with gradient rule */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>

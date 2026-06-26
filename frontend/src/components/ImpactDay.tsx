@@ -92,6 +92,55 @@ export function ImpactDayBanner({ day, onOpen }: { day: ImpactDay; onOpen: () =>
   )
 }
 
+// Heads-up banner for days that are NOT themselves an impact day: points to the
+// next one coming up. Recomputes as days pass, so it always shows what's next.
+export function NextImpactDayBanner({ day, date, onOpen }: { day: ImpactDay; date: Date; onOpen: () => void }) {
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const target = new Date(date); target.setHours(0, 0, 0, 0)
+  const diff = Math.round((target.getTime() - today.getTime()) / 86400000)
+  const away = diff === 1 ? 'Tomorrow'
+    : diff < 14 ? `In ${diff} days`
+    : target.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+
+  return (
+    <button
+      onClick={onOpen}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 12, width: '100%',
+        textAlign: 'left', cursor: 'pointer',
+        background: 'rgba(255,255,255,0.6)',
+        border: '1px solid rgba(45,106,79,0.14)', borderRadius: 16,
+        padding: '11px 14px', marginBottom: 16,
+      }}
+    >
+      <span style={{ fontSize: 26, lineHeight: 1, flexShrink: 0 }}>{day.emoji}</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: '0.14em',
+          textTransform: 'uppercase', color: '#2d6a4f', marginBottom: 2,
+        }}>
+          Next impact day
+        </div>
+        <div style={{
+          fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 15,
+          color: '#1b4332', lineHeight: 1.15,
+          overflowWrap: 'break-word', wordBreak: 'break-word',
+        }}>
+          {day.name}
+        </div>
+      </div>
+      <span style={{
+        flexShrink: 0, fontFamily: "'Oswald', sans-serif", fontSize: 11.5,
+        letterSpacing: '0.04em', textTransform: 'uppercase', color: day.color,
+        background: `${day.color}14`, border: `1px solid ${day.color}30`,
+        borderRadius: 999, padding: '4px 10px', whiteSpace: 'nowrap',
+      }}>
+        {away}
+      </span>
+    </button>
+  )
+}
+
 // Once-per-day celebratory modal, mirroring the badge unlock moment.
 export function ImpactDayModal({ day, onClose }: { day: ImpactDay; onClose: () => void }) {
   // Scale the title down for longer names so it always fits the card width
