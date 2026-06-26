@@ -19,7 +19,7 @@ export function ImpactDayBanner({ day, onOpen }: { day: ImpactDay; onOpen: () =>
           fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: '0.16em',
           textTransform: 'uppercase', color: day.color, marginBottom: 2,
         }}>
-          Impact day
+          {day.theme === 'social' ? 'Social impact day' : 'Environmental impact day'}
         </div>
         <div style={{
           fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 15,

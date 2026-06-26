@@ -10,6 +10,7 @@ export interface ImpactDay {
   blurb: string        // one mindful sentence
   action: string       // a small, concrete nudge tied to the app
   color: string        // accent colour
+  theme?: 'environmental' | 'social'  // defaults to environmental
   region?: string      // omit or 'global' for everyone; else match user's country
 }
 
@@ -20,6 +21,7 @@ const GOLD = '#c8952a'
 const CORAL = '#b85c38'
 const LEAF = '#5e7a44'
 const PURPLE = '#7b68ae'
+const ROSE = '#c45d7c'
 
 export const IMPACT_DAYS: ImpactDay[] = [
   { name: 'World Wetlands Day', month: 2, day: 2, emoji: '🪷', color: BLUE,
@@ -91,6 +93,68 @@ export const IMPACT_DAYS: ImpactDay[] = [
   { name: 'International Mountain Day', month: 12, day: 11, emoji: '⛰️', color: GREEN,
     blurb: 'Mountains supply freshwater to half the world. What happens upstream reaches us all.',
     action: 'Save water today.' },
+
+  // ── Social impact days ──
+  { name: 'World Day of Social Justice', month: 2, day: 20, emoji: '⚖️', color: ROSE, theme: 'social',
+    blurb: 'A fair society is a stable one. Social justice and environmental justice are the same fight.',
+    action: 'Take a social equity challenge today.' },
+  { name: 'International Women\'s Day', month: 3, day: 8, emoji: '💜', color: ROSE, theme: 'social',
+    blurb: 'When women lead, social and environmental outcomes improve. Equality lifts everyone.',
+    action: 'Take a social equity challenge today.' },
+  { name: 'International Day of Happiness', month: 3, day: 20, emoji: '😊', color: GOLD, theme: 'social',
+    blurb: 'Wellbeing, not just wealth, is the real measure of progress.',
+    action: 'Take a wellbeing challenge today.' },
+  { name: 'World Health Day', month: 4, day: 7, emoji: '❤️', color: CORAL, theme: 'social',
+    blurb: 'Healthy people, healthy planet. Clean air, water, and food underpin both.',
+    action: 'Take a wellbeing challenge today.' },
+  { name: 'World Day Against Child Labour', month: 6, day: 12, emoji: '✋', color: ROSE, theme: 'social',
+    blurb: 'Every child deserves school, not labour. The supply chains we choose shape their futures.',
+    action: 'Take a social equity challenge today.' },
+  { name: 'World Refugee Day', month: 6, day: 20, emoji: '🕊️', color: BLUE, theme: 'social',
+    blurb: 'Millions are displaced, increasingly by climate. Welcome and dignity are a shared duty.',
+    action: 'Take a community challenge today.' },
+  { name: 'Nelson Mandela International Day', month: 7, day: 18, emoji: '✊', color: GOLD, theme: 'social',
+    blurb: 'It is in your hands to make the world a better place. Give a little of your time in service.',
+    action: 'Take a community challenge today.' },
+  { name: 'International Youth Day', month: 8, day: 12, emoji: '🌱', color: TEAL, theme: 'social',
+    blurb: 'Young people are leading the movement for a fairer, greener world.',
+    action: 'Take an advocacy challenge today.' },
+  { name: 'World Humanitarian Day', month: 8, day: 19, emoji: '🤝', color: TEAL, theme: 'social',
+    blurb: 'Humanitarian need is rising with climate shocks. Solidarity is the response.',
+    action: 'Take a community challenge today.' },
+  { name: 'International Literacy Day', month: 9, day: 8, emoji: '📖', color: PURPLE, theme: 'social',
+    blurb: 'Education is the highest-leverage investment in equity and the planet alike.',
+    action: 'Do your learning on Ecosia today.' },
+  { name: 'International Day of Peace', month: 9, day: 21, emoji: '🕊️', color: BLUE, theme: 'social',
+    blurb: 'No country has reached sustainability through conflict. Peace is the precondition.',
+    action: 'Take a community challenge today.' },
+  { name: 'International Day of Non-Violence', month: 10, day: 2, emoji: '☮️', color: BLUE, theme: 'social',
+    blurb: 'Non-violence is the most effective tool for durable change, history shows it.',
+    action: 'Take an advocacy challenge today.' },
+  { name: 'International Day of the Girl', month: 10, day: 11, emoji: '👧', color: ROSE, theme: 'social',
+    blurb: 'Educating and empowering girls is one of the most powerful climate solutions there is.',
+    action: 'Take a social equity challenge today.' },
+  { name: 'Day for the Eradication of Poverty', month: 10, day: 17, emoji: '🤲', color: CORAL, theme: 'social',
+    blurb: 'Poverty and environmental harm trap the same communities. Lifting one lifts the other.',
+    action: 'Take a social equity challenge today.' },
+  { name: 'World Children\'s Day', month: 11, day: 20, emoji: '🧒', color: GOLD, theme: 'social',
+    blurb: 'Today\'s children will inherit this decade\'s decisions. We owe them a livable world.',
+    action: 'Take an advocacy challenge today.' },
+  { name: 'Day to End Violence Against Women', month: 11, day: 25, emoji: '💜', color: ROSE, theme: 'social',
+    blurb: 'Safety and equality are the foundation of any just, sustainable society.',
+    action: 'Take a social equity challenge today.' },
+  { name: 'Day of Persons with Disabilities', month: 12, day: 3, emoji: '♿', color: BLUE, theme: 'social',
+    blurb: 'Inclusive design serves everyone. Accessibility is a measure of a fair society.',
+    action: 'Take a social equity challenge today.' },
+  { name: 'Human Rights Day', month: 12, day: 10, emoji: '✊', color: ROSE, theme: 'social',
+    blurb: 'Where human rights are protected, environmental rights tend to follow.',
+    action: 'Take an advocacy challenge today.' },
+  { name: 'International Migrants Day', month: 12, day: 18, emoji: '🧳', color: TEAL, theme: 'social',
+    blurb: 'Migration, increasingly climate-driven, calls for dignity and shared responsibility.',
+    action: 'Take a community challenge today.' },
+  { name: 'International Human Solidarity Day', month: 12, day: 20, emoji: '🤝', color: TEAL, theme: 'social',
+    blurb: 'We are because we are. No one flourishes alone.',
+    action: 'Take a community challenge today.' },
 ]
 
 // The impact day for a given date, preferring a match for the user's country.
