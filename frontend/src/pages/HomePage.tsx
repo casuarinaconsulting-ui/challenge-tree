@@ -857,7 +857,7 @@ export default function HomePage() {
                     </p>
 
                     {/* Metadata pills */}
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: isCompleted ? 0 : 15 }}>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: isCompleted ? 14 : 15 }}>
                       {[
                         { icon: '⏱', val: `${c.timeEstimate} min` },
                         { icon: '💰', val: c.costLevel },
