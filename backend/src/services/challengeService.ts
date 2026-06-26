@@ -1,6 +1,14 @@
 import { Category } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 
+// A challenge a person can realistically complete the same day with no purchase
+// and low effort. Used to keep daily sets and swaps achievable.
+const isDoable = (c: { costLevel: string; difficulty: number }) =>
+  c.costLevel === 'free' && c.difficulty <= 2
+
+// Prisma where-clause for the doable subset.
+const DOABLE_FILTER = { costLevel: 'free', difficulty: { lte: 2 } as any }
+
 // Start of the *user's* local day, anchored at UTC midnight of that calendar
 // date so storage is consistent regardless of the server's timezone.
 // tzOffsetMin is the client's Date.getTimezoneOffset() (minutes; UTC+10 → -600).
@@ -70,17 +78,32 @@ export async function getDailyChallenges(userId: string, tzOffsetMin = 0) {
   const picked: typeof shuffled = []
   const usedCategories = new Set<Category>()
 
+  // A "doable" challenge needs no purchase and isn't high-effort, so it can be
+  // organised and completed the same day. We guarantee at least 2 of the 3 are
+  // doable, leaving at most one "stretch" (paid or harder) challenge, so every
+  // user can realistically finish all three.
+  const easy = shuffled.filter(isDoable)
+
+  // 1) Up to 2 doable challenges, category-diverse where possible
+  for (const c of easy) {
+    if (picked.length >= 2) break
+    if (!usedCategories.has(c.category)) { picked.push(c); usedCategories.add(c.category) }
+  }
+  // 2) Top up the doable quota ignoring category if diversity ran out
+  for (const c of easy) {
+    if (picked.length >= 2) break
+    if (!picked.find(p => p.id === c.id)) { picked.push(c); usedCategories.add(c.category) }
+  }
+  // 3) Third slot: any challenge (may be a stretch), prefer a fresh category
   for (const c of shuffled) {
-    if (picked.length === 3) break
-    if (!usedCategories.has(c.category)) {
-      picked.push(c)
-      usedCategories.add(c.category)
+    if (picked.length >= 3) break
+    if (!picked.find(p => p.id === c.id) && !usedCategories.has(c.category)) {
+      picked.push(c); usedCategories.add(c.category)
     }
   }
-
-  // Fall back to any challenges if not enough category-diverse ones
+  // 4) Final fallback: fill any remaining slots regardless of category
   for (const c of shuffled) {
-    if (picked.length === 3) break
+    if (picked.length >= 3) break
     if (!picked.find(p => p.id === c.id)) picked.push(c)
   }
 
@@ -190,22 +213,24 @@ export async function swapChallenge(userId: string, challengeId: string, tzOffse
 
   const excludeSeen = [...new Set([...seenIds, ...keepIds])]
 
-  // 1) unseen + different category from the other two
-  let candidates = await prisma.challenge.findMany({
-    where: { ...profileFilter, id: { notIn: excludeSeen }, category: { notIn: keepCategories as any } },
-    take: 100,
-  })
-  // 2) unseen, any category
-  if (candidates.length < 1) {
-    candidates = await prisma.challenge.findMany({
-      where: { ...profileFilter, id: { notIn: excludeSeen } }, take: 100,
-    })
-  }
-  // 3) cycle exhausted, anything not in today's current set
-  if (candidates.length < 1) {
-    candidates = await prisma.challenge.findMany({
-      where: { ...profileFilter, id: { notIn: keepIds } }, take: 100,
-    })
+  // A swap usually means the user couldn't do that challenge, so bias the
+  // replacement toward a "doable" one (free, low-effort). Fall back step by step
+  // so a swap always returns something rather than failing.
+  const tiers = [
+    // doable first
+    { ...profileFilter, ...DOABLE_FILTER, id: { notIn: excludeSeen }, category: { notIn: keepCategories as any } },
+    { ...profileFilter, ...DOABLE_FILTER, id: { notIn: excludeSeen } },
+    // then any unseen
+    { ...profileFilter, id: { notIn: excludeSeen }, category: { notIn: keepCategories as any } },
+    { ...profileFilter, id: { notIn: excludeSeen } },
+    // cycle exhausted: doable, then anything, not already in today's set
+    { ...profileFilter, ...DOABLE_FILTER, id: { notIn: keepIds } },
+    { ...profileFilter, id: { notIn: keepIds } },
+  ]
+  let candidates: Awaited<ReturnType<typeof prisma.challenge.findMany>> = []
+  for (const where of tiers) {
+    candidates = await prisma.challenge.findMany({ where, take: 100 })
+    if (candidates.length) break
   }
   if (candidates.length < 1) return { error: 'No alternative challenge available right now' }
 
