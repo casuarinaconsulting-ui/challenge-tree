@@ -1,4 +1,59 @@
 import type { ImpactDay } from '../utils/impactDays'
+import { getUpcomingImpactDays } from '../utils/impactDays'
+
+// Upcoming impact days list for the Impact page (light theme).
+export function UpcomingImpactDays({ country }: { country?: string | null }) {
+  const items = getUpcomingImpactDays(new Date(), 6, country)
+  if (!items.length) return null
+
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const dateLabel = (d: Date) => {
+    const diff = Math.round((d.getTime() - today.getTime()) / 86400000)
+    if (diff === 0) return 'Today'
+    if (diff === 1) return 'Tomorrow'
+    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+  }
+
+  return (
+    <div style={{ padding: '24px 18px 0' }}>
+      <div style={{
+        background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(45,106,79,0.12)',
+        borderRadius: 16, padding: '16px 16px 6px',
+      }}>
+        <p style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 11.5, letterSpacing: '0.1em',
+          textTransform: 'uppercase', color: '#2d6a4f', margin: '0 0 12px',
+        }}>
+          Upcoming impact days
+        </p>
+        {items.map(({ day, date }, i) => (
+          <div key={day.name + i} style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '10px 0',
+            borderTop: i === 0 ? 'none' : '1px solid rgba(0,0,0,0.05)',
+          }}>
+            <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0, width: 26, textAlign: 'center' }}>{day.emoji}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14, color: '#1b4332', fontWeight: 500, lineHeight: 1.2 }}>{day.name}</div>
+              <div style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: '0.08em',
+                textTransform: 'uppercase', color: day.color, marginTop: 2,
+              }}>
+                {day.theme === 'social' ? 'Social' : 'Environmental'}
+              </div>
+            </div>
+            <span style={{
+              fontFamily: "'Oswald', sans-serif", fontSize: 12.5, color: '#566c60',
+              flexShrink: 0, letterSpacing: '0.04em',
+            }}>
+              {dateLabel(date)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 // Slim, all-day banner shown on the home screen when today is an impact day.
 export function ImpactDayBanner({ day, onOpen }: { day: ImpactDay; onOpen: () => void }) {

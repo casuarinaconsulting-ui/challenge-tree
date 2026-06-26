@@ -6,6 +6,7 @@ import BottomNav from '../components/BottomNav'
 import Wordmark from '../components/Wordmark'
 import TreeMark from '../components/TreeMark'
 import { useAuthStore } from '../store/authStore'
+import { UpcomingImpactDays } from '../components/ImpactDay'
 
 function ImpactWave() {
   return (
@@ -793,6 +794,13 @@ export default function ImpactPage() {
   const token     = useAuthStore(s => s.token)
   const isDemo    = token === 'demo-token'
   const [showShare, setShowShare] = useState(false)
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
+    queryFn: () => api.get('/user/profile').then(r => r.data),
+    enabled: !isDemo,
+    staleTime: 30_000,
+  })
   const [flipped, setFlipped] = useState<Record<string, boolean>>({})
   const [hasInteracted, setHasInteracted] = useState(false)
   const toggleFlip = (label: string) => {
@@ -1144,6 +1152,8 @@ export default function ImpactPage() {
           </p>
         </div>
       </div>
+
+      <UpcomingImpactDays country={profile?.country ?? null} />
 
       <CasuarinaFooter />
       <BottomNav />

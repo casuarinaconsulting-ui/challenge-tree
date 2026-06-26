@@ -818,11 +818,13 @@ export default function HomePage() {
               const c = uc.challenge
               const isCompleted = uc.isCompleted || demoCompleted.has(uc.id)
               const cat = CATEGORY_CONFIG[c.category] ?? { bg: '#2d6a4f', label: c.category, emoji: '🌍' }
+              const isImpactMatch = !!(impactDay && impactDay.category === c.category)
 
               return (
                 <div key={uc.id} className={isCompleted ? '' : 'card-3d animate-slide-up'} style={{
                   borderRadius: 18, overflow: 'hidden', background: '#fff',
-                  border: isCompleted ? `1.5px solid ${cat.bg}50` : '1px solid rgba(0,0,0,0.06)',
+                  border: isCompleted ? `1.5px solid ${cat.bg}50` : isImpactMatch ? `1.5px solid ${impactDay!.color}55` : '1px solid rgba(0,0,0,0.06)',
+                  boxShadow: isImpactMatch && !isCompleted ? `0 0 0 1px ${impactDay!.color}18, 0 4px 20px ${impactDay!.color}18` : undefined,
                   animationDelay: `${uc.id === 'demo-1' ? '0' : uc.id === 'demo-2' ? '0.07' : '0.14'}s`,
                 }}>
 
@@ -853,16 +855,27 @@ export default function HomePage() {
                         {cat.label}
                       </span>
                     </div>
-                    {isCompleted && (
-                      <span style={{
-                        fontSize: 12.5, fontWeight: 700, letterSpacing: '0.07em',
-                        fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase',
-                        color: '#fff', background: 'rgba(255,255,255,0.22)',
-                        padding: '3px 10px', borderRadius: 999,
-                      }}>
-                        Done ✓
-                      </span>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {isImpactMatch && !isCompleted && (
+                        <span style={{
+                          fontFamily: "'Oswald', sans-serif", fontSize: 11.5, letterSpacing: '0.06em',
+                          textTransform: 'uppercase', color: '#fff',
+                          background: 'rgba(255,255,255,0.22)', padding: '3px 10px', borderRadius: 999,
+                        }}>
+                          {impactDay!.emoji} Theme
+                        </span>
+                      )}
+                      {isCompleted && (
+                        <span style={{
+                          fontSize: 12.5, fontWeight: 700, letterSpacing: '0.07em',
+                          fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase',
+                          color: '#fff', background: 'rgba(255,255,255,0.22)',
+                          padding: '3px 10px', borderRadius: 999,
+                        }}>
+                          Done ✓
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Card body */}
