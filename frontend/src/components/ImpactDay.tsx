@@ -28,23 +28,26 @@ export function UpcomingImpactDays({ country }: { country?: string | null }) {
         </p>
         {items.map(({ day, date }, i) => (
           <div key={day.name + i} style={{
-            display: 'flex', alignItems: 'center', gap: 12,
+            display: 'flex', alignItems: 'center', gap: 11,
             padding: '10px 0',
             borderTop: i === 0 ? 'none' : '1px solid rgba(0,0,0,0.05)',
           }}>
-            <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0, width: 26, textAlign: 'center' }}>{day.emoji}</span>
+            <span style={{ fontSize: 21, lineHeight: 1, flexShrink: 0, width: 24, textAlign: 'center' }}>{day.emoji}</span>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 14, color: '#1b4332', fontWeight: 500, lineHeight: 1.2 }}>{day.name}</div>
               <div style={{
-                fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: '0.08em',
+                fontSize: 13.5, color: '#1b4332', fontWeight: 500, lineHeight: 1.25,
+                overflowWrap: 'break-word', wordBreak: 'break-word',
+              }}>{day.name}</div>
+              <div style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: '0.07em',
                 textTransform: 'uppercase', color: day.color, marginTop: 2,
               }}>
                 {day.theme === 'social' ? 'Social' : 'Environmental'}
               </div>
             </div>
             <span style={{
-              fontFamily: "'Oswald', sans-serif", fontSize: 12.5, color: '#566c60',
-              flexShrink: 0, letterSpacing: '0.04em',
+              fontFamily: "'Oswald', sans-serif", fontSize: 12, color: '#566c60',
+              flexShrink: 0, letterSpacing: '0.03em', whiteSpace: 'nowrap', marginLeft: 4,
             }}>
               {dateLabel(date)}
             </span>
@@ -79,6 +82,7 @@ export function ImpactDayBanner({ day, onOpen }: { day: ImpactDay; onOpen: () =>
         <div style={{
           fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 15,
           color: '#1b4332', lineHeight: 1.15,
+          overflowWrap: 'break-word', wordBreak: 'break-word',
         }}>
           {day.name}
         </div>
@@ -90,6 +94,10 @@ export function ImpactDayBanner({ day, onOpen }: { day: ImpactDay; onOpen: () =>
 
 // Once-per-day celebratory modal, mirroring the badge unlock moment.
 export function ImpactDayModal({ day, onClose }: { day: ImpactDay; onClose: () => void }) {
+  // Scale the title down for longer names so it always fits the card width
+  // (longest is "International Day for Biological Diversity").
+  const n = day.name.length
+  const titleSize = n > 30 ? 20 : n > 24 ? 22 : n > 18 ? 24 : 26
   return (
     <div
       onClick={onClose}
@@ -144,8 +152,9 @@ export function ImpactDayModal({ day, onClose }: { day: ImpactDay; onClose: () =
           </div>
 
           <h2 style={{
-            fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: 26,
+            fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: titleSize,
             color: '#fff', margin: 0, lineHeight: 1.12, textShadow: '0 2px 12px rgba(0,0,0,0.4)',
+            overflowWrap: 'break-word', wordBreak: 'break-word',
           }}>
             {day.name}
           </h2>
