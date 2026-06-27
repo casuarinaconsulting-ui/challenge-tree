@@ -124,7 +124,7 @@ function HomeWave() {
     <svg viewBox="0 0 400 44" preserveAspectRatio="none"
          style={{ display: 'block', width: '100%', height: 44, marginTop: -1 }}>
       <path d="M0,0 L400,0 L400,44 Q340,14 270,32 Q200,50 130,24 Q70,2 0,28 Z"
-            fill="#1b4332"/>
+            fill="#173a2b"/>
     </svg>
   )
 }
@@ -676,7 +676,7 @@ export default function HomePage() {
       )}
 
       {/* ── Header ── */}
-      <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'linear-gradient(168deg, #205038 0%, #173a2b 100%)', position: 'relative', overflow: 'hidden' }}>
         {/* Floating glow orbs */}
         <div style={{
           position: 'absolute', top: -30, right: -20, width: 180, height: 180, borderRadius: '50%',
@@ -690,6 +690,13 @@ export default function HomePage() {
           animation: 'orbDrift 9s ease-in-out infinite reverse',
           pointerEvents: 'none',
         }} />
+        {/* Faint topographic contour motif */}
+        <svg viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true"
+             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+          <path d="M-20,46 Q110,12 230,42 T460,36" fill="none" stroke="#c8952a" strokeOpacity="0.12" strokeWidth="1.1" />
+          <path d="M-20,74 Q120,40 250,66 T470,58" fill="none" stroke="#c8952a" strokeOpacity="0.09" strokeWidth="1.1" />
+          <path d="M-20,104 Q90,72 220,96 T470,86" fill="none" stroke="#7fd4a8" strokeOpacity="0.09" strokeWidth="1.1" />
+        </svg>
         <div style={{ padding: '52px 22px 22px' }}>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -710,6 +717,12 @@ export default function HomePage() {
             </button>
           </div>
 
+          <p style={{
+            fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: '0.22em',
+            textTransform: 'uppercase', color: 'rgba(149,213,178,0.7)', margin: '0 0 6px',
+          }}>
+            {formatTodayLabel()}
+          </p>
           <p style={{ color: '#95d5b2', fontSize: 13, marginBottom: 12 }}>
             Good {getTimeOfDay()}, {user?.name?.split(' ')[0]}
           </p>
@@ -720,7 +733,9 @@ export default function HomePage() {
               {currentBadge ? (
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: 7,
-                  background: 'rgba(200,149,42,0.18)', border: '1px solid rgba(200,149,42,0.38)',
+                  background: 'linear-gradient(180deg, rgba(200,149,42,0.28), rgba(200,149,42,0.14))',
+                  border: '1px solid rgba(224,180,82,0.5)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)',
                   borderRadius: 999, padding: '5px 13px 5px 9px',
                 }}>
                   <span style={{ fontSize: 17, lineHeight: 1 }}>{currentBadge.icon}</span>
@@ -808,7 +823,7 @@ export default function HomePage() {
           }}>
             Today's Challenges
           </h2>
-          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, #2d6a4f55, transparent)' }} />
+          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, #c8952a88, #2d6a4f33, transparent)' }} />
         </div>
 
         {isLoading ? (
@@ -828,17 +843,23 @@ export default function HomePage() {
 
               return (
                 <div key={uc.id} className={isCompleted ? '' : 'card-3d animate-slide-up'} style={{
-                  borderRadius: 18, overflow: 'hidden', background: '#fff',
-                  border: isCompleted ? `1.5px solid ${cat.bg}50` : isImpactMatch ? `1.5px solid ${impactDay!.color}55` : '1px solid rgba(0,0,0,0.06)',
-                  boxShadow: isImpactMatch && !isCompleted ? `0 0 0 1px ${impactDay!.color}18, 0 4px 20px ${impactDay!.color}18` : undefined,
+                  borderRadius: 18, overflow: 'hidden', background: '#fffdf8',
+                  border: isCompleted ? `1.5px solid ${cat.bg}50` : isImpactMatch ? `1.5px solid ${impactDay!.color}55` : '1px solid rgba(120,90,40,0.10)',
+                  boxShadow: isImpactMatch && !isCompleted
+                    ? `0 0 0 1px ${impactDay!.color}18, 0 10px 26px ${impactDay!.color}1f`
+                    : isCompleted ? '0 4px 14px rgba(95,82,55,0.06)'
+                    : '0 10px 26px rgba(95,82,55,0.10), 0 1px 0 rgba(255,255,255,0.7)',
                   animationDelay: `${uc.id === 'demo-1' ? '0' : uc.id === 'demo-2' ? '0.07' : '0.14'}s`,
                 }}>
+
+                  {/* Gold hairline accent */}
+                  <div style={{ height: 2, background: 'linear-gradient(90deg, transparent, #c8952a, transparent)' }} />
 
                   {/* Category colour band */}
                   <div style={{
                     background: isCompleted
                       ? `${cat.bg}bb`
-                      : `linear-gradient(135deg, ${cat.bg} 0%, ${cat.bg}cc 100%)`,
+                      : `linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.10) 100%), linear-gradient(135deg, ${cat.bg} 0%, ${cat.bg}cc 100%)`,
                     padding: '13px 16px',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     position: 'relative', overflow: 'hidden',
@@ -887,7 +908,7 @@ export default function HomePage() {
                   {/* Card body */}
                   <div style={{
                     padding: '16px 16px 18px',
-                    background: isCompleted ? `${cat.bg}0a` : '#fff',
+                    background: isCompleted ? `${cat.bg}0a` : '#fffdf8',
                   }}>
                     <h3 style={{
                       fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 19,
@@ -909,7 +930,7 @@ export default function HomePage() {
                         <span key={m.val} style={{
                           display: 'inline-flex', alignItems: 'center', gap: 3,
                           padding: '3px 9px', borderRadius: 999, fontSize: 13,
-                          background: '#f3f3f1', color: '#555', fontWeight: 500,
+                          background: '#f1ebde', border: '1px solid #e6dcc6', color: '#6b6350', fontWeight: 500,
                         }}>
                           {m.icon} {m.val}
                         </span>
@@ -922,7 +943,7 @@ export default function HomePage() {
                         onClick={() => setDetailC(c)}
                         style={{
                           flex: 1, padding: '9px 0', borderRadius: 10, cursor: 'pointer',
-                          background: `${cat.bg}12`, border: `1px solid ${cat.bg}33`, color: cat.bg,
+                          background: 'transparent', border: `1px solid ${cat.bg}40`, color: cat.bg,
                           fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 13,
                           letterSpacing: '0.08em', textTransform: 'uppercase',
                         }}
@@ -935,7 +956,7 @@ export default function HomePage() {
                           disabled={swapMutation.isPending}
                           style={{
                             flex: '0 0 auto', padding: '9px 16px', borderRadius: 10, cursor: 'pointer',
-                            background: '#f3f3f1', border: '1px solid rgba(0,0,0,0.08)', color: '#555',
+                            background: '#f1ebde', border: '1px solid #e6dcc6', color: '#6b6350',
                             fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 13,
                             letterSpacing: '0.08em', textTransform: 'uppercase',
                             opacity: swapMutation.isPending ? 0.6 : 1,
@@ -957,16 +978,16 @@ export default function HomePage() {
                           color: '#fff',
                           fontFamily: "'Oswald', sans-serif", fontWeight: 500,
                           fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase',
-                          boxShadow: `0 4px 14px ${cat.bg}55, 0 1px 3px rgba(0,0,0,0.15)`,
+                          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.25), 0 7px 16px ${cat.bg}66, 0 1px 3px rgba(0,0,0,0.12)`,
                           transition: 'transform 0.18s ease, box-shadow 0.18s ease',
                         }}
                         onMouseEnter={e => {
                           (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'
-                          ;(e.currentTarget as HTMLButtonElement).style.boxShadow = `0 8px 20px ${cat.bg}66, 0 2px 4px rgba(0,0,0,0.15)`
+                          ;(e.currentTarget as HTMLButtonElement).style.boxShadow = `inset 0 1px 0 rgba(255,255,255,0.25), 0 11px 24px ${cat.bg}70, 0 2px 4px rgba(0,0,0,0.15)`
                         }}
                         onMouseLeave={e => {
                           (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'
-                          ;(e.currentTarget as HTMLButtonElement).style.boxShadow = `0 4px 14px ${cat.bg}55, 0 1px 3px rgba(0,0,0,0.15)`
+                          ;(e.currentTarget as HTMLButtonElement).style.boxShadow = `inset 0 1px 0 rgba(255,255,255,0.25), 0 7px 16px ${cat.bg}66, 0 1px 3px rgba(0,0,0,0.12)`
                         }}
                       >
                         Mark complete
@@ -1012,6 +1033,11 @@ export default function HomePage() {
 function getTimeOfDay() {
   const h = new Date().getHours()
   return h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'
+}
+
+// Editorial date label for the header, e.g. "Thursday, 26 June".
+function formatTodayLabel() {
+  return new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })
 }
 
 // User's local calendar date as YYYY-MM-DD (en-CA gives ISO-like format)
