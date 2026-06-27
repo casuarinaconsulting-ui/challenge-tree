@@ -11,7 +11,7 @@ function RegisterWave() {
     <svg viewBox="0 0 400 44" preserveAspectRatio="none"
          style={{ display: 'block', width: '100%', height: 44, marginTop: -1 }}>
       <path d="M0,0 L400,0 L400,44 Q340,14 270,32 Q200,50 130,24 Q70,2 0,28 Z"
-            fill="#1b4332"/>
+            fill="#173a2b"/>
     </svg>
   )
 }
@@ -146,7 +146,7 @@ export default function RegisterPage() {
       {welcomeName && <WelcomeModal name={welcomeName} onStart={() => navigate('/')} />}
 
       {/* ── Header ── */}
-      <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'linear-gradient(168deg, #205038 0%, #173a2b 100%)', position: 'relative', overflow: 'hidden' }}>
         <div style={{
           position: 'absolute', top: -40, right: -30, width: 200, height: 200, borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(82,183,136,0.22) 0%, transparent 70%)',
@@ -180,7 +180,7 @@ export default function RegisterPage() {
       {/* ── Form ── */}
       <div style={{ padding: '28px 20px 48px' }}>
         <div className="card-3d animate-slide-up" style={{
-          background: 'rgba(255,255,255,0.88)',
+          background: 'rgba(253,250,243,0.92)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           borderRadius: 22, padding: '28px 24px 24px',
@@ -294,7 +294,7 @@ export default function RegisterPage() {
                   : 'linear-gradient(135deg, #2d6a4f, #1b4332)',
                 color: '#fff', fontFamily: "'Oswald', sans-serif",
                 fontWeight: 500, fontSize: 14, letterSpacing: '0.14em', textTransform: 'uppercase',
-                boxShadow: '0 4px 16px rgba(27,67,50,0.35)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 16px rgba(27,67,50,0.3)',
                 transition: 'opacity 0.2s',
               }}
             >

@@ -17,7 +17,8 @@ export function UpcomingImpactDays({ country }: { country?: string | null }) {
   return (
     <div style={{ padding: '24px 18px 0' }}>
       <div style={{
-        background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(45,106,79,0.12)',
+        background: '#fffdf8', border: '1px solid rgba(120,90,40,0.12)',
+        boxShadow: '0 10px 26px rgba(95,82,55,0.10), 0 1px 0 rgba(255,255,255,0.7)',
         borderRadius: 16, padding: '16px 16px 6px',
       }}>
         <p style={{
@@ -108,8 +109,9 @@ export function NextImpactDayBanner({ day, date, onOpen }: { day: ImpactDay; dat
       style={{
         display: 'flex', alignItems: 'center', gap: 12, width: '100%',
         textAlign: 'left', cursor: 'pointer',
-        background: 'rgba(255,255,255,0.6)',
-        border: '1px solid rgba(45,106,79,0.14)', borderRadius: 16,
+        background: '#fffdf8',
+        border: '1px solid rgba(120,90,40,0.12)', borderRadius: 16,
+        boxShadow: '0 8px 20px rgba(95,82,55,0.09)',
         padding: '11px 14px', marginBottom: 16,
       }}
     >

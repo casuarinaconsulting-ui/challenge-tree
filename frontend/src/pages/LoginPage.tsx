@@ -25,7 +25,7 @@ function LoginWave() {
     <svg viewBox="0 0 400 52" preserveAspectRatio="none"
          style={{ display: 'block', width: '100%', height: 52, marginTop: -1 }}>
       <path d="M0,0 L400,0 L400,52 Q360,24 300,38 Q230,52 170,28 Q110,4 60,34 Q28,46 0,32 Z"
-            fill="#1b4332"/>
+            fill="#173a2b"/>
     </svg>
   )
 }
@@ -199,7 +199,7 @@ export default function LoginPage() {
     }}>
 
       {/* ── Green header ── */}
-      <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'linear-gradient(168deg, #205038 0%, #173a2b 100%)', position: 'relative', overflow: 'hidden' }}>
 
         {/* Glow orbs */}
         <div style={{
@@ -256,7 +256,7 @@ export default function LoginPage() {
       {/* ── Form section, frosted glass card ── */}
       <div style={{ padding: '28px 20px 48px' }}>
       <div className="card-3d animate-slide-up" style={{
-        background: 'rgba(255,255,255,0.88)',
+        background: 'rgba(253,250,243,0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderRadius: 22,
@@ -324,10 +324,11 @@ export default function LoginPage() {
           <button
             type="submit" disabled={loading}
             style={{
-              width: '100%', padding: '15px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
-              background: loading ? '#52b788' : '#1b4332',
+              width: '100%', padding: '15px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
+              background: loading ? '#52b788' : 'linear-gradient(135deg, #2d6a4f, #1b4332)',
               color: '#fff', fontFamily: "'Oswald', sans-serif",
               fontWeight: 500, fontSize: 14, letterSpacing: '0.14em', textTransform: 'uppercase',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 16px rgba(27,67,50,0.3)',
             }}
           >
             {loading ? 'Signing in…' : 'Sign in'}

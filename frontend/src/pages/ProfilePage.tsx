@@ -43,7 +43,8 @@ function ChangePasswordCard() {
   return (
     <div className="card-3d animate-slide-up" style={{
       borderRadius: 22, padding: '18px 20px', marginBottom: 14,
-      background: '#fff', border: '1px solid rgba(0,0,0,0.05)', animationDelay: '0.18s',
+      background: '#fffdf8', border: '1px solid rgba(120,90,40,0.10)',
+      boxShadow: '0 10px 26px rgba(95,82,55,0.10), 0 1px 0 rgba(255,255,255,0.7)', animationDelay: '0.18s',
     }}>
       <button
         onClick={() => { setOpen(o => !o); setMsg(null) }}
@@ -172,7 +173,7 @@ export default function ProfilePage() {
     }}>
 
       {/* ── Header ── */}
-      <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'linear-gradient(168deg, #205038 0%, #173a2b 100%)', position: 'relative', overflow: 'hidden' }}>
         {/* Orbs */}
         <div style={{
           position: 'absolute', top: -40, right: -30, width: 220, height: 220,
@@ -186,6 +187,13 @@ export default function ProfilePage() {
           background: 'radial-gradient(circle, rgba(200,149,42,0.14) 0%, transparent 70%)',
           animation: 'orbDrift 11s ease-in-out infinite reverse', pointerEvents: 'none',
         }} />
+        {/* Faint topographic contour motif */}
+        <svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"
+             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+          <path d="M-20,52 Q110,16 230,48 T460,42" fill="none" stroke="#c8952a" strokeOpacity="0.11" strokeWidth="1.1" />
+          <path d="M-20,84 Q120,48 250,76 T470,66" fill="none" stroke="#c8952a" strokeOpacity="0.08" strokeWidth="1.1" />
+          <path d="M-20,118 Q90,84 220,110 T470,98" fill="none" stroke="#7fd4a8" strokeOpacity="0.08" strokeWidth="1.1" />
+        </svg>
 
         <div style={{ padding: '52px 24px 32px', position: 'relative', textAlign: 'center' }}>
 
@@ -402,7 +410,8 @@ export default function ProfilePage() {
         {impact && (
           <div className="card-3d animate-slide-up" style={{
             borderRadius: 22, padding: '20px', marginBottom: 14,
-            background: '#fff', border: '1px solid rgba(0,0,0,0.05)',
+            background: '#fffdf8', border: '1px solid rgba(120,90,40,0.10)',
+            boxShadow: '0 10px 26px rgba(95,82,55,0.10), 0 1px 0 rgba(255,255,255,0.7)',
             animationDelay: '0.10s',
           }}>
             <h3 style={{
@@ -443,7 +452,8 @@ export default function ProfilePage() {
         {badges?.length > 0 && (
           <div className="card-3d animate-slide-up" style={{
             borderRadius: 22, padding: '20px', marginBottom: 14,
-            background: '#fff', border: '1px solid rgba(0,0,0,0.05)',
+            background: '#fffdf8', border: '1px solid rgba(120,90,40,0.10)',
+            boxShadow: '0 10px 26px rgba(95,82,55,0.10), 0 1px 0 rgba(255,255,255,0.7)',
             animationDelay: '0.15s',
           }}>
             <h3 style={{

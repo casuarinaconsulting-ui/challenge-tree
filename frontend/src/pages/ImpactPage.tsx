@@ -13,7 +13,7 @@ function ImpactWave() {
     <svg viewBox="0 0 400 40" preserveAspectRatio="none"
          style={{ display: 'block', width: '100%', height: 40, marginTop: -1 }}>
       <path d="M0,0 L400,0 L400,40 Q330,8 260,26 Q190,44 120,18 Q60,-4 0,20 Z"
-            fill="#1b4332"/>
+            fill="#173a2b"/>
     </svg>
   )
 }
@@ -912,7 +912,7 @@ export default function ImpactPage() {
     }}>
 
       {/* ── Header ── */}
-      <div style={{ background: '#1b4332', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'linear-gradient(168deg, #205038 0%, #173a2b 100%)', position: 'relative', overflow: 'hidden' }}>
         <div style={{
           position: 'absolute', top: -40, right: -30, width: 180, height: 180, borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(82,183,136,0.2) 0%, transparent 70%)',
@@ -923,6 +923,13 @@ export default function ImpactPage() {
           background: 'radial-gradient(circle, rgba(200,149,42,0.14) 0%, transparent 70%)',
           animation: 'orbDrift 10s ease-in-out infinite reverse', pointerEvents: 'none',
         }} />
+        {/* Faint topographic contour motif */}
+        <svg viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true"
+             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+          <path d="M-20,46 Q110,12 230,42 T460,36" fill="none" stroke="#c8952a" strokeOpacity="0.12" strokeWidth="1.1" />
+          <path d="M-20,74 Q120,40 250,66 T470,58" fill="none" stroke="#c8952a" strokeOpacity="0.09" strokeWidth="1.1" />
+          <path d="M-20,104 Q90,72 220,96 T470,86" fill="none" stroke="#7fd4a8" strokeOpacity="0.09" strokeWidth="1.1" />
+        </svg>
         <div style={{ padding: '52px 22px 20px', position: 'relative' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <button
@@ -1006,9 +1013,10 @@ export default function ImpactPage() {
                       <div style={{
                         position: 'absolute', inset: 0,
                         WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden',
-                        background: '#fff', borderRadius: 18,
+                        background: '#fffdf8', borderRadius: 18,
                         padding: '16px 16px 18px',
-                        border: '1px solid rgba(0,0,0,0.05)',
+                        border: '1px solid rgba(120,90,40,0.10)',
+                        boxShadow: '0 8px 22px rgba(95,82,55,0.10)',
                         overflow: 'hidden',
                       }}>
                         <div style={{
