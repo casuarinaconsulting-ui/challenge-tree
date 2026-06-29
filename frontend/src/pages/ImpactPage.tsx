@@ -7,6 +7,8 @@ import Wordmark from '../components/Wordmark'
 import TreeMark from '../components/TreeMark'
 import { useAuthStore } from '../store/authStore'
 import { UpcomingImpactDays } from '../components/ImpactDay'
+import { ImpactMilestones, ImpactBadgeModal } from '../components/ImpactBadges'
+import { getEarnedImpactBadges, type EarnedImpactBadge } from '../utils/impactBadges'
 
 function ImpactWave() {
   return (
@@ -879,6 +881,42 @@ export default function ImpactPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const motivation   = useMemo(() => getDailyMotivation(), [dayKey])
 
+  // Impact badges: celebrate once when a new cumulative milestone is crossed.
+  // On the very first run we record the current badges as "seen" so existing
+  // users are not flooded with retroactive popups.
+  const earnedKey = useMemo(
+    () => getEarnedImpactBadges(data).map(b => b.key).join('|'),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data.co2Saved, data.waterSaved, data.wasteDiverted, data.treesEquiv, data.totalActions]
+  )
+  const IMPACT_BADGES_SEEN_KEY = 'challenge-tree-impact-badges-seen'
+  const [badgeQueue, setBadgeQueue] = useState<EarnedImpactBadge[]>([])
+  useEffect(() => {
+    if (!isDemo && isLoading) return
+    const earned = getEarnedImpactBadges(data)
+    let seen: string[] | null = null
+    try { seen = JSON.parse(localStorage.getItem(IMPACT_BADGES_SEEN_KEY) || 'null') } catch { /* ignore */ }
+    if (!Array.isArray(seen)) {
+      // First run: record current badges as the baseline so existing users are
+      // not shown a flood of retroactive popups.
+      try { localStorage.setItem(IMPACT_BADGES_SEEN_KEY, JSON.stringify(earned.map(b => b.key))) } catch { /* ignore */ }
+      return
+    }
+    const fresh = earned.filter(b => !seen!.includes(b.key))
+    if (fresh.length) setBadgeQueue(fresh)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [earnedKey, isLoading])
+
+  // Mark every earned badge as seen only once the user has acknowledged the
+  // queue, so the celebration reliably shows once and survives a remount.
+  const dismissImpactBadge = () => setBadgeQueue(q => {
+    const rest = q.slice(1)
+    if (rest.length === 0) {
+      try { localStorage.setItem(IMPACT_BADGES_SEEN_KEY, JSON.stringify(getEarnedImpactBadges(data).map(b => b.key))) } catch { /* ignore */ }
+    }
+    return rest
+  })
+
   const stats = [
     {
       icon: '🌬️', label: 'CO₂ saved', value: `${(data?.co2Saved ?? 0).toFixed(1)} kg`, color: '#5e7a44',
@@ -1036,7 +1074,7 @@ export default function ImpactPage() {
                         }}>
                           {s.value}
                         </p>
-                        <p style={{ fontSize: 13, color: '#999', margin: 0, letterSpacing: '0.03em' }}>{s.label}</p>
+                        <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 500, color: '#5a5444', margin: 0, letterSpacing: '0.02em' }}>{s.label}</p>
                         {/* Flip hint — a small chip that gently pulses until the user taps */}
                         <span style={{
                           position: 'absolute', bottom: 8, right: 9,
@@ -1137,6 +1175,8 @@ export default function ImpactPage() {
         }
       </div>
 
+      <ImpactMilestones totals={data} />
+
       {/* How impact is calculated */}
       <div style={{ padding: '24px 18px 0' }}>
         <div style={{
@@ -1167,6 +1207,10 @@ export default function ImpactPage() {
       <BottomNav />
 
       {showShare && <ShareModal data={data} onClose={() => setShowShare(false)} />}
+
+      {badgeQueue.length > 0 && (
+        <ImpactBadgeModal badge={badgeQueue[0]} totals={data} onClose={dismissImpactBadge} />
+      )}
 
       <style>{`
         @keyframes impactPeek {
