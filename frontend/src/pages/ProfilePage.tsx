@@ -97,6 +97,153 @@ function ChangePasswordCard() {
   )
 }
 
+function FeedbackCard() {
+  const user = useAuthStore(s => s.user)
+  const [open, setOpen]       = useState(false)
+  const [type, setType]       = useState<'Idea' | 'Issue' | 'Other'>('Idea')
+  const [message, setMessage] = useState('')
+  const [sent, setSent]       = useState(false)
+  const [copied, setCopied]   = useState(false)
+
+  const EMAIL   = 'casuarinaconsulting@gmail.com'
+  const WEBSITE = 'https://casuarinaconsulting.com'
+
+  function buildMailto() {
+    const subject = `Challenge Tre3 feedback · ${type}`
+    const ctx = [
+      user?.name  ? `From: ${user.name}`   : null,
+      user?.email ? `Email: ${user.email}` : null,
+      `Sent: ${new Date().toLocaleString()}`,
+    ].filter(Boolean).join('\n')
+    const body = `${message.trim()}\n\nContext:\n${ctx}\nSent from Challenge Tre3`
+    return `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
+
+  function handleSend(e: React.FormEvent) {
+    e.preventDefault()
+    if (!message.trim()) return
+    window.location.href = buildMailto()
+    setSent(true)
+  }
+
+  function copyEmail() {
+    navigator.clipboard?.writeText(EMAIL)
+      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
+      .catch(() => {})
+  }
+
+  const typeChip = (t: 'Idea' | 'Issue' | 'Other') => (
+    <button type="button" key={t} onClick={() => setType(t)} style={{
+      flex: 1, padding: '8px 0', borderRadius: 10, cursor: 'pointer',
+      fontFamily: "'Oswald', sans-serif", fontSize: 12.5, letterSpacing: '0.06em', textTransform: 'uppercase',
+      background: type === t ? '#1b4332' : 'transparent',
+      color: type === t ? '#fff' : '#6b6350',
+      border: `1px solid ${type === t ? '#1b4332' : '#e0d8c6'}`,
+      transition: 'all 0.15s ease',
+    }}>{t}</button>
+  )
+
+  const textareaStyle: React.CSSProperties = {
+    width: '100%', fontSize: 15, padding: '11px 12px', marginTop: 10,
+    background: '#fff', border: '1px solid #e5e0d5', borderRadius: 10,
+    outline: 'none', color: '#1a1f1c', boxSizing: 'border-box',
+    minHeight: 90, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5,
+  }
+
+  return (
+    <div className="card-3d animate-slide-up" style={{
+      borderRadius: 22, padding: '18px 20px', marginBottom: 14,
+      background: '#fffdf8', border: '1px solid rgba(120,90,40,0.10)',
+      boxShadow: '0 10px 26px rgba(95,82,55,0.10), 0 1px 0 rgba(255,255,255,0.7)',
+      animationDelay: '0.2s',
+    }}>
+      <button onClick={() => { setOpen(o => !o); setSent(false) }} style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+      }}>
+        <span style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.16em',
+          textTransform: 'uppercase', color: '#1b4332',
+        }}>
+          💬 Send feedback
+        </span>
+        <span style={{ color: '#9ca3af', fontSize: 14 }}>{open ? '−' : '+'}</span>
+      </button>
+
+      {open && (
+        <div style={{ marginTop: 16 }}>
+          {sent ? (
+            <div style={{
+              background: 'rgba(45,106,79,0.07)', border: '1px solid rgba(45,106,79,0.2)',
+              borderRadius: 12, padding: '14px 16px',
+            }}>
+              <p style={{ fontSize: 14, color: '#1b4332', lineHeight: 1.6, margin: '0 0 6px', fontWeight: 600 }}>
+                ✓ Thank you 🌿
+              </p>
+              <p style={{ fontSize: 13, color: '#566c60', lineHeight: 1.6, margin: 0 }}>
+                Your email app should have opened with your message ready to send. If it did not, reach us directly at{' '}
+                <a href={`mailto:${EMAIL}`} style={{ color: '#2d6a4f', fontWeight: 600 }}>{EMAIL}</a>.
+              </p>
+              <button onClick={() => { setSent(false); setMessage('') }} style={{
+                marginTop: 12, background: 'none', border: 'none', cursor: 'pointer',
+                color: '#2d6a4f', fontFamily: "'Oswald', sans-serif", fontSize: 13,
+                letterSpacing: '0.06em', textDecoration: 'underline', textDecorationStyle: 'dotted', padding: 0,
+              }}>
+                Send another
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSend}>
+              <p style={{ fontSize: 13, color: '#566c60', lineHeight: 1.55, margin: '0 0 12px' }}>
+                Ideas, issues, or just a hello. We read every message.
+              </p>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {(['Idea', 'Issue', 'Other'] as const).map(typeChip)}
+              </div>
+              <textarea
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                placeholder="What's on your mind?"
+                required
+                style={textareaStyle}
+              />
+              <button type="submit" disabled={!message.trim()} style={{
+                width: '100%', padding: '13px 0', borderRadius: 12, border: 'none', marginTop: 12,
+                cursor: message.trim() ? 'pointer' : 'not-allowed',
+                background: message.trim() ? 'linear-gradient(135deg, #2d6a4f, #1b4332)' : '#cdbfa6',
+                color: '#fff', fontFamily: "'Oswald', sans-serif",
+                fontWeight: 500, fontSize: 14, letterSpacing: '0.1em', textTransform: 'uppercase',
+                boxShadow: message.trim() ? 'inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 16px rgba(27,67,50,0.3)' : 'none',
+              }}>
+                Send via email
+              </button>
+
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14,
+                marginTop: 14, flexWrap: 'wrap',
+              }}>
+                <button type="button" onClick={copyEmail} style={{
+                  background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                  fontSize: 12.5, color: '#2d6a4f', fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                }}>
+                  {copied ? '✓ Email copied' : '📋 Copy email'}
+                </button>
+                <span style={{ color: '#d4c9b8' }}>·</span>
+                <a href={WEBSITE} target="_blank" rel="noopener noreferrer" style={{
+                  fontSize: 12.5, color: '#2d6a4f', fontFamily: "'Oswald', sans-serif",
+                  letterSpacing: '0.04em', textDecoration: 'none',
+                }}>
+                  🌐 Visit our website
+                </a>
+              </div>
+            </form>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function ProfilePage() {
   const navigate = useNavigate()
   const logout   = useAuthStore(s => s.logout)
@@ -510,6 +657,9 @@ export default function ProfilePage() {
         {impactTotals && (
           <ImpactBadgeSummary totals={impactTotals} onOpen={() => navigate('/impact')} />
         )}
+
+        {/* ── Send feedback ── */}
+        <FeedbackCard />
 
         {/* ── Change password ── */}
         <ChangePasswordCard />
