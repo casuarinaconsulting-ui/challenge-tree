@@ -20,6 +20,7 @@ export interface ImpactMetricDef {
   metric: ImpactMetric
   field: 'co2Saved' | 'waterSaved' | 'wasteDiverted' | 'treesEquiv' | 'totalActions'
   label: string
+  short: string       // compact label for the Profile summary
   unit: string        // shown after the number ('kg', 'L', '')
   color: string
   unique?: boolean    // total actions: rank ladder, special styling
@@ -36,7 +37,7 @@ export interface ImpactTotals {
 
 export const IMPACT_BADGES: ImpactMetricDef[] = [
   {
-    metric: 'co2', field: 'co2Saved', label: 'CO₂ saved', unit: 'kg', color: '#5e7a44',
+    metric: 'co2', field: 'co2Saved', label: 'CO₂ saved', short: 'CO₂', unit: 'kg', color: '#5e7a44',
     tiers: [
       { threshold: 1,    icon: '🌬️', name: 'First Breath',     equiv: 'About a 6 km car journey kept out of the air.' },
       { threshold: 10,   icon: '☁️', name: 'Clear Air',        equiv: 'Roughly 60 km not driven in an average car.' },
@@ -47,7 +48,7 @@ export const IMPACT_BADGES: ImpactMetricDef[] = [
     ],
   },
   {
-    metric: 'water', field: 'waterSaved', label: 'Water saved', unit: 'L', color: '#2b8fb5',
+    metric: 'water', field: 'waterSaved', label: 'Water saved', short: 'Water', unit: 'L', color: '#2b8fb5',
     tiers: [
       { threshold: 100,   icon: '💧', name: 'First Drops',    equiv: 'About a full bathtub of water saved.' },
       { threshold: 500,   icon: '🚿', name: 'Stream Saver',   equiv: 'Around five baths kept in the system.' },
@@ -58,7 +59,7 @@ export const IMPACT_BADGES: ImpactMetricDef[] = [
     ],
   },
   {
-    metric: 'waste', field: 'wasteDiverted', label: 'Waste diverted', unit: 'kg', color: '#7b68ae',
+    metric: 'waste', field: 'wasteDiverted', label: 'Waste diverted', short: 'Waste', unit: 'kg', color: '#7b68ae',
     tiers: [
       { threshold: 1,  icon: '♻️', name: 'First Save',        equiv: 'About 100 plastic bottles kept out of landfill.' },
       { threshold: 2,  icon: '🛍️', name: 'Bag Beater',        equiv: 'Roughly 200 plastic bottles diverted.' },
@@ -69,7 +70,7 @@ export const IMPACT_BADGES: ImpactMetricDef[] = [
     ],
   },
   {
-    metric: 'trees', field: 'treesEquiv', label: 'Trees equivalent', unit: '', color: '#2a9d8f',
+    metric: 'trees', field: 'treesEquiv', label: 'Trees equivalent', short: 'Trees', unit: '', color: '#2a9d8f',
     tiers: [
       { threshold: 0.5, icon: '🌱', name: 'Seedling',        equiv: 'Half a tree yearly carbon work, matched.' },
       { threshold: 1,   icon: '🌿', name: 'Sapling',         equiv: 'A whole tree year of carbon, matched by you.' },
@@ -80,7 +81,7 @@ export const IMPACT_BADGES: ImpactMetricDef[] = [
     ],
   },
   {
-    metric: 'actions', field: 'totalActions', label: 'Total actions', unit: '', color: '#c8952a', unique: true,
+    metric: 'actions', field: 'totalActions', label: 'Total actions', short: 'Actions', unit: '', color: '#c8952a', unique: true,
     tiers: [
       { threshold: 1,   icon: '🌱', name: 'First Step',     equiv: 'Every movement starts with one action. This is yours.' },
       { threshold: 10,  icon: '✊', name: 'Changemaker',    equiv: 'Ten mindful choices. A habit is forming.' },

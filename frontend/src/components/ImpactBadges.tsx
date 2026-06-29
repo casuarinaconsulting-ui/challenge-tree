@@ -85,6 +85,75 @@ export function ImpactMilestones({ totals }: { totals: ImpactTotals }) {
   )
 }
 
+// ── Compact summary for the Profile page, shown alongside the streak badges ──
+export function ImpactBadgeSummary({ totals, onOpen }: { totals: ImpactTotals; onOpen?: () => void }) {
+  const rows = getMetricProgress(totals)
+  const earnedTotal = rows.reduce((n, r) => n + r.earnedCount, 0)
+
+  return (
+    <button
+      onClick={onOpen}
+      className="card-3d animate-slide-up"
+      style={{
+        width: '100%', textAlign: 'left', cursor: onOpen ? 'pointer' : 'default',
+        borderRadius: 22, padding: '18px 20px', marginBottom: 14,
+        background: '#fffdf8', border: '1px solid rgba(120,90,40,0.10)',
+        boxShadow: '0 10px 26px rgba(95,82,55,0.10), 0 1px 0 rgba(255,255,255,0.7)',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <h3 style={{
+          fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: '0.16em',
+          textTransform: 'uppercase', color: '#1b4332', margin: 0,
+        }}>
+          Impact Badges
+        </h3>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 12.5, color: '#c8952a', letterSpacing: '0.06em' }}>
+            {earnedTotal} earned
+          </span>
+          {onOpen && <span style={{ color: '#c8952a', fontSize: 15 }}>›</span>}
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+        {rows.map(({ def, current, earnedCount }) => {
+          const earned = !!current
+          return (
+            <div key={def.metric} style={{ textAlign: 'center', minWidth: 0 }}>
+              <div style={{
+                height: 50, borderRadius: 14, position: 'relative',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 23,
+                background: `${def.color}14`, border: `1px solid ${def.color}30`,
+                filter: earned ? undefined : 'grayscale(1)', opacity: earned ? 1 : 0.4,
+              }}>
+                {earned ? current!.icon : def.tiers[0].icon}
+                {earnedCount > 0 && (
+                  <span style={{
+                    position: 'absolute', top: -6, right: -5,
+                    minWidth: 16, height: 16, padding: '0 4px', borderRadius: 999,
+                    background: def.color, color: '#fff', fontSize: 10, fontWeight: 700,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: "'Oswald', sans-serif", border: '1.5px solid #fffdf8',
+                  }}>
+                    {earnedCount}
+                  </span>
+                )}
+              </div>
+              <div style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 10.5, color: '#8a8270', marginTop: 5,
+                letterSpacing: '0.03em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                {def.short}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </button>
+  )
+}
+
 // ── Full ladder for one metric (bottom sheet), showing each tier + what it means ──
 function LadderModal({ def, totals, onClose }: { def: ImpactMetricDef; totals: ImpactTotals; onClose: () => void }) {
   const value = Number((totals as any)[def.field] ?? 0)

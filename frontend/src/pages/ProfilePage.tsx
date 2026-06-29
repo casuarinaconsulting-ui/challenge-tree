@@ -8,6 +8,8 @@ import Wordmark from '../components/Wordmark'
 import TreeMark from '../components/TreeMark'
 import { getEcosystem } from '../utils/ecosystems'
 import { getCurrentBadgeData, getNextBadgeData, BADGE_DATA } from '../utils/badges'
+import { ImpactBadgeSummary } from '../components/ImpactBadges'
+import { getLocalImpactTotals } from '../utils/impactTotals'
 
 function ChangePasswordCard() {
   const [open, setOpen]       = useState(false)
@@ -162,6 +164,10 @@ export default function ProfilePage() {
   const memberSince = profile?.createdAt
     ? new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : null
+
+  // Impact-badge totals: cumulative from the API for real users, or today's
+  // local completions in demo mode.
+  const impactTotals = (!isDemo && impact) ? impact : getLocalImpactTotals()
 
   return (
     <div className="min-h-screen pb-28" style={{
@@ -498,6 +504,11 @@ export default function ProfilePage() {
               })}
             </div>
           </div>
+        )}
+
+        {/* ── Impact badges (compact summary, links to full set on Impact) ── */}
+        {impactTotals && (
+          <ImpactBadgeSummary totals={impactTotals} onOpen={() => navigate('/impact')} />
         )}
 
         {/* ── Change password ── */}
