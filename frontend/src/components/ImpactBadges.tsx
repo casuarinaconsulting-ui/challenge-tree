@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   getMetricProgress, formatImpact,
   type ImpactTotals, type ImpactMetricDef, type EarnedImpactBadge,
@@ -157,6 +157,29 @@ export function ImpactBadgeSummary({ totals, onOpen }: { totals: ImpactTotals; o
 // ── Full ladder for one metric (bottom sheet), showing each tier + what it means ──
 function LadderModal({ def, totals, onClose }: { def: ImpactMetricDef; totals: ImpactTotals; onClose: () => void }) {
   const value = Number((totals as any)[def.field] ?? 0)
+
+  // Pull-down-to-dismiss: drag the header down past a threshold to close, else
+  // snap back. Backdrop tap and the close button also dismiss.
+  const [dragY, setDragY] = useState(0)
+  const drag = useRef({ startY: 0, active: false, dy: 0 })
+  const startDrag = (e: React.PointerEvent) => {
+    drag.current = { startY: e.clientY, active: true, dy: 0 }
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch { /* ignore */ }
+  }
+  const moveDrag = (e: React.PointerEvent) => {
+    if (!drag.current.active) return
+    const dy = e.clientY - drag.current.startY
+    drag.current.dy = dy > 0 ? dy : 0
+    setDragY(drag.current.dy)
+  }
+  const endDrag = (e: React.PointerEvent) => {
+    if (!drag.current.active) return
+    drag.current.active = false
+    try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId) } catch { /* ignore */ }
+    if (drag.current.dy > 90) onClose()
+    else setDragY(0)
+  }
+
   return (
     <div onClick={onClose} style={{
       position: 'fixed', inset: 0, zIndex: 320, background: 'rgba(10,28,18,0.78)',
@@ -166,12 +189,30 @@ function LadderModal({ def, totals, onClose }: { def: ImpactMetricDef; totals: I
       <div onClick={e => e.stopPropagation()} style={{
         width: '100%', maxWidth: 480, maxHeight: '88vh', overflowY: 'auto',
         background: '#fffdf8', borderRadius: '24px 24px 0 0', border: '1px solid rgba(0,0,0,0.06)',
+        transform: `translateY(${dragY}px)`,
+        transition: drag.current.active ? 'none' : 'transform 0.28s cubic-bezier(0.4,0.2,0.2,1)',
       }}>
-        <div style={{
-          background: `linear-gradient(135deg, ${def.color} 0%, ${def.color}cc 100%)`,
-          padding: '22px 22px 18px', position: 'sticky', top: 0, zIndex: 1,
-        }}>
-          <div style={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.45)', margin: '0 auto 14px' }} />
+        <div
+          onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}
+          style={{
+            background: `linear-gradient(135deg, ${def.color} 0%, ${def.color}cc 100%)`,
+            padding: '22px 22px 18px', position: 'sticky', top: 0, zIndex: 1,
+            cursor: 'grab', touchAction: 'none',
+          }}
+        >
+          <button
+            onClick={onClose}
+            onPointerDown={e => e.stopPropagation()}
+            aria-label="Close"
+            style={{
+              position: 'absolute', top: 12, right: 12, width: 30, height: 30, borderRadius: '50%',
+              border: 'none', cursor: 'pointer', background: 'rgba(255,255,255,0.22)', color: '#fff',
+              fontSize: 15, lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            ✕
+          </button>
+          <div style={{ width: 44, height: 5, borderRadius: 999, background: 'rgba(255,255,255,0.55)', margin: '0 auto 14px' }} />
           <div style={{
             fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: '0.15em',
             textTransform: 'uppercase', color: 'rgba(255,255,255,0.9)', marginBottom: 4,
