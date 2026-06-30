@@ -1,26 +1,25 @@
-import { Resend } from 'resend'
+import sgMail from '@sendgrid/mail'
 
-// Sender identity. Once your domain is verified in Resend, set EMAIL_FROM to an
-// address on it, e.g. "Challenge Tre3 <noreply@casuarinaconsulting.com>". Until
-// then it falls back to Resend's shared onboarding domain, which only delivers
-// to the email that owns the Resend account (fine for a first smoke test).
-const FROM     = process.env.EMAIL_FROM     || 'Challenge Tre3 <onboarding@resend.dev>'
+// Sender identity. The from address must be on the SendGrid-authenticated domain
+// (casuarinaconsulting.com). Override with EMAIL_FROM / EMAIL_REPLY_TO if needed.
+const FROM     = process.env.EMAIL_FROM     || 'Challenge Tre3 <noreply@casuarinaconsulting.com>'
 const REPLY_TO = process.env.EMAIL_REPLY_TO || 'casuarinaconsulting@gmail.com'
 
-function getResend(): Resend | null {
-  if (!process.env.RESEND_API_KEY) return null
-  return new Resend(process.env.RESEND_API_KEY)
+let configured = false
+function ensureConfigured(): boolean {
+  if (!process.env.SENDGRID_API_KEY) return false
+  if (!configured) { sgMail.setApiKey(process.env.SENDGRID_API_KEY); configured = true }
+  return true
 }
 
 // Single send path for every email. It no-ops (with a log) when no API key is
 // set, so the rest of the app keeps working even before email is configured.
 async function send(opts: { to: string; subject: string; html: string; text: string; replyTo?: string }): Promise<boolean> {
-  const resend = getResend()
-  if (!resend) {
-    console.log(`[email] RESEND_API_KEY not set, skipping "${opts.subject}" to ${opts.to}`)
+  if (!ensureConfigured()) {
+    console.log(`[email] SENDGRID_API_KEY not set, skipping "${opts.subject}" to ${opts.to}`)
     return false
   }
-  const { error } = await resend.emails.send({
+  await sgMail.send({
     from: FROM,
     to: opts.to,
     replyTo: opts.replyTo ?? REPLY_TO,
@@ -28,7 +27,6 @@ async function send(opts: { to: string; subject: string; html: string; text: str
     html: opts.html,
     text: opts.text,
   })
-  if (error) throw new Error((error as { message?: string })?.message || 'Resend send failed')
   return true
 }
 
