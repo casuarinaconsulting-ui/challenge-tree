@@ -98,6 +98,7 @@ export default function RegisterPage() {
   const [error, setError]           = useState('')
   const [loading, setLoading]       = useState(false)
   const [welcomeName, setWelcomeName] = useState<string | null>(null)
+  const [agreed, setAgreed]           = useState(false)
   const setAuth  = useAuthStore(s => s.setAuth)
   const navigate = useNavigate()
 
@@ -285,16 +286,32 @@ export default function RegisterPage() {
               </p>
             )}
 
+            {/* Consent to the privacy policy (required) */}
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, margin: '0 0 20px', cursor: 'pointer' }}>
+              <input
+                type="checkbox" required checked={agreed}
+                onChange={e => setAgreed(e.target.checked)}
+                style={{ marginTop: 2, width: 16, height: 16, accentColor: '#2d6a4f', flexShrink: 0 }}
+              />
+              <span style={{ fontSize: 13, color: '#566c60', lineHeight: 1.5 }}>
+                I agree to the{' '}
+                <Link to="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#2d6a4f', fontWeight: 600 }}>
+                  Privacy Policy
+                </Link>.
+              </span>
+            </label>
+
             <button
-              type="submit" disabled={loading}
+              type="submit" disabled={loading || !agreed}
               style={{
-                width: '100%', padding: '15px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
-                background: loading
-                  ? '#52b788'
+                width: '100%', padding: '15px 0', borderRadius: 12, border: 'none',
+                cursor: (loading || !agreed) ? 'not-allowed' : 'pointer',
+                background: (loading || !agreed)
+                  ? '#cdbfa6'
                   : 'linear-gradient(135deg, #2d6a4f, #1b4332)',
                 color: '#fff', fontFamily: "'Oswald', sans-serif",
                 fontWeight: 500, fontSize: 14, letterSpacing: '0.14em', textTransform: 'uppercase',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 16px rgba(27,67,50,0.3)',
+                boxShadow: (loading || !agreed) ? 'none' : 'inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 16px rgba(27,67,50,0.3)',
                 transition: 'opacity 0.2s',
               }}
             >

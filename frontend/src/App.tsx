@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage'
 import HomePage     from './pages/HomePage'
 import ProfilePage  from './pages/ProfilePage'
 import ImpactPage   from './pages/ImpactPage'
+import PrivacyPage  from './pages/PrivacyPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 const queryClient = new QueryClient({
@@ -48,6 +49,7 @@ export default function App() {
           <Routes>
             <Route path="/login"    element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/privacy"  element={<PrivacyPage />} />
             <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
             <Route path="/profile"  element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
             <Route path="/impact"   element={<PrivateRoute><ImpactPage /></PrivateRoute>} />
