@@ -103,6 +103,8 @@ function FeedbackCard() {
   const [type, setType]       = useState<'Idea' | 'Issue' | 'Other'>('Idea')
   const [message, setMessage] = useState('')
   const [sent, setSent]       = useState(false)
+  const [sentVia, setSentVia] = useState<'server' | 'mail'>('server')
+  const [loading, setLoading] = useState(false)
   const [copied, setCopied]   = useState(false)
 
   const EMAIL   = 'casuarinaconsulting@gmail.com'
@@ -119,11 +121,24 @@ function FeedbackCard() {
     return `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
-  function handleSend(e: React.FormEvent) {
+  async function handleSend(e: React.FormEvent) {
     e.preventDefault()
-    if (!message.trim()) return
-    window.location.href = buildMailto()
-    setSent(true)
+    const msg = message.trim()
+    if (!msg || loading) return
+    setLoading(true)
+    try {
+      await api.post('/feedback', { message: msg, type, name: user?.name, email: user?.email })
+      setSentVia('server')
+      setSent(true)
+    } catch {
+      // Server could not take it (offline, or email not configured yet): hand
+      // off to the user's mail app so the feedback still reaches us.
+      window.location.href = buildMailto()
+      setSentVia('mail')
+      setSent(true)
+    } finally {
+      setLoading(false)
+    }
   }
 
   function copyEmail() {
@@ -181,8 +196,10 @@ function FeedbackCard() {
                 ✓ Thank you 🌿
               </p>
               <p style={{ fontSize: 13, color: '#566c60', lineHeight: 1.6, margin: 0 }}>
-                Your email app should have opened with your message ready to send. If it did not, reach us directly at{' '}
-                <a href={`mailto:${EMAIL}`} style={{ color: '#2d6a4f', fontWeight: 600 }}>{EMAIL}</a>.
+                {sentVia === 'server'
+                  ? 'Your feedback is on its way to the Casuarina team. We read every message.'
+                  : <>Your email app should have opened with your message ready to send. If it did not, reach us directly at{' '}
+                      <a href={`mailto:${EMAIL}`} style={{ color: '#2d6a4f', fontWeight: 600 }}>{EMAIL}</a>.</>}
               </p>
               <button onClick={() => { setSent(false); setMessage('') }} style={{
                 marginTop: 12, background: 'none', border: 'none', cursor: 'pointer',
@@ -207,15 +224,15 @@ function FeedbackCard() {
                 required
                 style={textareaStyle}
               />
-              <button type="submit" disabled={!message.trim()} style={{
+              <button type="submit" disabled={!message.trim() || loading} style={{
                 width: '100%', padding: '13px 0', borderRadius: 12, border: 'none', marginTop: 12,
-                cursor: message.trim() ? 'pointer' : 'not-allowed',
-                background: message.trim() ? 'linear-gradient(135deg, #2d6a4f, #1b4332)' : '#cdbfa6',
+                cursor: (message.trim() && !loading) ? 'pointer' : 'not-allowed',
+                background: (message.trim() && !loading) ? 'linear-gradient(135deg, #2d6a4f, #1b4332)' : '#cdbfa6',
                 color: '#fff', fontFamily: "'Oswald', sans-serif",
                 fontWeight: 500, fontSize: 14, letterSpacing: '0.1em', textTransform: 'uppercase',
-                boxShadow: message.trim() ? 'inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 16px rgba(27,67,50,0.3)' : 'none',
+                boxShadow: (message.trim() && !loading) ? 'inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 16px rgba(27,67,50,0.3)' : 'none',
               }}>
-                Send via email
+                {loading ? 'Sending…' : 'Send feedback'}
               </button>
 
               <div style={{

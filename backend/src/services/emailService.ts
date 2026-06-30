@@ -1,25 +1,38 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-function createTransporter() {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return null
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
+// Sender identity. Once your domain is verified in Resend, set EMAIL_FROM to an
+// address on it, e.g. "Challenge Tre3 <noreply@casuarinaconsulting.com>". Until
+// then it falls back to Resend's shared onboarding domain, which only delivers
+// to the email that owns the Resend account (fine for a first smoke test).
+const FROM     = process.env.EMAIL_FROM     || 'Challenge Tre3 <onboarding@resend.dev>'
+const REPLY_TO = process.env.EMAIL_REPLY_TO || 'casuarinaconsulting@gmail.com'
+
+function getResend(): Resend | null {
+  if (!process.env.RESEND_API_KEY) return null
+  return new Resend(process.env.RESEND_API_KEY)
+}
+
+// Single send path for every email. It no-ops (with a log) when no API key is
+// set, so the rest of the app keeps working even before email is configured.
+async function send(opts: { to: string; subject: string; html: string; text: string; replyTo?: string }): Promise<boolean> {
+  const resend = getResend()
+  if (!resend) {
+    console.log(`[email] RESEND_API_KEY not set, skipping "${opts.subject}" to ${opts.to}`)
+    return false
+  }
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: opts.to,
+    replyTo: opts.replyTo ?? REPLY_TO,
+    subject: opts.subject,
+    html: opts.html,
+    text: opts.text,
   })
+  if (error) throw new Error((error as { message?: string })?.message || 'Resend send failed')
+  return true
 }
 
 export async function sendWelcomeEmail(to: string, name: string): Promise<void> {
-  const transporter = createTransporter()
-  if (!transporter) {
-    console.log('[email] EMAIL_USER/EMAIL_PASS not set, skipping welcome email')
-    return
-  }
-
   const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -172,8 +185,7 @@ The Challenge Tree Team
 Casuarina Consulting
   `.trim()
 
-  await transporter.sendMail({
-    from: `"Challenge Tree" <${process.env.EMAIL_USER}>`,
+  await send({
     to,
     subject: 'Welcome to Challenge Tree, Your Daily Sustainability Journey Begins',
     text,
@@ -184,12 +196,6 @@ Casuarina Consulting
 }
 
 export async function sendPasswordResetEmail(to: string, name: string, tempPassword: string): Promise<void> {
-  const transporter = createTransporter()
-  if (!transporter) {
-    console.log('[email] EMAIL_USER/EMAIL_PASS not set, skipping reset email')
-    return
-  }
-
   const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -308,8 +314,7 @@ The Challenge Tree Team
 Casuarina Consulting
   `.trim()
 
-  await transporter.sendMail({
-    from: `"Challenge Tree" <${process.env.EMAIL_USER}>`,
+  await send({
     to,
     subject: 'Reset your Challenge Tree password',
     text,
@@ -317,4 +322,39 @@ Casuarina Consulting
   })
 
   console.log(`[email] Password reset email sent to ${to}`)
+}
+
+// ── Feedback submitted from the app's Profile page ──
+export async function sendFeedbackEmail(input: {
+  message: string
+  type?: string
+  name?: string
+  email?: string
+}): Promise<boolean> {
+  const to   = process.env.FEEDBACK_TO || 'casuarinaconsulting@gmail.com'
+  const type = input.type?.trim() || 'Feedback'
+  const from = [input.name, input.email].filter(Boolean).join(' · ') || 'Anonymous'
+  const esc  = (s: string) => s.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c] as string))
+
+  const subject = `Challenge Tre3 feedback · ${type}`
+  const text = `${input.message}\n\nFrom: ${from}\nType: ${type}\nSent from Challenge Tre3`
+  const html = `
+<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">
+  <div style="background:#1b4332;border-radius:16px 16px 0 0;padding:22px 26px;">
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:rgba(149,213,178,0.7);">Casuarina Consulting</div>
+    <div style="font-size:20px;font-weight:800;color:#fff;margin-top:4px;">Challenge Tre3 feedback</div>
+  </div>
+  <div style="background:#fff;border:1px solid #eee;border-top:none;border-radius:0 0 16px 16px;padding:24px 26px;">
+    <table style="width:100%;font-size:13px;color:#374151;margin-bottom:16px;">
+      <tr><td style="color:#9ca3af;padding:3px 0;">Type</td><td style="text-align:right;font-weight:600;color:#1b4332;">${esc(type)}</td></tr>
+      <tr><td style="color:#9ca3af;padding:3px 0;">From</td><td style="text-align:right;">${esc(from)}</td></tr>
+    </table>
+    <div style="background:#f0faf4;border-left:4px solid #52b788;border-radius:0 10px 10px 0;padding:16px 18px;font-size:15px;color:#1b4332;line-height:1.7;white-space:pre-wrap;">${esc(input.message)}</div>
+  </div>
+</div>`.trim()
+
+  // Reply-to the user when they left an address, so a reply reaches them directly.
+  const ok = await send({ to, subject, text, html, replyTo: input.email || undefined })
+  if (ok) console.log(`[email] Feedback email sent to ${to}`)
+  return ok
 }

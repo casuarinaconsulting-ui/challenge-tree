@@ -9,6 +9,7 @@ import userRoutes      from './routes/user'
 import challengeRoutes from './routes/challenges'
 import impactRoutes    from './routes/impact'
 import badgeRoutes     from './routes/badges'
+import feedbackRoutes  from './routes/feedback'
 
 dotenv.config()
 
@@ -34,6 +35,7 @@ app.use('/api/user',       userRoutes)
 app.use('/api/challenges', challengeRoutes)
 app.use('/api/impact',     impactRoutes)
 app.use('/api/badges',     badgeRoutes)
+app.use('/api/feedback',   feedbackRoutes)
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err.stack)
