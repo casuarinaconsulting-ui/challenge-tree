@@ -2,7 +2,7 @@
   "installCommand": "cd frontend && npm install",
   "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/dist",
-  "alias": ["challenge-tree.vercel.app"],
+  "alias": ["challengetree.casuarinaconsulting.com", "challenge-tree.vercel.app"],
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]

@@ -452,7 +452,7 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
     `💧 ${water} L water saved\n` +
     `♻️ ${waste} kg waste diverted\n` +
     `✅ ${actions} actions completed\n\n` +
-    `Join me → https://challenge-tree.vercel.app`
+    `Join me → https://challengetree.casuarinaconsulting.com`
 
   useEffect(() => {
     const style = document.createElement('style')
@@ -587,7 +587,7 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
     ctx.font = '400 11px "Helvetica Neue", Arial, sans-serif'
     ctx.fillStyle = 'rgba(255,255,255,0.22)'
     ctx.textAlign = 'center'
-    ctx.fillText('challenge-tree.vercel.app', W / 2, H - 28)
+    ctx.fillText('challengetree.casuarinaconsulting.com', W / 2, H - 28)
     ctx.textAlign = 'left'
 
     canvas.toBlob(blob => {
@@ -723,7 +723,7 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
               <span style={{
                 fontSize: 11, color: 'rgba(255,255,255,0.22)',
                 fontFamily: "'Oswald', sans-serif", letterSpacing: '0.14em', textTransform: 'uppercase',
-              }}>challenge-tree.vercel.app</span>
+              }}>challengetree.casuarinaconsulting.com</span>
               <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
             </div>
           </div>

@@ -295,6 +295,9 @@ export default function RegisterPage() {
               />
               <span style={{ fontSize: 13, color: '#566c60', lineHeight: 1.5 }}>
                 I agree to the{' '}
+                <Link to="/terms" target="_blank" rel="noopener noreferrer" style={{ color: '#2d6a4f', fontWeight: 600 }}>
+                  Terms of Service
+                </Link>{' '}and{' '}
                 <Link to="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#2d6a4f', fontWeight: 600 }}>
                   Privacy Policy
                 </Link>.

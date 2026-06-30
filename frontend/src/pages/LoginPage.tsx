@@ -408,7 +408,14 @@ export default function LoginPage() {
             <div style={{ width: 36, height: 1, background: '#d4c9b8' }} />
           </div>
 
-          <div style={{ marginTop: 20 }}>
+          <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <Link to="/terms" style={{
+              fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: '0.12em',
+              textTransform: 'uppercase', color: 'rgba(45,106,79,0.6)', textDecoration: 'none',
+            }}>
+              Terms
+            </Link>
+            <span style={{ color: 'rgba(26,51,40,0.25)' }}>·</span>
             <Link to="/privacy" style={{
               fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: '0.12em',
               textTransform: 'uppercase', color: 'rgba(45,106,79,0.6)', textDecoration: 'none',

@@ -100,7 +100,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
               <table width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://challenge-tree.vercel.app"
+                    <a href="https://challengetree.casuarinaconsulting.com"
                        style="display:inline-block;background:linear-gradient(135deg,#2d6a4f,#1b4332);color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:15px 36px;border-radius:12px;box-shadow:0 4px 16px rgba(27,67,50,0.3);">
                       Open Challenge Tree →
                     </a>
@@ -260,7 +260,7 @@ export async function sendPasswordResetEmail(to: string, name: string, tempPassw
               <table width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://challenge-tree.vercel.app"
+                    <a href="https://challengetree.casuarinaconsulting.com"
                        style="display:inline-block;background:linear-gradient(135deg,#2d6a4f,#1b4332);color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:15px 36px;border-radius:12px;box-shadow:0 4px 16px rgba(27,67,50,0.3);">
                       Sign in now →
                     </a>
@@ -301,7 +301,7 @@ We received a request to reset the password for your Challenge Tree account.
 Your temporary password is: ${tempPassword}
 
 What to do next:
-1. Sign in using this temporary password at https://challenge-tree.vercel.app
+1. Sign in using this temporary password at https://challengetree.casuarinaconsulting.com
 2. Go to your Profile page.
 3. Choose "Change Password" and set a new password you'll remember.
 
