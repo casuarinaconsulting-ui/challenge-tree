@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Challenge Tre3 - LinkedIn Carousel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#333; font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; }
+.slide {
+  width:1080px; height:1080px; position:relative; overflow:hidden;
+  background: linear-gradient(168deg, #205038 0%, #14332a 55%, #0c261a 100%);
+  color:#fdf9f0; page-break-after:always;
+}
+.glow-g { position:absolute; top:-160px; left:-160px; width:600px; height:600px; border-radius:50%;
+  background:radial-gradient(circle, rgba(82,183,136,0.20), transparent 70%); }
+.glow-a { position:absolute; bottom:-180px; right:-180px; width:640px; height:640px; border-radius:50%;
+  background:radial-gradient(circle, rgba(200,149,42,0.20), transparent 70%); }
+.osw { font-family:'Oswald', sans-serif; }
+.eyebrow { position:absolute; top:56px; left:70px; font-family:'Oswald'; font-size:19px; letter-spacing:0.22em;
+  color:#e0b452; font-weight:500; }
+.pagenum { position:absolute; top:56px; right:70px; font-family:'Oswald'; font-size:19px; letter-spacing:0.14em;
+  color:rgba(253,249,240,0.45); }
+.foot { position:absolute; bottom:52px; left:70px; font-size:19px; color:rgba(253,249,240,0.55); }
+.brand { position:absolute; bottom:52px; right:70px; font-family:'Oswald'; font-size:17px; letter-spacing:0.24em;
+  color:rgba(253,249,240,0.45); }
+.h { font-family:'Oswald'; font-weight:700; line-height:1.06; text-transform:uppercase; }
+.gold { color:#e0b452; }
+.mint { color:#7fe0b0; }
+.body { font-size:25px; line-height:1.55; color:rgba(253,249,240,0.82); }
+.rule { width:64px; height:5px; background:#c8952a; border-radius:3px; margin:34px 0; }
+/* two-column feature slide */
+.cols { position:absolute; top:150px; bottom:130px; left:70px; right:70px; display:flex; align-items:center; gap:48px; }
+.txt { flex:1.15; }
+.txt .h { font-size:64px; margin-bottom:0; }
+.phone { flex:0 0 400px; }
+.phone .shell { width:400px; height:704px; border-radius:34px; overflow:hidden;
+  box-shadow:0 42px 90px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.08); }
+.phone img { width:100%; height:100%; display:block; }
+.chip { display:inline-block; font-family:'Oswald'; font-size:21px; letter-spacing:0.1em; color:#f0d289;
+  background:rgba(200,149,42,0.16); border:1px solid rgba(224,180,82,0.5); border-radius:99px;
+  padding:8px 22px; margin-bottom:30px; }
+</style>
+</head>
+<body>
+
+<!-- 1 : COVER -->
+<div class="slide">
+  <div class="glow-g"></div><div class="glow-a"></div>
+  <div class="eyebrow">CASUARINA CONSULTING &middot; CHALLENGE TRE3</div>
+  <div class="pagenum">1 / 10</div>
+  <div style="position:absolute; top:280px; left:70px; right:70px;">
+    <div class="h" style="font-size:104px;">Climate change<br/>feels <span class="gold">too big</span><br/>to fix.</div>
+    <div class="rule"></div>
+    <div class="body" style="font-size:30px; max-width:760px;">So we made it three small things a day.
+    Meet <strong style="color:#fdf9f0;">Challenge Tre3</strong>, our free web app for real, measurable climate action.</div>
+  </div>
+  <div class="foot">Swipe to see how it works &rarr;</div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+<!-- 2 : 364 CHALLENGES -->
+<div class="slide">
+  <div class="glow-g"></div><div class="glow-a"></div>
+  <div class="eyebrow">CASUARINA CONSULTING &middot; CHALLENGE TRE3</div>
+  <div class="pagenum">2 / 10</div>
+  <div class="cols">
+    <div class="txt">
+      <div class="h" style="font-size:150px; line-height:1;"><span class="gold">364</span></div>
+      <div class="h" style="font-size:56px; margin-top:6px;">unique challenges.<br/><span class="mint">3 a day.</span></div>
+      <div class="rule"></div>
+      <div class="body">Across 12 categories: energy, water, food, transport, waste, biodiversity, community and more.
+      That is around four months of daily action before anything repeats.</div>
+    </div>
+    <div class="phone"><div class="shell"><img src="linkedin-carousel-slides/phones/frame-02-daily-challenges.png"/></div></div>
+  </div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+<!-- 3 : PICKED FOR YOU -->
+<div class="slide">
+  <div class="glow-g"></div><div class="glow-a"></div>
+  <div class="eyebrow">CASUARINA CONSULTING &middot; CHALLENGE TRE3</div>
+  <div class="pagenum">3 / 10</div>
+  <div class="cols">
+    <div class="txt">
+      <div class="h" style="font-size:64px;">Picked for you.<br/><span class="gold">Learn why it counts.</span></div>
+      <div class="rule"></div>
+      <div class="body">Every challenge explains the science of why it matters.
+      Does not fit your day? Swap it for one that does.</div>
+    </div>
+    <div class="phone"><div class="shell"><img src="linkedin-carousel-slides/phones/frame-03-why-it-matters.png"/></div></div>
+  </div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+<!-- 4 : REAL IMPACT -->
+<div class="slide">
+  <div class="glow-g"></div><div class="glow-a"></div>
+  <div class="eyebrow">CASUARINA CONSULTING &middot; CHALLENGE TRE3</div>
+  <div class="pagenum">4 / 10</div>
+  <div class="cols">
+    <div class="txt">
+      <div class="h" style="font-size:64px;">Tap done.<br/><span class="mint">Watch real impact grow.</span></div>
+      <div class="rule"></div>
+      <div class="body">Every action converts into numbers you can stand behind:
+      CO2 saved, litres of water, waste diverted, tree equivalents.</div>
+    </div>
+    <div class="phone"><div class="shell"><img src="linkedin-carousel-slides/phones/frame-04-real-impact.png"/></div></div>
+  </div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+<!-- 5 : SPECIES -->
+<div class="slide">
+  <div class="glow-g"></div><div class="glow-a"></div>
+  <div class="eyebrow">CASUARINA CONSULTING &middot; CHALLENGE TRE3</div>
+  <div class="pagenum">5 / 10</div>
+  <div class="cols">
+    <div class="txt">
+      <div class="h" style="font-size:64px;">Every milestone,<br/><span class="gold">a new endangered species</span> to meet.</div>
+      <div class="rule"></div>
+      <div class="body">Your streak unlocks species like the Siberian Tiger,
+      each with its story, habitat, and what is pushing it to the edge.
+      Learn about them as you grow.</div>
+    </div>
+    <div class="phone"><div class="shell"><img src="linkedin-carousel-slides/phones/frame-06-badge-unlock.png"/></div></div>
+  </div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+<!-- 6 : EQUIVALENCES -->
+<div class="slide">
+  <div class="glow-g"></div><div class="glow-a"></div>
+  <div class="eyebrow">CASUARINA CONSULTING &middot; CHALLENGE TRE3</div>
+  <div class="pagenum">6 / 10</div>
+  <div class="cols">
+    <div class="txt">
+      <div class="h" style="font-size:64px;">See what your impact <span class="mint">really equals.</span></div>
+      <div class="rule"></div>
+      <div class="body">Milestone badges translate your totals into things you can picture,
+      like the plastic of roughly 200 bottles kept out of the stream.</div>
+    </div>
+    <div class="phone"><div class="shell"><img src="linkedin-carousel-slides/phones/frame-07-impact-badges.png"/></div></div>
+  </div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+<!-- 7 : IMPACT DAYS -->
+<div class="slide">
+  <div class="glow-g"></div><div class="glow-a"></div>
+  <div class="eyebrow">CASUARINA CONSULTING &middot; CHALLENGE TRE3</div>
+  <div class="pagenum">7 / 10</div>
+  <div class="cols">
+    <div class="txt">
+      <div class="h" style="font-size:64px;">Stay mindful of <span class="gold">the days that matter.</span></div>
+      <div class="rule"></div>
+      <div class="body">World Oceans Day, Earth Hour, World Cleanup Day and more,
+      built into the app with themed challenges when they arrive.</div>
+    </div>
+    <div class="phone"><div class="shell"><img src="linkedin-carousel-slides/phones/frame-08-impact-days.png"/></div></div>
+  </div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+<!-- 8 : COLLECTIVE -->
+<div class="slide">
+  <div class="glow-g"></div><div class="glow-a"></div>
+  <div class="eyebrow">CASUARINA CONSULTING &middot; CHALLENGE TRE3</div>
+  <div class="pagenum">8 / 10</div>
+  <div class="cols">
+    <div class="txt">
+      <div class="h" style="font-size:64px;">Together <span class="mint">so far.</span></div>
+      <div class="rule"></div>
+      <div class="body">Our early members have already saved over 18,000 litres of water
+      and completed more than 100 actions. Small on a spreadsheet.
+      Massive as a habit. And this is just the start.</div>
+    </div>
+    <div class="phone"><div class="shell"><img src="linkedin-carousel-slides/phones/frame-09-collective.png"/></div></div>
+  </div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+<!-- 9 : THE TURN -->
+<div class="slide" style="background:#0e0e0e;">
+  <div style="position:absolute; top:-160px; right:-160px; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle, rgba(200,149,42,0.14), transparent 70%);"></div>
+  <div class="eyebrow">SHARE OF GLOBAL EMISSIONS</div>
+  <div class="pagenum">9 / 10</div>
+  <div style="position:absolute; top:190px; left:70px; right:70px;">
+    <div class="h" style="font-size:62px;">If ordinary people can do this much...</div>
+  </div>
+  <div style="position:absolute; top:400px; left:150px; right:150px; display:flex; align-items:flex-end; justify-content:center; gap:110px; height:360px;">
+    <div style="text-align:center;">
+      <div class="osw" style="color:#e0b452; font-size:30px; font-weight:600; margin-bottom:12px;">richest 1%</div>
+      <div style="width:150px; height:300px; background:linear-gradient(180deg,#e0b452,#a0720f); border-radius:12px; margin:0 auto;"></div>
+    </div>
+    <div style="text-align:center;">
+      <div class="osw" style="color:#8fa595; font-size:30px; font-weight:600; margin-bottom:12px;">poorest 50%</div>
+      <div style="width:150px; height:198px; background:#4a5a4d; border-radius:12px; margin:0 auto;"></div>
+    </div>
+  </div>
+  <div style="position:absolute; bottom:150px; left:70px; right:70px; text-align:center;">
+    <div class="h" style="font-size:44px;"><span class="gold">So why can't those who can do more,</span> do their share?</div>
+  </div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+<!-- 10 : CTA -->
+<div class="slide">
+  <div class="glow-g"></div><div class="glow-a"></div>
+  <div class="eyebrow">CASUARINA CONSULTING &middot; CHALLENGE TRE3</div>
+  <div class="pagenum">10 / 10</div>
+  <div class="cols">
+    <div class="txt">
+      <div class="chip">100% FREE &middot; NO APP STORE &middot; ANY BROWSER</div>
+      <div class="h" style="font-size:74px;">Start today.<br/><span class="gold">Be the proof.</span></div>
+      <div class="rule"></div>
+      <div class="body">Join free, pick the ecosystem that represents you,
+      and take your first three actions today.</div>
+      <div class="osw" style="margin-top:36px; font-size:31px; color:#7fe0b0; font-weight:500;">challengetree.casuarinaconsulting.com</div>
+    </div>
+    <div class="phone"><div class="shell"><img src="linkedin-carousel-slides/phones/frame-12-choose-your-ecosystem.png"/></div></div>
+  </div>
+  <div class="brand">CASUARINA CONSULTING</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Challenge Tre3 — Logo Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;500;600;700&family=EB+Garamond:wght@600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f5efe6; color: #1b4332; font-family: 'Oswald', sans-serif; padding: 40px 20px 80px; }
+  h1 { font-weight: 600; font-size: 26px; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; color: #6b7280; font-weight: 300; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 36px; }
+  .grid { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 26px; }
+  .card { background: #fff; border-radius: 18px; padding: 26px; border: 1px solid rgba(0,0,0,0.06); }
+  .card h2 { font-weight: 500; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #2d6a4f; margin-bottom: 4px; }
+  .card p { font-weight: 300; font-size: 13.5px; color: #6b7280; margin-bottom: 18px; }
+  .stage { display: flex; align-items: center; justify-content: center; border-radius: 12px; padding: 24px; margin-bottom: 16px; min-height: 130px; }
+  .stage.light { background: #f5efe6; }
+  .stage.checker { background:
+      linear-gradient(45deg,#e9e4da 25%,transparent 25%),
+      linear-gradient(-45deg,#e9e4da 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,#e9e4da 75%),
+      linear-gradient(-45deg,transparent 75%,#e9e4da 75%);
+    background-size: 18px 18px; background-position: 0 0,0 9px,9px -9px,-9px 0px; background-color:#fff; }
+  canvas { max-width: 100%; height: auto; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg,#2d6a4f,#1b4332); color: #fff; border: none; border-radius: 10px; padding: 11px 20px; font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+  .btn:hover { opacity: 0.92; }
+  .hint { max-width: 720px; margin: 30px auto 0; background: #fff; border-radius: 18px; padding: 24px 26px; border: 1px solid rgba(0,0,0,0.06); }
+  .hint h2 { font-weight: 500; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: #2d6a4f; margin-bottom: 12px; }
+  .hint ol { padding-left: 20px; }
+  .hint li { font-weight: 300; font-size: 14.5px; line-height: 1.75; color: #374151; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<h1>Challenge Tre<span style="font-family:'EB Garamond',serif;color:#c8952a;">3</span> — Logo Studio</h1>
+<div class="sub">Click download under any version to get a transparent PNG</div>
+
+<div class="grid">
+
+  <div class="card">
+    <h2>Pill button (full colour)</h2>
+    <p>Best as a clickable button on a light Wix section.</p>
+    <div class="stage light"><canvas id="cPill"></canvas></div>
+    <button class="btn" onclick="dl('cPill','challenge-tre3-button.png')">⬇ Download PNG</button>
+  </div>
+
+  <div class="card">
+    <h2>Wordmark (transparent)</h2>
+    <p>Green text on transparent — drop onto any light background.</p>
+    <div class="stage checker"><canvas id="cWord"></canvas></div>
+    <button class="btn" onclick="dl('cWord','challenge-tre3-wordmark.png')">⬇ Download PNG</button>
+  </div>
+
+  <div class="card">
+    <h2>Icon badge (square)</h2>
+    <p>Compact square — great for a small button, avatar, or favicon.</p>
+    <div class="stage checker"><canvas id="cIcon"></canvas></div>
+    <button class="btn" onclick="dl('cIcon','challenge-tre3-icon.png')">⬇ Download PNG</button>
+  </div>
+
+</div>
+
+<div class="hint">
+  <h2>Add it as a button on Wix</h2>
+  <ol>
+    <li>Download the version you want (the pill button is the most "button-like").</li>
+    <li>In the Wix Editor: Add → Image → upload the PNG.</li>
+    <li>Select the image → click the Link icon → Web Address → paste https://challenge-tree.vercel.app</li>
+    <li>Set it to open in a new tab, and resize to taste.</li>
+  </ol>
+</div>
+
+<script>
+const GREEN_TOP='#1b4332', GREEN_BOT='#0d2b1e', GOLD='#c8952a', GOLD_LT='#e8c97a';
+const T1='#52b788', T2='#3a8f63', T3='#2d6a4f';
+
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+// Tree in a local 100x110 box, placed at (ox,oy) scaled by s
+function drawTree(ctx,ox,oy,s){
+  const X=lx=>ox+lx*s, Y=ly=>oy+ly*s;
+  const circ=(cx,cy,r,fill)=>{ctx.beginPath();ctx.arc(X(cx),Y(cy),r*s,0,7);ctx.fillStyle=fill;ctx.fill();};
+  ctx.fillStyle=GOLD;roundRect(ctx,X(45.5),Y(64),9*s,40*s,3*s);ctx.fill();
+  circ(50,44,30,T3);
+  circ(31,50,18,T2);
+  circ(69,50,18,T2);
+  circ(50,27,21,T1);
+  circ(40,33,10,'#95d5b2');
+  ctx.fillStyle='#f0c96e';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=`600 ${38*s}px "EB Garamond"`;ctx.fillText('3',X(50),Y(45));
+  ctx.textAlign='start';ctx.textBaseline='alphabetic';
+}
+
+function setup(id,w,h){
+  const c=document.getElementById(id),dpr=3;
+  c.width=w*dpr;c.height=h*dpr;c.style.width=w+'px';c.style.height=h+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);return ctx;
+}
+
+function wordmark(ctx,x,baseline,teColor,threeColor,sub){
+  ctx.textBaseline='alphabetic';
+  ctx.font='600 36px Oswald';ctx.fillStyle=teColor;ctx.fillText('Challenge Tre',x,baseline);
+  const w=ctx.measureText('Challenge Tre').width;
+  ctx.font='600 41px "EB Garamond"';ctx.fillStyle=threeColor;ctx.fillText('3',x+w-3,baseline+2);
+  ctx.font='300 11px Oswald';ctx.fillStyle=sub;ctx.letterSpacing='3px';
+  ctx.fillText('BY CASUARINA CONSULTING',x+1,baseline+20);ctx.letterSpacing='0px';
+}
+
+function drawPill(){
+  const ctx=setup('cPill',470,132);
+  const g=ctx.createLinearGradient(0,6,0,126);g.addColorStop(0,GREEN_TOP);g.addColorStop(1,GREEN_BOT);
+  ctx.fillStyle=g;roundRect(ctx,4,6,462,120,60);ctx.fill();
+  ctx.strokeStyle='rgba(200,149,42,0.45)';ctx.lineWidth=1.5;roundRect(ctx,5,7,460,118,59);ctx.stroke();
+  drawTree(ctx,34,28,0.72);
+  wordmark(ctx,126,78,'#ffffff',GOLD_LT,'rgba(255,255,255,0.55)');
+}
+function drawWord(){
+  const ctx=setup('cWord',470,132);
+  drawTree(ctx,18,28,0.72);
+  wordmark(ctx,110,78,'#1b4332',GOLD,'rgba(45,106,79,0.7)');
+}
+function drawIcon(){
+  const ctx=setup('cIcon',240,240);
+  const g=ctx.createLinearGradient(0,10,0,230);g.addColorStop(0,GREEN_TOP);g.addColorStop(1,GREEN_BOT);
+  ctx.fillStyle=g;roundRect(ctx,10,10,220,220,52);ctx.fill();
+  ctx.strokeStyle='rgba(200,149,42,0.45)';ctx.lineWidth=2;roundRect(ctx,11,11,218,218,51);ctx.stroke();
+  drawTree(ctx,64,56,1.12);
+}
+function dl(id,name){const c=document.getElementById(id);c.toBlob(b=>{const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);});}
+
+(async()=>{
+  try{await Promise.all([document.fonts.load('600 36px Oswald'),document.fonts.load('700 36px Oswald'),document.fonts.load('300 11px Oswald'),document.fonts.load('600 41px "EB Garamond"')]);}catch(e){}
+  await document.fonts.ready;
+  drawPill();drawWord();drawIcon();
+})();
+</script>
+</body>
+</html>
