@@ -725,36 +725,51 @@ export default function HomePage() {
             </button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, margin: '0 0 6px' }}>
-            <p style={{
-              fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: '0.22em',
-              textTransform: 'uppercase', color: 'rgba(149,213,178,0.7)', margin: 0,
-              flex: '1 1 auto', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>
-              {formatTodayLabel()}
-            </p>
-            <a
-              href="https://pxbc.casuarinaconsulting.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Planet X Business Collective"
-              style={{
-                flex: '0 0 auto', display: 'inline-flex', alignItems: 'center', gap: 6,
-                background: 'linear-gradient(135deg, rgba(224,180,82,0.32) 0%, rgba(200,149,42,0.13) 100%)',
-                border: '1px solid rgba(224,180,82,0.55)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16), 0 4px 12px rgba(200,149,42,0.20)',
-                color: '#f2d894', borderRadius: 999, padding: '5px 12px 5px 9px', textDecoration: 'none',
-                fontFamily: "'Oswald', sans-serif", fontSize: 11.5, letterSpacing: '0.03em', whiteSpace: 'nowrap',
-              }}
-            >
-              <span style={{ fontSize: 13, lineHeight: 1 }}>🪐</span>
-              <span style={{ fontWeight: 600 }}>Planet X</span>
-              <span style={{ color: 'rgba(242,216,148,0.72)' }}>Collective</span>
-            </a>
-          </div>
+          <p style={{
+            fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: '0.22em',
+            textTransform: 'uppercase', color: 'rgba(149,213,178,0.7)', margin: '0 0 6px',
+          }}>
+            {formatTodayLabel()}
+          </p>
           <p style={{ color: '#95d5b2', fontSize: 13, marginBottom: 12 }}>
             Good {getTimeOfDay()}, {user?.name?.split(' ')[0]}
           </p>
+
+          {/* Planet X Business Collective — sister project for organisations */}
+          <a
+            href="https://pxbc.casuarinaconsulting.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Planet X Business Collective"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 9, marginBottom: 14,
+              background: 'linear-gradient(135deg, rgba(224,180,82,0.30) 0%, rgba(200,149,42,0.12) 100%)',
+              border: '1px solid rgba(224,180,82,0.5)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 5px 16px rgba(200,149,42,0.18)',
+              borderRadius: 999, padding: '6px 13px 6px 7px', textDecoration: 'none',
+            }}
+          >
+            {/* small emblem echoing the PxBC seal (swap for the real logo asset when available) */}
+            <svg width="26" height="26" viewBox="0 0 24 24" style={{ flex: '0 0 auto', display: 'block' }} aria-hidden="true">
+              <defs><clipPath id="pxcClip"><circle cx="12" cy="12" r="11" /></clipPath></defs>
+              <g clipPath="url(#pxcClip)">
+                <rect x="0" y="0" width="24" height="24" fill="#cfe3dd" />
+                <rect x="0" y="0" width="24" height="13" fill="#7fb6c4" />
+                <circle cx="12" cy="13" r="4.4" fill="#e6b34e" />
+                <path d="M0,13 L6,8.5 L10.5,12 L15,7.5 L24,13 L24,24 L0,24 Z" fill="#2f6f6a" />
+                <rect x="0" y="13.2" width="24" height="10.8" fill="#3f97a8" opacity="0.9" />
+              </g>
+              <circle cx="12" cy="12" r="11" fill="none" stroke="#e0b452" strokeWidth="1.4" />
+            </svg>
+            <span style={{
+              fontFamily: "'Oswald', sans-serif", fontSize: 12.5, letterSpacing: '0.02em',
+              color: '#f2d894', whiteSpace: 'nowrap', lineHeight: 1.05,
+            }}>
+              <span style={{ fontWeight: 600 }}>Planet X</span>{' '}
+              <span style={{ color: 'rgba(242,216,148,0.78)' }}>Business Collective</span>
+            </span>
+            <span style={{ color: 'rgba(242,216,148,0.6)', fontSize: 15, marginLeft: 1 }}>›</span>
+          </a>
 
           {/* Streak badge row */}
           {!isDemo && (
