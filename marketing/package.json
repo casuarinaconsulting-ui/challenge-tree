@@ -1,0 +1,8 @@
+{
+  "name": "challenge-tre3-marketing",
+  "private": true,
+  "description": "Marketing asset generators for Challenge Tre3 (storyboard frames, LinkedIn carousel)",
+  "dependencies": {
+    "puppeteer": "^25.3.0"
+  }
+}

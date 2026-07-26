@@ -651,6 +651,14 @@ export default function HomePage() {
     onError: () => setSwapUsedLocal(true),
   })
 
+  // Ecosia: search the web via Ecosia, whose profits fund tree planting.
+  const handleEcosiaSearch = (e: any) => {
+    e.preventDefault()
+    const q = String(new FormData(e.currentTarget).get('q') || '').trim()
+    const url = q ? `https://www.ecosia.org/search?q=${encodeURIComponent(q)}` : 'https://www.ecosia.org'
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <div className="min-h-screen pb-24" style={{
       background: `
@@ -717,12 +725,33 @@ export default function HomePage() {
             </button>
           </div>
 
-          <p style={{
-            fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: '0.22em',
-            textTransform: 'uppercase', color: 'rgba(149,213,178,0.7)', margin: '0 0 6px',
-          }}>
-            {formatTodayLabel()}
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, margin: '0 0 6px' }}>
+            <p style={{
+              fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: '0.22em',
+              textTransform: 'uppercase', color: 'rgba(149,213,178,0.7)', margin: 0,
+              flex: '1 1 auto', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {formatTodayLabel()}
+            </p>
+            <a
+              href="https://pxbc.casuarinaconsulting.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Planet X Business Collective"
+              style={{
+                flex: '0 0 auto', display: 'inline-flex', alignItems: 'center', gap: 6,
+                background: 'linear-gradient(135deg, rgba(224,180,82,0.32) 0%, rgba(200,149,42,0.13) 100%)',
+                border: '1px solid rgba(224,180,82,0.55)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16), 0 4px 12px rgba(200,149,42,0.20)',
+                color: '#f2d894', borderRadius: 999, padding: '5px 12px 5px 9px', textDecoration: 'none',
+                fontFamily: "'Oswald', sans-serif", fontSize: 11.5, letterSpacing: '0.03em', whiteSpace: 'nowrap',
+              }}
+            >
+              <span style={{ fontSize: 13, lineHeight: 1 }}>🪐</span>
+              <span style={{ fontWeight: 600 }}>Planet X</span>
+              <span style={{ color: 'rgba(242,216,148,0.72)' }}>Collective</span>
+            </a>
+          </div>
           <p style={{ color: '#95d5b2', fontSize: 13, marginBottom: 12 }}>
             Good {getTimeOfDay()}, {user?.name?.split(' ')[0]}
           </p>
@@ -999,6 +1028,49 @@ export default function HomePage() {
             })}
           </div>
         )}
+      </div>
+
+      {/* ── Search the web, plant trees (Ecosia) ── */}
+      <div style={{ padding: '20px 18px 0' }}>
+        <div style={{
+          background: '#fffdf8', borderRadius: 18, padding: '15px 16px',
+          border: '1px solid rgba(120,90,40,0.12)',
+          boxShadow: '0 8px 20px rgba(95,82,55,0.07)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <span style={{ fontSize: 16, lineHeight: 1 }}>🌳</span>
+            <h3 style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 15, color: '#1a1f1c', margin: 0 }}>
+              Search the web, plant trees
+            </h3>
+          </div>
+          <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.5, margin: '0 0 11px' }}>
+            Every search on{' '}
+            <a href="https://www.ecosia.org" target="_blank" rel="noopener noreferrer"
+              style={{ color: '#2d6a4f', fontWeight: 600, textDecoration: 'none' }}>Ecosia</a>{' '}
+            helps plant trees, about one for every 45. Look things up here to make it a habit.
+          </p>
+          <form onSubmit={handleEcosiaSearch} style={{ display: 'flex', gap: 8 }}>
+            <input
+              name="q"
+              type="text"
+              placeholder="Search with Ecosia…"
+              aria-label="Search the web with Ecosia"
+              style={{
+                flex: 1, minWidth: 0, padding: '10px 13px', borderRadius: 10,
+                border: '1px solid #e6dcc6', background: '#faf6ec',
+                color: '#1a1f1c', fontSize: 14, outline: 'none', fontFamily: 'inherit',
+              }}
+            />
+            <button type="submit" style={{
+              flex: '0 0 auto', padding: '0 16px', borderRadius: 10, border: 'none', cursor: 'pointer',
+              background: 'linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%)', color: '#fff',
+              fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 12.5,
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+            }}>
+              Search
+            </button>
+          </form>
+        </div>
       </div>
 
       {/* Footer */}
