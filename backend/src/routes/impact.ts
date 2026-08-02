@@ -40,7 +40,10 @@ router.get('/global', async (_req, res: Response) => {
 })
 
 router.get('/', authenticate, async (req: AuthRequest, res: Response) => {
-  const records = await prisma.impact.findMany({ where: { userId: req.userId } })
+  const [records, user] = await Promise.all([
+    prisma.impact.findMany({ where: { userId: req.userId } }),
+    prisma.user.findUnique({ where: { id: req.userId }, select: { preferences: true } }),
+  ])
   const totals = records.reduce(
     (acc, r) => ({
       co2Saved:      acc.co2Saved      + r.co2Saved,
@@ -51,7 +54,10 @@ router.get('/', authenticate, async (req: AuthRequest, res: Response) => {
     }),
     { co2Saved: 0, waterSaved: 0, wasteDiverted: 0, treesEquiv: 0, totalActions: 0 }
   )
-  res.json(totals)
+  // Learning impact: Ecosia searches fund real tree planting, folded straight
+  // into the trees total (funded trees are real trees). No separate stat.
+  const ecosiaTrees = ((user?.preferences as any)?.ecosia?.treesEquiv) ?? 0
+  res.json({ ...totals, treesEquiv: totals.treesEquiv + ecosiaTrees })
 })
 
 router.get('/history', authenticate, async (req: AuthRequest, res: Response) => {

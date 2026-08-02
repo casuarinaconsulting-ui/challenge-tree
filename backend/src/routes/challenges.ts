@@ -1,7 +1,7 @@
 import { Router, Response } from 'express'
 import { prisma } from '../lib/prisma'
 import { authenticate, AuthRequest } from '../middleware/auth'
-import { getDailyChallenges, markComplete, swapChallenge } from '../services/challengeService'
+import { getDailyChallenges, markComplete, swapChallenge, recordEcosiaSearch } from '../services/challengeService'
 
 const router = Router()
 
@@ -34,6 +34,13 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res: Respons
 // POST /api/challenges/:id/swap, replace an incomplete challenge with a fresh one
 router.post('/:id/swap', authenticate, async (req: AuthRequest, res: Response) => {
   const result = await swapChallenge(req.userId!, req.params.id, tzOffset(req))
+  res.json(result)
+})
+
+// POST /api/challenges/:id/ecosia-search, record a learning search (funds tree
+// planting via Ecosia) as impact. The client opens the Ecosia search itself.
+router.post('/:id/ecosia-search', authenticate, async (req: AuthRequest, res: Response) => {
+  const result = await recordEcosiaSearch(req.userId!, req.params.id, tzOffset(req))
   res.json(result)
 })
 

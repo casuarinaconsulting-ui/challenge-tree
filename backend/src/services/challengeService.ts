@@ -173,6 +173,57 @@ export async function markComplete(userId: string, challengeId: string, tzOffset
   return { success: true, impact, newBadge }
 }
 
+// Ecosia plants roughly one tree for every 45 searches. A search from a
+// challenge card funds real tree planting, so we credit that as "learning
+// impact" (kept separate from physical CO2/water/waste savings).
+const ECOSIA_TREES_PER_SEARCH = 1 / 45
+
+// Shift a YYYY-MM-DD key by whole days (UTC), used to prune the search log.
+function shiftDateKey(dateKey: string, deltaDays: number): string {
+  const d = new Date(`${dateKey}T00:00:00.000Z`)
+  d.setUTCDate(d.getUTCDate() + deltaDays)
+  return d.toISOString().slice(0, 10)
+}
+
+// Record that the user ran an Ecosia search to learn about a challenge. Credits
+// learning impact once per challenge per day (anti-gaming), stored on the user's
+// preferences JSON so it never interferes with the daily Impact record or streak.
+export async function recordEcosiaSearch(userId: string, challengeId: string, tzOffsetMin = 0) {
+  const today   = startOfUserDay(tzOffsetMin)
+  const dateKey = today.toISOString().slice(0, 10)
+
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+  if (!user) return { error: 'User not found' }
+
+  const prefs = (user.preferences as Record<string, any>) ?? {}
+  const ecosia = prefs.ecosia ?? { searches: 0, treesEquiv: 0, log: {} }
+  const log: Record<string, string[]> = ecosia.log ?? {}
+  const todayList: string[] = log[dateKey] ?? []
+
+  const alreadyToday = todayList.includes(challengeId)
+  if (!alreadyToday) {
+    todayList.push(challengeId)
+    log[dateKey] = todayList
+    // keep only the last 3 days of the log so preferences stays small
+    const keep = new Set([dateKey, shiftDateKey(dateKey, -1), shiftDateKey(dateKey, -2)])
+    for (const k of Object.keys(log)) if (!keep.has(k)) delete log[k]
+    ecosia.searches   = (ecosia.searches ?? 0) + 1
+    ecosia.treesEquiv = (ecosia.treesEquiv ?? 0) + ECOSIA_TREES_PER_SEARCH
+    ecosia.log        = log
+    await prisma.user.update({
+      where: { id: userId },
+      data:  { preferences: { ...prefs, ecosia } as any },
+    })
+  }
+
+  return {
+    success:    true,
+    credited:   !alreadyToday,
+    searches:   ecosia.searches,
+    treesEquiv: ecosia.treesEquiv,
+  }
+}
+
 // Replace one of today's (incomplete) challenges with a fresh alternative.
 export async function swapChallenge(userId: string, challengeId: string, tzOffsetMin = 0) {
   const today = startOfUserDay(tzOffsetMin)
