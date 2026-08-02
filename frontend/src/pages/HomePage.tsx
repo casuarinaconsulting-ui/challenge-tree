@@ -659,6 +659,24 @@ export default function HomePage() {
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
+  // Per-card Ecosia "learn" action: opens a challenge-specific Ecosia search
+  // (funds tree planting) and records it as learning impact, so any card can
+  // create impact even when the physical challenge is not possible today.
+  const [ecosiaSearched, setEcosiaSearched] = useState<Set<string>>(new Set())
+  const handleCardEcosia = (c: any, ucId: string) => {
+    const q = ecosiaQueryForChallenge(c)
+    window.open(`https://www.ecosia.org/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener,noreferrer')
+    setEcosiaSearched(prev => new Set(prev).add(ucId))
+    if (!isDemo && !String(c.id).startsWith('demo-')) {
+      api.post(`/challenges/${c.id}/ecosia-search`)
+        .then(() => {
+          qc.invalidateQueries({ queryKey: ['impact'] })
+          qc.invalidateQueries({ queryKey: ['profile'] })
+        })
+        .catch(() => { /* the search still opened; impact credit is best-effort */ })
+    }
+  }
+
   return (
     <div className="min-h-screen pb-24" style={{
       background: `
@@ -1011,6 +1029,23 @@ export default function HomePage() {
                       )}
                     </div>
 
+                    {/* Learn on Ecosia: create impact through learning, on any card */}
+                    <button
+                      onClick={() => handleCardEcosia(c, uc.id)}
+                      style={{
+                        width: '100%', padding: '10px 0', borderRadius: 10, cursor: 'pointer',
+                        marginBottom: isCompleted ? 0 : 12,
+                        background: ecosiaSearched.has(uc.id) ? 'rgba(45,106,79,0.10)' : '#fffdf8',
+                        border: `1px solid rgba(45,106,79,${ecosiaSearched.has(uc.id) ? '0.42' : '0.26'})`,
+                        color: '#2d6a4f', fontFamily: "'Oswald', sans-serif", fontWeight: 500, fontSize: 12.5,
+                        letterSpacing: '0.05em', display: 'inline-flex', alignItems: 'center',
+                        justifyContent: 'center', gap: 7,
+                      }}
+                    >
+                      <span style={{ fontSize: 15, lineHeight: 1 }}>🌱</span>
+                      {ecosiaSearched.has(uc.id) ? 'Nice, that funds a tree' : 'Learn on Ecosia, plant a tree'}
+                    </button>
+
                     {!isCompleted && (
                       <button
                         onClick={() => completeMutation.mutate(c.id)}
@@ -1120,6 +1155,33 @@ export default function HomePage() {
 function getTimeOfDay() {
   const h = new Date().getHours()
   return h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'
+}
+
+// Build a sensible, task-specific Ecosia learning query for a challenge, so
+// every card searches something genuinely relevant to THAT action, framed by
+// the impact that action actually has (water, energy, carbon, waste, etc.),
+// rather than one generic "how does X help the climate" for everything.
+function ecosiaQueryForChallenge(c: any): string {
+  const t = String(c?.title || '').trim().toLowerCase()
+  const byCat: Record<string, string[]> = {
+    WATER:            [`how does ${t} save water`, `how much water can ${t} save`, `${t}: water use and climate impact`],
+    ENERGY:           [`how much energy does ${t} save`, `how does ${t} cut energy use and carbon`, `${t}: energy and emissions explained`],
+    FOOD:             [`what is the carbon footprint of ${t}`, `how does ${t} lower food related emissions`, `${t}: climate impact of food choices`],
+    TRANSPORT:        [`how much carbon does ${t} avoid`, `how does ${t} cut transport emissions`, `${t}: transport and your carbon footprint`],
+    WASTE:            [`how does ${t} reduce waste and pollution`, `why does ${t} matter for plastic and landfill`, `${t}: waste and the environment`],
+    CONSUMPTION:      [`what is the hidden environmental cost behind ${t}`, `how does ${t} reduce overconsumption`, `${t}: mindful consumption and climate`],
+    BIODIVERSITY:     [`how does ${t} help biodiversity`, `how does ${t} protect wildlife and habitats`, `${t}: nature, species and climate`],
+    COMMUNITY:        [`how does ${t} spread climate action`, `why does ${t} matter for collective climate action`, `${t}: community and climate change`],
+    SOCIAL_EQUITY:    [`how does ${t} relate to climate justice`, `why is ${t} part of a fair climate transition`, `${t}: equity and the climate crisis`],
+    CIRCULAR_ECONOMY: [`how does ${t} support a circular economy`, `how does ${t} keep materials in use for longer`, `${t}: circular economy and waste`],
+    CLIMATE_ADVOCACY: [`why does ${t} matter for climate policy`, `how does ${t} help push for systemic change`, `${t}: advocacy and real climate impact`],
+    WELLBEING:        [`how does ${t} help both wellbeing and the planet`, `why is ${t} good for you and the climate`, `${t}: nature, health and climate`],
+  }
+  const opts = byCat[c?.category] || [`what is the climate impact of ${t}`, `why does ${t} help the planet`, `${t} and climate change`]
+  // deterministic pick, so a given challenge always asks its own sensible question
+  let h = 0
+  for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0
+  return opts[h % opts.length]
 }
 
 // Editorial date label for the header, e.g. "Thursday, 26 June".
