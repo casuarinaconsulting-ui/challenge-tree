@@ -516,6 +516,24 @@ export default function HomePage() {
     staleTime: 30_000,
   })
 
+  // Streak restore: if the streak just broke, the backend offers a 24h window to
+  // restore it. The banner below only renders when the backend returns
+  // restorable/armed, so it stays dormant wherever the endpoint is not live.
+  const { data: streakStatus } = useQuery({
+    queryKey: ['streak-status'],
+    queryFn: () => api.get('/challenges/streak').then(r => r.data),
+    enabled: !isDemo,
+    staleTime: 30_000,
+    retry: false,
+  })
+  const restoreStreakMutation = useMutation({
+    mutationFn: () => api.post('/challenges/streak/restore'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['streak-status'] })
+      qc.invalidateQueries({ queryKey: ['profile'] })
+    },
+  })
+
   const streakCount  = profile?.streakCount ?? 0
   const currentBadge = getCurrentBadge(streakCount)
   const nextBadge    = getNextBadge(streakCount)
@@ -663,6 +681,7 @@ export default function HomePage() {
   // (funds tree planting) and records it as learning impact, so any card can
   // create impact even when the physical challenge is not possible today.
   const [ecosiaSearched, setEcosiaSearched] = useState<Set<string>>(new Set())
+  const [sharedId, setSharedId] = useState<string | null>(null)
   const handleCardEcosia = (c: any, ucId: string) => {
     const q = ecosiaQueryForChallenge(c)
     window.open(`https://www.ecosia.org/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener,noreferrer')
@@ -675,6 +694,26 @@ export default function HomePage() {
         })
         .catch(() => { /* the search still opened; impact credit is best-effort */ })
     }
+  }
+
+  // Per-card "share your proof": hands the user a ready caption with the campaign
+  // hashtag for the challenge they just completed. Frontend-only (Web Share API,
+  // clipboard fallback), so it needs no backend.
+  const handleShareChallenge = async (c: any, ucId: string) => {
+    const text =
+      `✅ Just did "${c.title}" on Challenge Tre3.\n` +
+      `Three small climate actions a day. Be the proof.\n` +
+      `https://challengetree.casuarinaconsulting.com\n` +
+      `#ProveItWithChallengeTre3`
+    try {
+      if (typeof navigator.share === 'function') {
+        await navigator.share({ title: 'Challenge Tre3', text })
+      } else {
+        await navigator.clipboard.writeText(text)
+        setSharedId(ucId)
+        setTimeout(() => setSharedId(null), 2500)
+      }
+    } catch { /* user dismissed the share sheet, nothing to do */ }
   }
 
   return (
@@ -877,6 +916,52 @@ export default function HomePage() {
           <NextImpactDayBanner day={nextImpactDay.day} date={nextImpactDay.date} onOpen={() => navigate('/impact')} />
         ) : null}
 
+        {/* Streak restore: a just-broken streak can be rescued within 24h */}
+        {streakStatus?.restorable && (
+          <div style={{
+            marginBottom: 18, padding: '16px 18px', borderRadius: 16,
+            background: 'linear-gradient(135deg, #fff6e2 0%, #fdeecb 100%)',
+            border: '1.5px solid #e0b45266', boxShadow: '0 6px 18px rgba(200,149,42,0.16)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+              <span style={{ fontSize: 22, lineHeight: 1 }}>🔥</span>
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 17, color: '#7a5a10' }}>
+                Your {streakStatus.streakCount}-day streak ended
+              </span>
+            </div>
+            <p style={{ fontSize: 13.5, color: '#8a6a2a', lineHeight: 1.5, margin: '0 0 12px' }}>
+              About {Math.max(1, Math.ceil(streakStatus.hoursLeft))} hours left to restore it. Restore it, then complete a challenge today to keep it going.
+            </p>
+            <button
+              onClick={() => restoreStreakMutation.mutate()}
+              disabled={restoreStreakMutation.isPending}
+              style={{
+                width: '100%', padding: '12px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
+                background: 'linear-gradient(135deg, #e0b452 0%, #c8952a 100%)', color: '#3a2e10',
+                fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 13.5,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                boxShadow: '0 6px 14px rgba(200,149,42,0.35)',
+                opacity: restoreStreakMutation.isPending ? 0.6 : 1,
+              }}
+            >
+              {restoreStreakMutation.isPending ? 'Restoring…' : `↻ Restore my ${streakStatus.streakCount}-day streak`}
+            </button>
+          </div>
+        )}
+        {streakStatus?.armed && (
+          <div style={{
+            marginBottom: 18, padding: '14px 18px', borderRadius: 16,
+            background: 'rgba(45,106,79,0.08)', border: '1.5px solid rgba(45,106,79,0.28)',
+          }}>
+            <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 15, color: '#2d6a4f' }}>
+              ✓ Streak restore armed
+            </span>
+            <p style={{ fontSize: 13.5, color: '#3a5a45', lineHeight: 1.5, margin: '4px 0 0' }}>
+              Complete a challenge today to keep your {streakStatus.streakCount}-day streak.
+            </p>
+          </div>
+        )}
+
         {/* Section header with gradient rule */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
           <h2 style={{
@@ -1045,6 +1130,26 @@ export default function HomePage() {
                       <span style={{ fontSize: 15, lineHeight: 1 }}>🌱</span>
                       {ecosiaSearched.has(uc.id) ? 'Nice, that funds a tree' : 'Learn on Ecosia, plant a tree'}
                     </button>
+
+                    {isCompleted && (
+                      <button
+                        onClick={() => handleShareChallenge(c, uc.id)}
+                        style={{
+                          width: '100%', padding: '12px 0', borderRadius: 12, border: 'none',
+                          cursor: 'pointer', marginTop: 12,
+                          background: sharedId === uc.id
+                            ? 'rgba(45,106,79,0.12)'
+                            : 'linear-gradient(135deg, #e0b452 0%, #c8952a 100%)',
+                          color: sharedId === uc.id ? '#2d6a4f' : '#3a2e10',
+                          fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: 13,
+                          letterSpacing: '0.1em', textTransform: 'uppercase',
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                          boxShadow: sharedId === uc.id ? 'none' : '0 6px 14px rgba(200,149,42,0.35)',
+                        }}
+                      >
+                        {sharedId === uc.id ? '✓ Copied, add it to your post' : '📣 Share your proof'}
+                      </button>
+                    )}
 
                     {!isCompleted && (
                       <button

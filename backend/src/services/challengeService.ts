@@ -18,6 +18,16 @@ const startOfUserDay = (tzOffsetMin = 0): Date => {
   return new Date(`${dateStr}T00:00:00.000Z`)
 }
 
+// The user's current local day plus the real instant it ends. nextMidnightRealMs
+// is when "today" rolls over in real time, used for the streak-restore countdown.
+const userDayInfo = (tzOffsetMin = 0) => {
+  const localMs = Date.now() - tzOffsetMin * 60000
+  const todayStr = new Date(localMs).toISOString().slice(0, 10)
+  const todayUtc = new Date(`${todayStr}T00:00:00.000Z`)
+  const nextMidnightRealMs = todayUtc.getTime() + 86400000 + tzOffsetMin * 60000
+  return { todayStr, todayUtc, nextMidnightRealMs }
+}
+
 export async function getDailyChallenges(userId: string, tzOffsetMin = 0) {
   const today = startOfUserDay(tzOffsetMin)
 
@@ -315,15 +325,27 @@ async function updateStreak(userId: string, tzOffsetMin = 0) {
   const user = await prisma.user.findUnique({ where: { id: userId } })
   if (!user) return null
 
-  const newStreak = yesterdayRecord ? user.streakCount + 1 : 1
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      streakCount:   newStreak,
-      longestStreak: Math.max(newStreak, user.longestStreak),
-      lastActive:    new Date()
-    }
-  })
+  // A streak restore (see restoreStreak) can bridge a single missed day so the
+  // streak continues instead of resetting to 1. It only takes effect once the
+  // user completes a challenge today, and it never fabricates impact for the
+  // missed day: the chain is reconnected, the numbers are not touched.
+  const yesterdayKey = yesterday.toISOString().slice(0, 10)
+  const prefs = (user.preferences as Record<string, any>) ?? {}
+  const restore = prefs.streakRestore ?? {}
+  const bridgedByRestore = !yesterdayRecord && restore.coveredDay === yesterdayKey
+  const bridged = !!yesterdayRecord || bridgedByRestore
+
+  const newStreak = bridged ? user.streakCount + 1 : 1
+  const data: Record<string, any> = {
+    streakCount:   newStreak,
+    longestStreak: Math.max(newStreak, user.longestStreak),
+    lastActive:    new Date(),
+  }
+  // Consume the restore: start the 30-day cooldown, clear the pending freeze.
+  if (bridgedByRestore) {
+    data.preferences = { ...prefs, streakRestore: { lastUsedAt: new Date().toISOString() } }
+  }
+  await prisma.user.update({ where: { id: userId }, data })
 
   if (!STREAK_MILESTONES.includes(newStreak)) return null
 
@@ -341,4 +363,80 @@ async function updateStreak(userId: string, tzOffsetMin = 0) {
 
   const req = badge.requirement as { threshold: number; level: number }
   return { id: badge.id, name: badge.name, icon: badge.icon, description: badge.description, level: req.level }
+}
+
+// A streak restore is offered only after exactly one missed day, during the day
+// that follows it (the ~24h window after the streak ended), and at most once
+// every 30 days.
+const STREAK_RESTORE_COOLDOWN_DAYS = 30
+
+// Current streak plus whether a just-broken streak can still be restored.
+// gap = whole days since the last day with any completed challenge:
+//   0/1 -> streak still alive, 2 -> one day missed (restorable today), 3+ -> gone.
+export async function getStreakStatus(userId: string, tzOffsetMin = 0) {
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+  if (!user) return { error: 'User not found' as const }
+
+  const { todayStr, todayUtc, nextMidnightRealMs } = userDayInfo(tzOffsetMin)
+  const last = await prisma.impact.findFirst({
+    where: { userId }, orderBy: { date: 'desc' }, select: { date: true },
+  })
+
+  const prefs = (user.preferences as Record<string, any>) ?? {}
+  const restore = prefs.streakRestore ?? {}
+  const onCooldown = restore.lastUsedAt
+    ? Date.now() - Date.parse(restore.lastUsedAt) < STREAK_RESTORE_COOLDOWN_DAYS * 86400000
+    : false
+
+  const missedDay = shiftDateKey(todayStr, -1)
+  const gap = last ? Math.round((todayUtc.getTime() - last.date.getTime()) / 86400000) : null
+  const broken = gap != null && gap >= 2
+  const armed = gap === 2 && restore.coveredDay === missedDay
+  const restorable = gap === 2 && !onCooldown && !armed
+
+  return {
+    streakCount: user.streakCount,
+    broken,
+    restorable,
+    armed,
+    coveredDay: gap === 2 ? missedDay : null,
+    hoursLeft: gap === 2 ? Math.max(0, Math.round((nextMidnightRealMs - Date.now()) / 360000) / 10) : 0,
+    onCooldown,
+    cooldownDays: STREAK_RESTORE_COOLDOWN_DAYS,
+  }
+}
+
+// Arm a streak restore for the single missed day. The streak only actually
+// continues when the user completes a challenge today (see updateStreak), so
+// this never fabricates activity. Allowed once every 30 days, inside the window.
+export async function restoreStreak(userId: string, tzOffsetMin = 0) {
+  const status = await getStreakStatus(userId, tzOffsetMin)
+  if ('error' in status) return status
+  if (status.armed) {
+    return {
+      success: true, alreadyArmed: true, restoredStreak: status.streakCount,
+      message: 'Streak restore is armed. Complete a challenge today to keep it.',
+    }
+  }
+  if (!status.restorable) {
+    const reason = status.onCooldown ? 'cooldown' : status.broken ? 'window_closed' : 'streak_active'
+    return { error: 'not_restorable' as const, reason, status }
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+  const prefs = (user!.preferences as Record<string, any>) ?? {}
+  const restore = prefs.streakRestore ?? {}
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      preferences: {
+        ...prefs,
+        streakRestore: { ...restore, coveredDay: status.coveredDay, createdAt: new Date().toISOString() },
+      },
+    },
+  })
+  return {
+    success: true, restoredStreak: status.streakCount,
+    message: 'Streak restore armed. Complete a challenge today to keep your streak.',
+  }
 }

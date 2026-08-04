@@ -452,7 +452,8 @@ function ShareModal({ data, onClose }: { data: any; onClose: () => void }) {
     `💧 ${water} L water saved\n` +
     `♻️ ${waste} kg waste diverted\n` +
     `✅ ${actions} actions completed\n\n` +
-    `Join me → https://challengetree.casuarinaconsulting.com`
+    `Be the proof. Join me → https://challengetree.casuarinaconsulting.com\n` +
+    `#ProveItWithChallengeTre3`
 
   useEffect(() => {
     const style = document.createElement('style')

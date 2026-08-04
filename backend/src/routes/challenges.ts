@@ -1,7 +1,7 @@
 import { Router, Response } from 'express'
 import { prisma } from '../lib/prisma'
 import { authenticate, AuthRequest } from '../middleware/auth'
-import { getDailyChallenges, markComplete, swapChallenge, recordEcosiaSearch } from '../services/challengeService'
+import { getDailyChallenges, markComplete, swapChallenge, recordEcosiaSearch, getStreakStatus, restoreStreak } from '../services/challengeService'
 
 const router = Router()
 
@@ -16,6 +16,19 @@ const tzOffset = (req: AuthRequest) => {
 router.get('/daily', authenticate, async (req: AuthRequest, res: Response) => {
   const challenges = await getDailyChallenges(req.userId!, tzOffset(req))
   res.json(challenges)
+})
+
+// GET /api/challenges/streak, current streak + whether it can still be restored.
+// Declared before /:id so "streak" is not captured as a challenge id.
+router.get('/streak', authenticate, async (req: AuthRequest, res: Response) => {
+  const result = await getStreakStatus(req.userId!, tzOffset(req))
+  res.json(result)
+})
+
+// POST /api/challenges/streak/restore, restore a just-broken streak (24h window)
+router.post('/streak/restore', authenticate, async (req: AuthRequest, res: Response) => {
+  const result = await restoreStreak(req.userId!, tzOffset(req))
+  res.json(result)
 })
 
 // GET /api/challenges/:id, get a single challenge
